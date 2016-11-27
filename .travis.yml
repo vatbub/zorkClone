@@ -1,0 +1,27 @@
+language: java
+jdk:
+- oraclejdk8
+addons:
+  apt:
+    packages:
+    - oracle-java8-installer
+cache:
+  directories:
+  - "$HOME/.m2"
+before_install:
+- git clone -b travis `git config --get remote.origin.url` target/travis
+install: echo Install phase has been disabled as a complete build is run during deployment
+script:
+- mvn test jacoco:report coveralls:report --settings target/travis/settings.xml
+before_cache:
+- mvn site site:deploy --settings target/travis/settings.xml -DskipTests=true
+- mvn deploy --settings target/travis/settings.xml -DskipTests=true
+branches:
+  only:
+  - master
+notifications:
+  email:
+    recipients:
+    - vatbub123+travisbuildnotification@googlemail.com
+    on_success: never
+on_failure: always
