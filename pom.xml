@@ -30,14 +30,14 @@
     <parent>
         <groupId>com.github.vatbub</groupId>
         <artifactId>parentPom</artifactId>
-        <version>0.0.18</version>
+        <version>0.0.19-SNAPSHOT</version>
     </parent>
 
     <scm>
         <connection>scm:git:git@github.com:vatbub/${gitRepoName}.git</connection>
         <url>https://github.com/vatbub/${gitRepoName}</url>
         <developerConnection>scm:git:git@github.com:vatbub/${gitRepoName}.git</developerConnection>
-        <tag>zorkClone-1.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <issueManagement>
@@ -51,7 +51,7 @@
     </ciManagement>
 
     <artifactId>zorkClone</artifactId>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Zork Clone</name>
@@ -83,7 +83,7 @@
         <dependency>
             <groupId>com.github.vatbub</groupId>
             <artifactId>common</artifactId>
-            <version>0.0.18</version>
+            <version>0.0.19-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
