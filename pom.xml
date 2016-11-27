@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <repositories>
@@ -32,14 +30,14 @@
     <parent>
         <groupId>com.github.vatbub</groupId>
         <artifactId>parentPom</artifactId>
-        <version>0.0.19-SNAPSHOT</version>
+        <version>0.0.18</version>
     </parent>
 
     <scm>
         <connection>scm:git:git@github.com:vatbub/${gitRepoName}.git</connection>
         <url>https://github.com/vatbub/${gitRepoName}</url>
         <developerConnection>scm:git:git@github.com:vatbub/${gitRepoName}.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>zorkClone-1.0</tag>
     </scm>
 
     <issueManagement>
@@ -53,7 +51,7 @@
     </ciManagement>
 
     <artifactId>zorkClone</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
     <name>Zork Clone</name>
@@ -85,7 +83,7 @@
         <dependency>
             <groupId>com.github.vatbub</groupId>
             <artifactId>common</artifactId>
-            <version>0.0.19-SNAPSHOT</version>
+            <version>0.0.18</version>
         </dependency>
     </dependencies>
 
