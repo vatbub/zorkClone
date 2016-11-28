@@ -1,7 +1,125 @@
 package view;
 
 /**
- * Created by Frederik on 27/11/2016.
+ * Sample Skeleton for 'BasicApplication_i18n.fxml' Controller Class
  */
-public class MainWindow {
+
+import common.AppConfig;
+import common.Common;
+import common.UpdateChecker;
+import common.UpdateInfo;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
+import logging.FOKLogger;
+import view.updateAvailableDialog.UpdateAvailableDialog;
+
+import java.net.URL;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+
+public class MainWindow extends Application{
+
+    private static FOKLogger log;
+    private static boolean disableUpdateChecks;
+
+    public static void main(String[] args){
+        common.Common.setAppName("zork");
+        log = new FOKLogger(MainWindow.class.getName());
+        for (String arg : args) {
+            if (arg.toLowerCase().matches("mockappversion=.*")) {
+                // Set the mock version
+                String version = arg.substring(arg.toLowerCase().indexOf('=') + 1);
+                Common.setMockAppVersion(version);
+            } else if (arg.toLowerCase().matches("mockbuildnumber=.*")) {
+                // Set the mock build number
+                String buildnumber = arg.substring(arg.toLowerCase().indexOf('=') + 1);
+                Common.setMockBuildNumber(buildnumber);
+            } else if (arg.toLowerCase().matches("disableupdatechecks")) {
+                log.getLogger().info("Update checks are disabled as app was launched from launcher.");
+                disableUpdateChecks = true;
+            } else if (arg.toLowerCase().matches("mockpackaging=.*")) {
+                // Set the mock packaging
+                String packaging = arg.substring(arg.toLowerCase().indexOf('=') + 1);
+                Common.setMockPackaging(packaging);
+            } else if (arg.toLowerCase().matches("locale=.*")) {
+                // set the gui language
+                String guiLanguageCode = arg.substring(arg.toLowerCase().indexOf('=') + 1);
+                log.getLogger().info("Setting language: " + guiLanguageCode);
+                Locale.setDefault(new Locale(guiLanguageCode));
+            }
+        }
+
+        launch(args);
+    }
+
+    public static ResourceBundle bundle;
+    private Stage stage;
+
+    @FXML // ResourceBundle that was given to the FXMLLoader
+    private ResourceBundle resources;
+
+    @FXML // URL location of the FXML file that was given to the FXMLLoader
+    private URL location;
+
+    @FXML // fx:id="commandLine"
+    private TextField commandLine; // Value injected by FXMLLoader
+
+    @FXML // fx:id="getAvailableCommandsButton"
+    private Button getAvailableCommandsButton; // Value injected by FXMLLoader
+
+    @FXML // This method is called by the FXMLLoader when initialization is complete
+    void initialize() {
+        assert commandLine != null : "fx:id=\"commandLine\" was not injected: check your FXML file 'BasicApplication_i18n.fxml'.";
+        assert getAvailableCommandsButton != null : "fx:id=\"getAvailableCommandsButton\" was not injected: check your FXML file 'BasicApplication_i18n.fxml'.";
+
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        bundle = ResourceBundle.getBundle("view.strings");
+
+        // appConfig = new Config();
+
+        stage = primaryStage;
+        try {
+            Thread updateThread = new Thread(() -> {
+                UpdateInfo update = UpdateChecker.isUpdateAvailable(AppConfig.getUpdateRepoBaseURL(),
+                        AppConfig.groupID, AppConfig.artifactID, AppConfig.updateFileClassifier,
+                        Common.getPackaging());
+                if (update.showAlert) {
+                    Platform.runLater(() -> new UpdateAvailableDialog(update));
+                }
+            });
+            updateThread.setName("updateThread");
+            updateThread.start();
+
+            Parent root = FXMLLoader.load(getClass().getResource("MainWindow.fxml"), bundle);
+
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("MainWindow.css").toExternalForm());
+
+            primaryStage.setTitle(bundle.getString("windowTitle"));
+
+            primaryStage.setMinWidth(scene.getRoot().minWidth(0) + 70);
+            primaryStage.setMinHeight(scene.getRoot().minHeight(0) + 70);
+
+            primaryStage.setScene(scene);
+
+            // Set Icon
+            primaryStage.getIcons().add(new Image(MainWindow.class.getResourceAsStream("icon.png")));
+
+            primaryStage.show();
+        } catch (Exception e) {
+            log.getLogger().log(Level.SEVERE, "An error occurred", e);
+        }
+    }
 }
