@@ -1,4 +1,4 @@
-# zorkClone
+# zorkClone [![Build Status](https://travis-ci.org/vatbub/zorkClone.svg?branch=master)](https://travis-ci.org/vatbub/zorkClone)
 This project aims to reimplement the good old nerdy game [Zork](https://en.wikipedia.org/wiki/Zork), parts I, II and III in java. 
 
 *This is not a wrapper*, it's a reimplementation with
