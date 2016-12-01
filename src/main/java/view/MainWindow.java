@@ -38,11 +38,17 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import logging.FOKLogger;
+import parser.Parser;
 import view.updateAvailableDialog.UpdateAvailableDialog;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -51,6 +57,8 @@ public class MainWindow extends Application{
 
     private static FOKLogger log;
     private static boolean disableUpdateChecks;
+
+    private static List<GameMessage> messages = new ArrayList<>();
 
     public static void main(String[] args){
         common.Common.setAppName("zork");
@@ -97,11 +105,14 @@ public class MainWindow extends Application{
     @FXML // fx:id="getAvailableCommandsButton"
     private Button getAvailableCommandsButton; // Value injected by FXMLLoader
 
+    @FXML
+    private WebView messageView;
+
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         assert commandLine != null : "fx:id=\"commandLine\" was not injected: check your FXML file 'BasicApplication_i18n.fxml'.";
         assert getAvailableCommandsButton != null : "fx:id=\"getAvailableCommandsButton\" was not injected: check your FXML file 'BasicApplication_i18n.fxml'.";
-
+        updateCommandView();
     }
 
     @Override
@@ -142,5 +153,22 @@ public class MainWindow extends Application{
         } catch (Exception e) {
             log.getLogger().log(Level.SEVERE, "An error occurred", e);
         }
+    }
+
+    @FXML
+    void commandLineOnKeyPressed(KeyEvent event) {
+        if (event.getCode().equals(KeyCode.ENTER)){
+            String playerMessage = this.commandLine.getText();
+            messages.add(new GameMessage(playerMessage, false));
+            messages.add(new GameMessage(Parser.parse(playerMessage), true));
+            this.commandLine.setText("");
+            updateCommandView();
+        }
+    }
+
+    public void updateCommandView(){
+        this.messageView.getEngine().loadContent(HTMLGenerator.generate(messages));
+        System.out.println("===================================================================");
+        System.out.println(HTMLGenerator.generate(messages));
     }
 }

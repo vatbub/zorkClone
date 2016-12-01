@@ -9,7 +9,7 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.MainWindow">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
@@ -37,13 +37,13 @@
          <bottom>
             <AnchorPane prefHeight="34.0" prefWidth="640.0" BorderPane.alignment="CENTER">
                <children>
-                  <TextField fx:id="commandLine" layoutX="106.0" layoutY="-1.0" prefHeight="72.0" prefWidth="640.0" promptText="%commandLine.promptText" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                  <Button layoutX="561.0" layoutY="5.0" mnemonicParsing="false" text="Button" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <TextField fx:id="commandLine" layoutX="106.0" layoutY="-1.0" onKeyPressed="#commandLineOnKeyPressed" prefHeight="72.0" prefWidth="640.0" promptText="%commandLine.promptText" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <Button fx:id="getAvailableCommandsButton" layoutX="561.0" layoutY="5.0" mnemonicParsing="false" text="Button" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                </children>
             </AnchorPane>
          </bottom>
          <center>
-            <WebView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+            <WebView fx:id="messageView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
          </center>
       </BorderPane>
   </children>
