@@ -286,7 +286,7 @@ public class HTMLGenerator {
             }
 
             res = res + "<div class=\"talktext\">\n" +
-                    "        <p>" + message.getMessage() + "</p>\n" +
+                    "        <p>" + message.getMessage().replace("\n", "<br>") + "</p>\n" +
                     "    </div>\n" +
                     "</div>\n";
         }
