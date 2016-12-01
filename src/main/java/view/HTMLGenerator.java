@@ -10,7 +10,7 @@ public class HTMLGenerator {
         // Header
         String res = "<html>\n" +
                 "<head>\n" +
-                "<script language=\\\"javascript\\\" type=\\\"text/javascript\\\">  \n" +
+                "<script language=\"javascript\" type=\"text/javascript\">  \n" +
                 "        function toBottom(){\n" +
                 "        window.scrollTo(0, document.body.scrollHeight)  \n" +
                 "        } \n" +
