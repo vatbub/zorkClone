@@ -35,9 +35,10 @@ class HTMLGenerator {
                 "\n" +
                 "/* CSS talk bubble */\n" +
                 ".talk-bubble {\n" +
-                "\tmargin: 40px;\n" +
-                "  display: inline-block;\n" +
-                "  position: relative;\n" +
+                "\tmargin: 10px;\n" +
+                "\tdisplay: inline-block;\n" +
+                "\ttransform: translate(+7%);\n" +
+                "\tposition: relative;\n" +
                 "\twidth: 86%;\n" +
                 "\theight: auto;\n" +
                 "\tbackground-color: lightyellow;\n" +
