@@ -40,6 +40,7 @@ class HTMLGenerator {
                 "\ttransform: translate(+7%);\n" +
                 "\tposition: relative;\n" +
                 "\twidth: 86%;\n" +
+                "\tword-wrap: break-word;\n" +
                 "\theight: auto;\n" +
                 "\tbackground-color: lightyellow;\n" +
                 "}\n" +
