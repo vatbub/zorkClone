@@ -22,13 +22,14 @@ package view;
 
 
 /**
- * Created by Frederik on 01/12/2016.
+ * Represents a message that was sent from the player to the game or vice versa.
  */
 public class GameMessage {
     private String message;
     private boolean messageFromGame;
 
-    public GameMessage(){
+    @SuppressWarnings("unused")
+    public GameMessage() {
         this(null, false);
     }
 
@@ -41,6 +42,7 @@ public class GameMessage {
         return messageFromGame;
     }
 
+    @SuppressWarnings("unused")
     public boolean isMessageFromPlayer() {
         return !messageFromGame;
     }
@@ -49,10 +51,12 @@ public class GameMessage {
         this.messageFromGame = messageFromGame;
     }
 
+    @SuppressWarnings("unused")
     public void messageIsFromGame() {
         this.setIsMessageFromGame(true);
     }
 
+    @SuppressWarnings("unused")
     public void messageIsFromPlayer() {
         this.setIsMessageFromGame(false);
     }

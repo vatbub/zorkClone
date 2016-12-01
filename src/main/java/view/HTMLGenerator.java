@@ -3,10 +3,16 @@ package view;
 import java.util.List;
 
 /**
- * Created by Frederik on 01/12/2016.
+ * Renders the html code for the gui to show the message history
  */
-public class HTMLGenerator {
-    public static String generate(List<GameMessage> messages) {
+class HTMLGenerator {
+    /**
+     * Renders the html code for the gui to show the message history
+     *
+     * @param messages The List of {@link GameMessage}s to render.
+     * @return The html code ready to be shown in any kind of web browser
+     */
+    static String generate(List<GameMessage> messages) {
         // Header
         String res = "<html>\n" +
                 "<head>\n" +
