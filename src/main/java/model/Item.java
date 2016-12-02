@@ -23,12 +23,13 @@ package model;
 
 import parser.Noun;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by Frederik on 27/11/2016.
  */
-public class Item {
+public class Item implements Serializable {
     private Noun name;
     private String description;
 

@@ -21,13 +21,14 @@ package parser;
  */
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Frederik on 27/11/2016.
+ * Any word that can be used by the {@link model.Player} to interact with the game.
  */
-public class Word {
+public class Word implements Serializable{
     private String word;
     private List<String> synonyms;
     private Word thisWordInstance;

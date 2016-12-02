@@ -24,7 +24,7 @@ package model;
 import java.util.List;
 
 /**
- * Created by Frederik on 27/11/2016.
+ * Represents the player.
  */
 public class Player extends Entity {
     private List<Item> inventory;

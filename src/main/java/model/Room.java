@@ -21,12 +21,13 @@ package model;
  */
 
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
- * Created by Frederik on 27/11/2016.
+ * Represents a room in the {@link Game}
  */
-public class Room {
+public class Room implements Serializable {
     private String description;
     private String name;
     private boolean detailsTold;

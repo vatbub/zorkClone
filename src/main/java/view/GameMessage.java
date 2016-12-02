@@ -21,10 +21,12 @@ package view;
  */
 
 
+import java.io.Serializable;
+
 /**
  * Represents a message that was sent from the player to the game or vice versa.
  */
-public class GameMessage {
+public class GameMessage implements Serializable {
     private String message;
     private boolean messageFromGame;
 

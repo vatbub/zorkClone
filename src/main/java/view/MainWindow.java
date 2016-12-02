@@ -43,6 +43,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import logging.FOKLogger;
+import model.Game;
 import parser.Parser;
 import view.updateAvailableDialog.UpdateAvailableDialog;
 
@@ -50,8 +51,6 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -60,8 +59,7 @@ public class MainWindow extends Application{
 
     private static FOKLogger log;
     private static boolean disableUpdateChecks;
-
-    private static List<GameMessage> messages = new ArrayList<>();
+    Game currentGame = new Game();
 
     public static void main(String[] args){
         common.Common.setAppName("zork");
@@ -115,7 +113,7 @@ public class MainWindow extends Application{
     void initialize() {
         assert commandLine != null : "fx:id=\"commandLine\" was not injected: check your FXML file 'BasicApplication_i18n.fxml'.";
         assert getAvailableCommandsButton != null : "fx:id=\"getAvailableCommandsButton\" was not injected: check your FXML file 'BasicApplication_i18n.fxml'.";
-        messages.add(new GameMessage("ZORK I: The Great Underground Empire\nCopyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved.\nZORK is a registered trademark of Infocom, Inc.\n Revison " + Common.getAppVersion() + "\n\nThis game is not yet functional. Give the team some time and come back in some time. See ya :)", true));
+        currentGame.getMessages().add(new GameMessage("ZORK I: The Great Underground Empire\nCopyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved.\nZORK is a registered trademark of Infocom, Inc.\n Revison " + Common.getAppVersion() + "\n\nThis game is not yet functional. Give the team some time and come back in some time. See ya :)", true));
         updateCommandView();
     }
 
@@ -163,15 +161,15 @@ public class MainWindow extends Application{
     void commandLineOnKeyPressed(KeyEvent event) {
         if (event.getCode().equals(KeyCode.ENTER)){
             String playerMessage = this.commandLine.getText();
-            messages.add(new GameMessage(playerMessage, false));
-            messages.add(new GameMessage(Parser.parse(playerMessage), true));
+            currentGame.getMessages().add(new GameMessage(playerMessage, false));
+            currentGame.getMessages().add(new GameMessage(Parser.parse(playerMessage), true));
             this.commandLine.setText("");
             updateCommandView();
         }
     }
 
     public void updateCommandView(){
-        String html = HTMLGenerator.generate(messages);
+        String html = HTMLGenerator.generate(currentGame.getMessages());
         this.messageView.getEngine().loadContent(html);
         System.out.println("===================================================================");
         System.out.println(html);

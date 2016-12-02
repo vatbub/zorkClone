@@ -23,20 +23,22 @@ package model;
 
 import parser.Word;
 
+import java.io.Serializable;
+
 /**
- * Created by Frederik on 27/11/2016.
+ * Any entity in the game like a {@link Player} or thief, trol, ...
  */
-public class Entity {
-    private int remeaningHealth = 10;
+public class Entity implements Serializable{
+    private int remainingHealth = 10;
     private Word name;
     private String description;
 
-    public int getRemeaningHealth() {
-        return remeaningHealth;
+    public int getRemainingHealth() {
+        return remainingHealth;
     }
 
-    public void setRemeaningHealth(int remeaningHealth) {
-        this.remeaningHealth = remeaningHealth;
+    public void setRemainingHealth(int remainingHealth) {
+        this.remainingHealth = remainingHealth;
     }
 
     public Word getName() {

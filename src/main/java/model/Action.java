@@ -22,7 +22,7 @@ package model;
 
 
 /**
- * Created by Frederik on 27/11/2016.
+ * A action that can happen in the {@link Game} like picking up or moving an item, moving the player...
  */
 public abstract class Action {
     private String name;
