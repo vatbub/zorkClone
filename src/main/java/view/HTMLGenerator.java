@@ -14,6 +14,10 @@ class HTMLGenerator {
      */
     static String generate(List<GameMessage> messages) {
         // Header
+
+        String borderColor = "#000000";
+        String bubbleBackground = "white";
+
         String res = "<html>\n" +
                 "<head>\n" +
                 "<script language=\"javascript\" type=\"text/javascript\">  \n" +
@@ -42,10 +46,10 @@ class HTMLGenerator {
                 "\twidth: 86%;\n" +
                 "\tword-wrap: break-word;\n" +
                 "\theight: auto;\n" +
-                "\tbackground-color: lightyellow;\n" +
+                "\tbackground-color: " + bubbleBackground + ";\n" +
                 "}\n" +
                 ".border{\n" +
-                "  border: 8px solid #666;\n" +
+                "  border: 8px solid " + borderColor + ";\n" +
                 "}\n" +
                 ".round{\n" +
                 "  border-radius: 30px;\n" +
@@ -65,7 +69,7 @@ class HTMLGenerator {
                 "  top: -8px;\n" +
                 "\tbottom: auto;\n" +
                 "\tborder: 32px solid;\n" +
-                "\tborder-color: #666 transparent transparent transparent;\n" +
+                "\tborder-color: " + borderColor + " transparent transparent transparent;\n" +
                 "}\n" +
                 ".tri-right.left-top:after{\n" +
                 "\tcontent: ' ';\n" +
@@ -77,7 +81,7 @@ class HTMLGenerator {
                 "  top: 0px;\n" +
                 "\tbottom: auto;\n" +
                 "\tborder: 22px solid;\n" +
-                "\tborder-color: lightyellow transparent transparent transparent;\n" +
+                "\tborder-color: " + bubbleBackground + " transparent transparent transparent;\n" +
                 "}\n" +
                 "\n" +
                 "/* Right triangle, left side slightly down */\n" +
@@ -91,7 +95,7 @@ class HTMLGenerator {
                 "  top: 30px;\n" +
                 "\tbottom: auto;\n" +
                 "\tborder: 20px solid;\n" +
-                "\tborder-color: #666 #666 transparent transparent;\n" +
+                "\tborder-color: " + borderColor + " " + borderColor + " transparent transparent;\n" +
                 "}\n" +
                 ".tri-right.left-in:after{\n" +
                 "\tcontent: ' ';\n" +
@@ -103,7 +107,7 @@ class HTMLGenerator {
                 "  top: 38px;\n" +
                 "\tbottom: auto;\n" +
                 "\tborder: 12px solid;\n" +
-                "\tborder-color: lightyellow lightyellow transparent transparent;\n" +
+                "\tborder-color: " + bubbleBackground + " " + bubbleBackground + " transparent transparent;\n" +
                 "}\n" +
                 "\n" +
                 "/*Right triangle, placed bottom left side slightly in*/\n" +
@@ -117,7 +121,7 @@ class HTMLGenerator {
                 "  top: auto;\n" +
                 "\tbottom: -40px;\n" +
                 "\tborder: 32px solid;\n" +
-                "\tborder-color: transparent transparent transparent #666;\n" +
+                "\tborder-color: transparent transparent transparent " + borderColor + ";\n" +
                 "}\n" +
                 ".tri-right.btm-left:after{\n" +
                 "\tcontent: ' ';\n" +
@@ -129,7 +133,7 @@ class HTMLGenerator {
                 "  top: auto;\n" +
                 "\tbottom: -20px;\n" +
                 "\tborder: 22px solid;\n" +
-                "\tborder-color: transparent transparent transparent lightyellow;\n" +
+                "\tborder-color: transparent transparent transparent " + bubbleBackground + ";\n" +
                 "}\n" +
                 "\n" +
                 "/*Right triangle, placed bottom left side slightly in*/\n" +
@@ -143,7 +147,7 @@ class HTMLGenerator {
                 "  top: auto;\n" +
                 "\tbottom: -40px;\n" +
                 "\tborder: 20px solid;\n" +
-                "\tborder-color: #666 transparent transparent #666;\n" +
+                "\tborder-color: " + borderColor + " transparent transparent " + borderColor + ";\n" +
                 "}\n" +
                 ".tri-right.btm-left-in:after{\n" +
                 "\tcontent: ' ';\n" +
@@ -155,7 +159,7 @@ class HTMLGenerator {
                 "  top: auto;\n" +
                 "\tbottom: -20px;\n" +
                 "\tborder: 12px solid;\n" +
-                "\tborder-color: lightyellow transparent transparent lightyellow;\n" +
+                "\tborder-color: " + bubbleBackground + " transparent transparent " + bubbleBackground + ";\n" +
                 "}\n" +
                 "\n" +
                 "/*Right triangle, placed bottom right side slightly in*/\n" +
@@ -168,7 +172,7 @@ class HTMLGenerator {
                 "\tright: 30px;\n" +
                 "\tbottom: -40px;\n" +
                 "\tborder: 20px solid;\n" +
-                "\tborder-color: #666 #666 transparent transparent;\n" +
+                "\tborder-color: " + borderColor + " " + borderColor + " transparent transparent;\n" +
                 "}\n" +
                 ".tri-right.btm-right-in:after{\n" +
                 "\tcontent: ' ';\n" +
@@ -179,7 +183,7 @@ class HTMLGenerator {
                 "\tright: 38px;\n" +
                 "\tbottom: -20px;\n" +
                 "\tborder: 12px solid;\n" +
-                "\tborder-color: lightyellow lightyellow transparent transparent;\n" +
+                "\tborder-color: " + bubbleBackground + " " + bubbleBackground + " transparent transparent;\n" +
                 "}\n" +
                 "/*\n" +
                 "\tleft: -8px;\n" +
@@ -187,13 +191,13 @@ class HTMLGenerator {
                 "  top: auto;\n" +
                 "\tbottom: -40px;\n" +
                 "\tborder: 32px solid;\n" +
-                "\tborder-color: transparent transparent transparent #666;\n" +
+                "\tborder-color: transparent transparent transparent " + borderColor + ";\n" +
                 "\tleft: 0px;\n" +
                 "  right: auto;\n" +
                 "  top: auto;\n" +
                 "\tbottom: -20px;\n" +
                 "\tborder: 22px solid;\n" +
-                "\tborder-color: transparent transparent transparent lightyellow;\n" +
+                "\tborder-color: transparent transparent transparent " + bubbleBackground + ";\n" +
                 "\n" +
                 "/*Right triangle, placed bottom right side slightly in*/\n" +
                 ".tri-right.border.btm-right:before {\n" +
@@ -205,7 +209,7 @@ class HTMLGenerator {
                 "\tright: -8px;\n" +
                 "\tbottom: -40px;\n" +
                 "\tborder: 20px solid;\n" +
-                "\tborder-color: #666 #666 transparent transparent;\n" +
+                "\tborder-color: " + borderColor + " " + borderColor + " transparent transparent;\n" +
                 "}\n" +
                 ".tri-right.btm-right:after{\n" +
                 "\tcontent: ' ';\n" +
@@ -216,7 +220,7 @@ class HTMLGenerator {
                 "\tright: 0px;\n" +
                 "\tbottom: -20px;\n" +
                 "\tborder: 12px solid;\n" +
-                "\tborder-color: lightyellow lightyellow transparent transparent;\n" +
+                "\tborder-color: " + bubbleBackground + " " + bubbleBackground + " transparent transparent;\n" +
                 "}\n" +
                 "\n" +
                 "/* Right triangle, right side slightly down*/\n" +
@@ -230,7 +234,7 @@ class HTMLGenerator {
                 "  top: 30px;\n" +
                 "\tbottom: auto;\n" +
                 "\tborder: 20px solid;\n" +
-                "\tborder-color: #666 transparent transparent #666;\n" +
+                "\tborder-color: " + borderColor + " transparent transparent " + borderColor + ";\n" +
                 "}\n" +
                 ".tri-right.right-in:after{\n" +
                 "\tcontent: ' ';\n" +
@@ -242,7 +246,7 @@ class HTMLGenerator {
                 "  top: 38px;\n" +
                 "\tbottom: auto;\n" +
                 "\tborder: 12px solid;\n" +
-                "\tborder-color: lightyellow transparent transparent lightyellow;\n" +
+                "\tborder-color: " + bubbleBackground + " transparent transparent " + bubbleBackground + ";\n" +
                 "}\n" +
                 "\n" +
                 "/* Right triangle placed top right flush. */\n" +
@@ -256,7 +260,7 @@ class HTMLGenerator {
                 "  top: -8px;\n" +
                 "\tbottom: auto;\n" +
                 "\tborder: 32px solid;\n" +
-                "\tborder-color: #666 transparent transparent transparent;\n" +
+                "\tborder-color: " + borderColor + " transparent transparent transparent;\n" +
                 "}\n" +
                 ".tri-right.right-top:after{\n" +
                 "\tcontent: ' ';\n" +
@@ -268,19 +272,22 @@ class HTMLGenerator {
                 "  top: 0px;\n" +
                 "\tbottom: auto;\n" +
                 "\tborder: 20px solid;\n" +
-                "\tborder-color: lightyellow transparent transparent transparent;\n" +
+                "\tborder-color: " + bubbleBackground + " transparent transparent transparent;\n" +
                 "}\n" +
                 "\n" +
                 "/* talk bubble contents */\n" +
                 ".talktext{\n" +
-                "  padding: 1em;\n" +
+                "\tpadding-left: 1em;\n" +
+                "\tpadding-right: 1em;" +
+                "\tpadding-top: 0.1em;" +
+                "\tpadding-bottom: 0.1em;" +
                 "\ttext-align: left;\n" +
-                "  line-height: 1.5em;\n" +
+                "\tline-height: 1.5em;\n" +
                 "}\n" +
                 ".talktext p{\n" +
-                "  /* remove webkit p margins */\n" +
-                "  -webkit-margin-before: 0em;\n" +
-                "  -webkit-margin-after: 0em;\n" +
+                "\t/* remove webkit p margins */\n" +
+                "\t-webkit-margin-before: 0em;\n" +
+                "\t-webkit-margin-after: 0em;\n" +
                 "}\n" +
                 "    </style>\n" +
                 "</head>\n" +
