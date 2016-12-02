@@ -3,7 +3,8 @@ package view;
 import java.util.List;
 
 /**
- * Renders the html code for the gui to show the message history
+ * Renders the html code for the gui to show the message history<br>
+ *     Style is inspired by <a href="https://codepen.io/Founts/pen/gmhcl">Jason Founts</a>
  */
 class HTMLGenerator {
     /**
