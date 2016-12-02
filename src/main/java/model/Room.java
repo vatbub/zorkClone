@@ -21,6 +21,8 @@ package model;
  */
 
 
+import parser.Noun;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -29,7 +31,7 @@ import java.util.List;
  */
 public class Room implements Serializable {
     private String description;
-    private String name;
+    private Noun name;
     private boolean detailsTold;
     private List<Item> itemsInRoom;
     private List<Entity> entitiesInRoom;
@@ -62,11 +64,11 @@ public class Room implements Serializable {
         return res;
     }
 
-    public String getName() {
+    public Noun getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(Noun name) {
         this.name = name;
     }
 
