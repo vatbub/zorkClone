@@ -19,6 +19,8 @@ class HTMLGenerator {
         String borderColor = "#000000";
         String bubbleBackground = "white";
 
+        // TODO: give messages from player and from game a different background color
+
         String res = "<html>\n" +
                 "<head>\n" +
                 "<script language=\"javascript\" type=\"text/javascript\">  \n" +
@@ -296,7 +298,7 @@ class HTMLGenerator {
 
         for (GameMessage message : messages) {
             if (message.isMessageFromGame()) {
-                res = res + "<div class=\"talk-bubble tri-right round border left-top\">\n";
+                res = res + "<div class=\"talk-bubble tri-right border left-top\">\n";
             } else {
                 res = res + "<div class=\"talk-bubble tri-right round border right-top\">\n";
             }
