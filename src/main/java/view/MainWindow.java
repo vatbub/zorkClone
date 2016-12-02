@@ -46,6 +46,9 @@ import logging.FOKLogger;
 import parser.Parser;
 import view.updateAvailableDialog.UpdateAvailableDialog;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -168,8 +171,12 @@ public class MainWindow extends Application{
     }
 
     public void updateCommandView(){
-        this.messageView.getEngine().loadContent(HTMLGenerator.generate(messages));
+        String html = HTMLGenerator.generate(messages);
+        this.messageView.getEngine().loadContent(html);
         System.out.println("===================================================================");
-        System.out.println(HTMLGenerator.generate(messages));
+        System.out.println(html);
+        StringSelection selection = new StringSelection(html);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(selection, selection);
     }
 }
