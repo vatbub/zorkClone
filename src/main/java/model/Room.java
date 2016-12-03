@@ -24,7 +24,10 @@ package model;
 import parser.Noun;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a room in the {@link Game}
@@ -35,6 +38,35 @@ public class Room implements Serializable {
     private boolean detailsTold;
     private List<Item> itemsInRoom;
     private List<Entity> entitiesInRoom;
+    private Map<WalkDirection, Room> adjacentRooms;
+
+    public Room(){
+        this(new Noun(""));
+    }
+
+    public Room(Noun name){
+        this(name, "");
+    }
+
+    public Room(Noun name, String description){
+        this(name, description, new ArrayList<>());
+    }
+
+    public Room(Noun name, String description, List<Item> itemsInRoom){
+        this(name, description, itemsInRoom, new ArrayList<>());
+    }
+
+    public Room(Noun name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom){
+        this(name, description, itemsInRoom, entitiesInRoom, new HashMap<>(WalkDirection.values().length));
+    }
+
+    public Room(Noun name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom, Map<WalkDirection, Room> adjacentRooms){
+        this.setName(name);
+        this.setDescription(description);
+        this.setItemsInRoom(itemsInRoom);
+        this.setEntitiesInRoom(entitiesInRoom);
+        this.setAdjacentRooms(adjacentRooms);
+    }
 
     public String getPrintableDescription() {
         String res = getPrintableDescription(!detailsTold);
@@ -102,5 +134,13 @@ public class Room implements Serializable {
 
     public void setEntitiesInRoom(List<Entity> entitiesInRoom) {
         this.entitiesInRoom = entitiesInRoom;
+    }
+
+    public Map<WalkDirection, Room> getAdjacentRooms() {
+        return adjacentRooms;
+    }
+
+    public void setAdjacentRooms(Map<WalkDirection, Room> adjacentRooms) {
+        this.adjacentRooms = adjacentRooms;
     }
 }

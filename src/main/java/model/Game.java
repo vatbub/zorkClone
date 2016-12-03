@@ -17,10 +17,31 @@ public class Game implements Serializable{
     private static List<GameMessage> messages;
 
     public Game(){
-        this.setMessages(new ArrayList<>());
-        this.setMoveCount(0);
-        this.setScore(0);
-        this.setPlayer(new Player());
+        this(new Room());
+    }
+
+    public Game(Room currentRoom){
+        this(currentRoom, new Player());
+    }
+
+    public Game(Room currentRoom, Player player){
+        this(currentRoom, player, 0);
+    }
+
+    public Game(Room currentRoom, Player player, int score){
+        this(currentRoom, player, score, 0);
+    }
+
+    public Game(Room currentRoom, Player player, int score, int moveCount){
+        this(currentRoom, player, score, moveCount, new ArrayList<>());
+    }
+
+    public Game(Room currentRoom, Player player, int score, int moveCount, List<GameMessage> messages){
+        this.setMessages(messages);
+        this.setMoveCount(moveCount);
+        this.setScore(score);
+        this.setPlayer(player);
+        this.setCurrentRoom(currentRoom);
     }
 
     public int getMoveCount() {
