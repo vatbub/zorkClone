@@ -21,7 +21,7 @@ package model;
  */
 
 
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import common.Common;
 import logging.FOKLogger;
 import view.GameMessage;
@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 
 /**
@@ -141,6 +142,7 @@ public class Game implements Serializable {
      * @see #load(String)
      */
     public void save(@NotNull String customNamePrefix) {
+        Objects.requireNonNull(customNamePrefix);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
         Date date = new Date();
         String dateString = dateFormat.format(date);
@@ -172,6 +174,8 @@ public class Game implements Serializable {
      * @see #load(String)
      */
     public void save(@NotNull File fileToSave) throws IOException {
+        Objects.requireNonNull(fileToSave);
+
         if (fileToSave.exists()) {
             throw new FileAlreadyExistsException("The file " + fileToSave.toPath().toString() + " exists already.");
         }
