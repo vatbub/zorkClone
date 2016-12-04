@@ -50,7 +50,7 @@ public class Game implements Serializable {
     private Player player;
     private int score;
     private int moveCount;
-    private static List<GameMessage> messages;
+    private List<GameMessage> messages;
     private static FOKLogger log = new FOKLogger(Game.class.getName());
 
     public Game() {
@@ -97,7 +97,7 @@ public class Game implements Serializable {
         return currentRoom;
     }
 
-    public static List<GameMessage> getMessages() {
+    public List<GameMessage> getMessages() {
         return messages;
     }
 
@@ -117,8 +117,8 @@ public class Game implements Serializable {
         this.score = score;
     }
 
-    public static void setMessages(List<GameMessage> messages) {
-        Game.messages = messages;
+    public void setMessages(List<GameMessage> messages) {
+        this.messages = messages;
     }
 
     public void save() {
