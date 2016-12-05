@@ -135,6 +135,7 @@ public class EditorView extends Application {
 
     @FXML
     void insertRoomOnAction(ActionEvent event) {
+        log.getLogger().fine("Added room to game");
         RoomRectangle room = new RoomRectangle();
         room.setX(1000 * Math.abs(Math.random()));
         room.setY(1000 * Math.abs(Math.random()));
@@ -150,7 +151,7 @@ public class EditorView extends Application {
     @FXML
     void drawingOnMouseReleased(MouseEvent event) {
         if (!event.isControlDown() & !unselectingDisabled) {
-            System.out.println("unselected everything");
+            log.getLogger().finest("Unselected all rooms through clicking the scroll pane");
             unselectEverything();
         }
 
@@ -229,15 +230,11 @@ public class EditorView extends Application {
         currentGame = new Game();
         renderView();
 
-        // System.out.println("Scroll detected");
-        //unselectingDisabled = false;
         scrollPane.hvalueProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("Scroll detected");
             unselectingDisabled = true;
         });
 
         scrollPane.vvalueProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("Scroll detected");
             unselectingDisabled = true;
         });
     }

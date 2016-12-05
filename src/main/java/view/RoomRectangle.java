@@ -61,7 +61,7 @@ public class RoomRectangle extends Rectangle {
         this.setStroke(Color.BLACK);
 
         selected.addListener((observable, oldValue, newValue) -> {
-            System.out.println("Selected = " + newValue);
+            log.getLogger().finest("Room selected = " + newValue);
             if (newValue) {
                 // is selected
                 thisRef.setStroke(Color.GRAY);
