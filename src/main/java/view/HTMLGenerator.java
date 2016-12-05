@@ -328,8 +328,14 @@ class HTMLGenerator {
                 res = res + "<div class=\"talk-bubble tri-right round border right-top\">\n";
             }
 
+            String messageString = message.getMessage().replace("\n", "<br>");
+            // Add empty line if there is no message
+            if (messageString.equals("")){
+                messageString = "<br>";
+            }
+
             res = res + "<div class=\"talktext\">\n" +
-                    "        <p>" + message.getMessage().replace("\n", "<br>") + "</p>\n" +
+                    "        <p>" + messageString + "</p>\n" +
                     "    </div>\n" +
                     "</div>\n";
         }
