@@ -39,7 +39,11 @@ public class Parser {
     public static String parse(@NotNull String input) {
         Objects.requireNonNull(input);
 
-        return getLoremIpsum(input.length());
+        if (input.equals("")) {
+            return "I beg your pardon?";
+        } else {
+            return getLoremIpsum(input.length());
+        }
     }
 
     private static String getLoremIpsum(int length) {
