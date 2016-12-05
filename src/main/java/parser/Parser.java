@@ -21,6 +21,10 @@ package parser;
  */
 
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
+
 /**
  * Parses the player input, tells the game what to do and returns the output from the game.
  */
@@ -32,7 +36,9 @@ public class Parser {
      * @param input The string that the player typed.
      * @return The game output to be shown to the player.
      */
-    public static String parse(String input) {
+    public static String parse(@NotNull String input) {
+        Objects.requireNonNull(input);
+
         return getLoremIpsum(input.length());
     }
 

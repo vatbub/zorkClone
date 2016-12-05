@@ -212,7 +212,9 @@ public class Game implements Serializable {
      * @throws IOException            If the specified file dows not exist or cannot be read for some other reason.
      * @throws ClassNotFoundException If the specified file does not contain a {@code Game} but anything else (wrong file format)
      */
-    public static Game load(File saveFile) throws IOException, ClassNotFoundException {
+    public static Game load(@NotNull File saveFile) throws IOException, ClassNotFoundException {
+        Objects.requireNonNull(saveFile);
+
         FileInputStream fileIn = new FileInputStream(saveFile);
         ObjectInputStream objIn = new ObjectInputStream(fileIn);
         return (Game) objIn.readObject();

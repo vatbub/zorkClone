@@ -43,6 +43,7 @@ import logging.FOKLogger;
 import model.Game;
 import model.Room;
 import model.WalkDirection;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
 import java.util.*;
@@ -146,7 +147,9 @@ public class EditorView extends Application {
         }
     }
 
-    private void renderView(RoomRectangle currentRoom) {
+    private void renderView(@NotNull RoomRectangle currentRoom) {
+        Objects.requireNonNull(currentRoom);
+
         drawing.getChildren().add(currentRoom);
         for (Map.Entry<WalkDirection, Room> entry : currentRoom.getRoom().getAdjacentRooms().entrySet()) {
             RoomRectangle newRoom = new RoomRectangle(entry.getValue());

@@ -21,7 +21,10 @@ package view;
  */
 
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Renders the html code for the gui to show the message history<br>
@@ -34,14 +37,15 @@ class HTMLGenerator {
      * @param messages The List of {@link GameMessage}s to render.
      * @return The html code ready to be shown in any kind of web browser
      */
-    static String generate(List<GameMessage> messages) {
-        // Header
+    static String generate(@NotNull List<GameMessage> messages) {
+        Objects.requireNonNull(messages);
 
+        // Parameters
         String borderColor = "#000000";
         String bubbleBackground = "white";
 
         // TODO: give messages from player and from game a different background color
-
+        // Header
         String res = "<html>\n" +
                 "<head>\n" +
                 "<script language=\"javascript\" type=\"text/javascript\">  \n" +
