@@ -21,9 +21,9 @@ package model;
  */
 
 
-import org.jetbrains.annotations.NotNull;
 import common.Common;
 import logging.FOKLogger;
+import org.jetbrains.annotations.NotNull;
 import view.GameMessage;
 
 import java.io.*;
@@ -53,6 +53,17 @@ public class Game implements Serializable {
     private int moveCount;
     private List<GameMessage> messages;
     private static FOKLogger log = new FOKLogger(Game.class.getName());
+
+    /**
+     * If the game was loaded from a file, this specifies the file it was loaded from. {@code null} if the game was not loaded from a file.
+     */
+    private File fileSource;
+
+    /**
+     * {@code true} if this game was modified since the last save, {@code false} otherwise
+     */
+    private boolean modified;
+    // TODO: Listen to modifications of the rooms
 
     public Game() {
         this(new Room());
@@ -102,24 +113,54 @@ public class Game implements Serializable {
         return messages;
     }
 
+    public String getGameSavedWithAppVersion() {
+        return gameSavedWithAppVersion;
+    }
+
+    /**
+     * The {@code File} the game was loaded from or {@code null} if it was not loaded from a file.
+     *
+     * @return The {@code File} the game was loaded from or {@code null} if it was not loaded from a file.
+     */
+    public File getFileSource() {
+        return fileSource;
+    }
+
+    /**
+     * Checks if this game was modified since the last save.
+     * @return {@code true} if this game was modified since the last save, {@code false} otherwise
+     */
+    public boolean isModified() {
+        return modified;
+    }
+
     public void setCurrentRoom(Room currentRoom) {
         this.currentRoom = currentRoom;
+        modified = true;
     }
 
     public void setMoveCount(int moveCount) {
         this.moveCount = moveCount;
+        modified = true;
     }
 
     public void setPlayer(Player player) {
         this.player = player;
+        modified = true;
     }
 
     public void setScore(int score) {
         this.score = score;
+        modified = true;
     }
 
     public void setMessages(List<GameMessage> messages) {
         this.messages = messages;
+        modified = true;
+    }
+
+    public void setFileSource(File fileSource) {
+        this.fileSource = fileSource;
     }
 
     public void save() {
@@ -186,6 +227,8 @@ public class Game implements Serializable {
         objOut.writeObject(this);
         objOut.close();
         fileOut.close();
+
+        this.setFileSource(fileToSave);
     }
 
     /**
@@ -217,6 +260,9 @@ public class Game implements Serializable {
 
         FileInputStream fileIn = new FileInputStream(saveFile);
         ObjectInputStream objIn = new ObjectInputStream(fileIn);
-        return (Game) objIn.readObject();
+
+        Game res = (Game) objIn.readObject();
+        res.setFileSource(saveFile);
+        return res;
     }
 }

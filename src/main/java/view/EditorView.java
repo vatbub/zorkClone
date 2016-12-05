@@ -27,6 +27,7 @@ package view;
 
 import common.Common;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -35,6 +36,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
@@ -104,6 +106,30 @@ public class EditorView extends Application {
 
     @FXML
     private ScrollPane scrollPane;
+
+    @FXML
+    private MenuItem menuItemClose;
+
+    @FXML
+    private MenuItem menuItemSave;
+
+    @FXML
+    private MenuItem menuItemSaveAs;
+
+    @FXML
+    void menuItemSaveOnAction(ActionEvent event){
+
+    }
+
+    @FXML
+    void menuItemSaveAsOnAction(ActionEvent event){
+
+    }
+
+    @FXML
+    void menuItemCloseOnAction(ActionEvent event){
+        Platform.exit();
+    }
 
     @FXML
     void insertRoomOnAction(ActionEvent event) {
