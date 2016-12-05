@@ -55,6 +55,8 @@ public class EditorView extends Application {
 
     private static FOKLogger log;
 
+    private boolean unselectingDisabled;
+
     private Game currentGame;
     // Unconnected Rooms will not be saved but need to be hold in the RAM while editing
     private List<RoomRectangle> unconnectedRooms = new ArrayList<>();
@@ -117,17 +119,17 @@ public class EditorView extends Application {
     private MenuItem menuItemSaveAs;
 
     @FXML
-    void menuItemSaveOnAction(ActionEvent event){
+    void menuItemSaveOnAction(ActionEvent event) {
 
     }
 
     @FXML
-    void menuItemSaveAsOnAction(ActionEvent event){
+    void menuItemSaveAsOnAction(ActionEvent event) {
 
     }
 
     @FXML
-    void menuItemCloseOnAction(ActionEvent event){
+    void menuItemCloseOnAction(ActionEvent event) {
         Platform.exit();
     }
 
@@ -146,11 +148,13 @@ public class EditorView extends Application {
     }
 
     @FXML
-    void drawingOnMousePressed(MouseEvent event) {
-        if (!event.isControlDown()) {
+    void drawingOnMouseReleased(MouseEvent event) {
+        if (!event.isControlDown() & !unselectingDisabled) {
             System.out.println("unselected everything");
             unselectEverything();
         }
+
+        unselectingDisabled = false;
     }
 
     public void unselectEverything() {
@@ -224,6 +228,18 @@ public class EditorView extends Application {
 
         currentGame = new Game();
         renderView();
+
+        // System.out.println("Scroll detected");
+        //unselectingDisabled = false;
+        scrollPane.hvalueProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("Scroll detected");
+            unselectingDisabled = true;
+        });
+
+        scrollPane.vvalueProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("Scroll detected");
+            unselectingDisabled = true;
+        });
     }
 
     @Override

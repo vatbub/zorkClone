@@ -45,7 +45,7 @@ public class RoomRectangle extends Rectangle {
         super();
         this.setRoom(room);
 
-        this.setOnMouseReleased(event -> {
+        this.setOnMouseClicked(event -> {
             if (event.getClickCount() == 1) {
                 this.setSelected(true);
             } else if (event.getClickCount() == 2) {

@@ -17,7 +17,7 @@
    <children>
       <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="571.0" prefWidth="781.0" GridPane.rowIndex="1">
          <center>
-            <ScrollPane fx:id="scrollPane" onMousePressed="#drawingOnMousePressed" pannable="true" prefHeight="200.0" prefWidth="200.0" styleClass="scrollPane" BorderPane.alignment="CENTER">
+            <ScrollPane fx:id="scrollPane" onMouseReleased="#drawingOnMouseReleased" pannable="true" prefHeight="200.0" prefWidth="200.0" styleClass="scrollPane" BorderPane.alignment="CENTER">
                <content>
                   <Group fx:id="drawing" />
                </content>
