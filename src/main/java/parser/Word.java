@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Any word that can be used by the {@link model.Player} to interact with the game.
  */
-public class Word implements Serializable{
+public class Word implements Serializable {
     private String word;
     private List<String> synonyms;
     private Word thisWordInstance;
@@ -73,11 +73,11 @@ public class Word implements Serializable{
         this.synonyms = synonyms;
     }
 
-    public List<? extends Word> getPermittedWordClassesThatFollow(){
+    public List<? extends Word> getPermittedWordClassesThatFollow() {
         return permittedWordClassesThatFollow;
     }
 
-    public void setPermittedWordClassesThatFollow(List<? extends Word> permittedWordClassesThatFollow){
+    public void setPermittedWordClassesThatFollow(List<? extends Word> permittedWordClassesThatFollow) {
         this.permittedWordClassesThatFollow = permittedWordClassesThatFollow;
     }
 
@@ -95,7 +95,45 @@ public class Word implements Serializable{
     }
 
     @Override
-    public String toString(){
-        return this.getClass().getSimpleName() + "@" +  this.getWord();
+    public String toString() {
+        return this.getClass().getSimpleName() + "@" + this.getWord();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Word) {
+            // obj is a word
+            Word word = (Word) obj;
+
+            if (!word.getWord().equals(this.getWord())) {
+                return false;
+            }
+            if (!word.getSynonyms().equals(this.getSynonyms())) {
+                return false;
+            }
+            if (!word.getPermittedWordClassesThatFollow().equals(this.getPermittedWordClassesThatFollow())) {
+                return false;
+            }
+            if (!word.getPermittedWordsThatFollow().equals(this.getPermittedWordsThatFollow())) {
+                return false;
+            }
+
+            // everything ok
+            return true;
+
+        } else {
+            // Not the same class
+            return false;
+        }
+    }
+
+    /**
+     * Checks if {@code input} is equal to {@code this.}{@link #getWord()} or to one of the synonyms
+     *
+     * @param input The string to compare
+     * @return {@code true} if {@code input} is equal to {@code this.}{@link #getWord()} or to one of the synonyms, {@code false} otherwise.
+     */
+    public boolean equals(String input) {
+        return (this.getWord().equals(input) || this.getSynonyms().contains(input));
     }
 }
