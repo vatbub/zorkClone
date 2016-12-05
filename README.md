@@ -23,3 +23,6 @@ Feel free to [file issues](https://github.com/vatbub/zorkClone/issues/new), fork
 ## The roadmap
 - create a functioning framework for textbased adventure games (data model, gui, parser)
 - Rewrite the story of Zork I, II and III using the framework
+
+##Docs
+[Maven Site](http://vatbubmvnsites.s3-website-us-west-2.amazonaws.com/zorkClone/1.1-SNAPSHOT/site/zorkClone/), [JavaDoc](http://vatbubmvnsites.s3-website-us-west-2.amazonaws.com/zorkClone/1.1-SNAPSHOT/site/zorkClone/apidocs/index.html)
