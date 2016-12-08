@@ -4,6 +4,7 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
+<?import view.*?>
 <?import javafx.scene.layout.*?>
 
 <GridPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.EditorView">
@@ -19,7 +20,7 @@
          <center>
             <ScrollPane fx:id="scrollPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onMouseReleased="#drawingOnMouseReleased" pannable="true" prefHeight="200.0" prefWidth="200.0" styleClass="scrollPane" BorderPane.alignment="CENTER">
                <content>
-                  <Group fx:id="drawing" />
+                  <CustomGroup fx:id="drawing" />
                </content>
             </ScrollPane>
          </center>

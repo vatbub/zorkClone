@@ -23,10 +23,13 @@ package view;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.Group;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import logging.FOKLogger;
 import model.Room;
+import model.WalkDirection;
 
 /**
  * The graphical representation of a {@link model.Room} in the {@link EditorView}
@@ -36,6 +39,9 @@ public class RoomRectangle extends Rectangle {
     private static FOKLogger log = new FOKLogger(RoomRectangle.class.getName());
     private BooleanProperty selected = new SimpleBooleanProperty();
     private RoomRectangle thisRef = this;
+    private boolean dragStarted;
+    private Line line;
+    private RoomRectangle previousTarget;
 
     public RoomRectangle() {
         this(new Room());
@@ -51,6 +57,84 @@ public class RoomRectangle extends Rectangle {
             } else if (event.getClickCount() == 2) {
                 // launch editor
                 log.getLogger().info("RoomEditor launched");
+            }
+        });
+
+        // Add Path using drag and drop
+        this.setOnDragDetected(event -> dragStarted = true);
+
+        this.setOnMouseDragged(event -> {
+            if (line == null) {
+                line = new Line(this.getX() + (this.getWidth() / 2), this.getY() + (this.getHeight() / 2), event.getX(), event.getY());
+                ((Group) this.getParent()).getChildren().add(line);
+            } else {
+                line.setEndX(event.getX());
+                line.setEndY(event.getY());
+            }
+
+            RoomRectangle newTarget = (RoomRectangle) ((CustomGroup) this.getParent()).getRectangleByCoordinatesPreferFront(event.getX(), event.getY());
+            if (newTarget != previousTarget && previousTarget != null) {
+                previousTarget.setSelected(false);
+            }
+            if (newTarget != null && newTarget != thisRef) {
+                newTarget.setSelected(true);
+            }
+
+            previousTarget = newTarget;
+        });
+
+        this.setOnMouseReleased(event -> {
+            if (dragStarted) {
+                dragStarted = false;
+                System.out.println("Drag done");
+                RoomRectangle target = (RoomRectangle) ((CustomGroup) this.getParent()).getRectangleByCoordinatesPreferFront(event.getX(), event.getY());
+
+                if (target != null) {
+                    double lineAngle = Math.atan2(line.getEndY() - line.getStartY(), line.getEndX() - line.getStartX());
+
+                    WalkDirection fromThisToTarget = null;
+                    WalkDirection fromTargetToThis = null;
+
+                    if (lineAngle <= (Math.PI / 8.0) || lineAngle >= (Math.PI * 15.0 / 8.0)) {
+                        // north
+                        fromThisToTarget = WalkDirection.NORTH;
+                        fromTargetToThis = WalkDirection.SOUTH;
+                    } else if (lineAngle < (Math.PI * 3.0 / 8.0) && lineAngle > (Math.PI / 8.0)) {
+                        // ne
+                        fromThisToTarget = WalkDirection.NORTH_EAST;
+                        fromTargetToThis = WalkDirection.SOUTH_WEST;
+                    } else if (lineAngle <= (Math.PI * 5.0 / 8.0) && lineAngle >= (Math.PI * 3.0 / 8.0)) {
+                        // e
+                        fromThisToTarget = WalkDirection.EAST;
+                        fromTargetToThis = WalkDirection.WEST;
+                    } else if (lineAngle < (Math.PI * 7.0 / 8.0) && lineAngle > (Math.PI * 5.0 / 8.0)) {
+                        // se
+                        fromThisToTarget = WalkDirection.SOUTH_EAST;
+                        fromTargetToThis = WalkDirection.NORTH_WEST;
+                    } else if (lineAngle <= (Math.PI * 9.0 / 8.0) && lineAngle >= (Math.PI * 7.0 / 8.0)) {
+                        // s
+                        fromThisToTarget = WalkDirection.SOUTH;
+                        fromTargetToThis = WalkDirection.NORTH;
+                    } else if (lineAngle < (Math.PI * 11.0 / 8.0) && lineAngle > (Math.PI * 9.0 / 8.0)) {
+                        // sw
+                        fromThisToTarget = WalkDirection.SOUTH_WEST;
+                        fromTargetToThis = WalkDirection.NORTH_EAST;
+                    } else if (lineAngle <= (Math.PI * 13.0 / 8.0) && lineAngle >= (Math.PI * 11.0 / 8.0)) {
+                        // w
+                        fromThisToTarget = WalkDirection.WEST;
+                        fromTargetToThis = WalkDirection.EAST;
+                    } else if (lineAngle < (Math.PI * 15.0 / 8.0) && lineAngle > (Math.PI * 13.0 / 8.0)) {
+                        // nw
+                        fromThisToTarget = WalkDirection.NORTH_WEST;
+                        fromTargetToThis = WalkDirection.SOUTH_WEST;
+                    }
+
+                    this.getRoom().getAdjacentRooms().put(fromThisToTarget, target.getRoom());
+                    target.getRoom().getAdjacentRooms().put(fromTargetToThis, this.getRoom());
+                    System.out.println(EditorView.currentEditorInstance.setRoomAsConnected(this));
+                    System.out.println(EditorView.currentEditorInstance.setRoomAsConnected(target));
+                    EditorView.currentEditorInstance.renderView();
+                }
             }
         });
 

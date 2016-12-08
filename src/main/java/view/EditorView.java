@@ -31,7 +31,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -55,11 +54,14 @@ public class EditorView extends Application {
 
     private static FOKLogger log;
 
+    public static EditorView currentEditorInstance;
+
     private boolean unselectingDisabled;
 
     private Game currentGame;
     // Unconnected Rooms will not be saved but need to be hold in the RAM while editing
     private List<RoomRectangle> unconnectedRooms = new ArrayList<>();
+    private List<RoomRectangle> allRoomsAsList;
 
     public static void main(String[] args) {
         common.Common.setAppName("zork");
@@ -101,7 +103,7 @@ public class EditorView extends Application {
     private Button insertRoom; // Value injected by FXMLLoader
 
     @FXML // fx:id="drawing"
-    private Group drawing; // Value injected by FXMLLoader
+    private CustomGroup drawing; // Value injected by FXMLLoader
 
     @FXML // fx:id="insertPath"
     private Button insertPath; // Value injected by FXMLLoader
@@ -145,6 +147,9 @@ public class EditorView extends Application {
 
     @FXML
     void insertPathOnAction(ActionEvent event) {
+        while (drawing.getChildren().size() > 0) {
+            drawing.getChildren().remove(0);
+        }
 
     }
 
@@ -166,57 +171,87 @@ public class EditorView extends Application {
         }
     }
 
-    private void renderView() {
-        RoomRectangle startRoom = new RoomRectangle(this.currentGame.getCurrentRoom());
-        startRoom.setX(400);
-        startRoom.setY(400);
-        renderView(startRoom);
+    /**
+     * Removes the specified room from the {@code unconnectedRooms}-list.
+     *
+     * @param room The room to remove
+     * @return {@code true} if this list contained the specified element
+     */
+    public boolean setRoomAsConnected(RoomRectangle room) {
+        return unconnectedRooms.remove(room);
+    }
 
-        // render unconnected rooms
-        for (RoomRectangle room : unconnectedRooms) {
-            renderView(room);
+    public void renderView() {
+        while (drawing.getChildren().size() > 0) {
+            drawing.getChildren().remove(0);
         }
+
+        Thread renderThread = new Thread(() -> {
+            if (allRoomsAsList != null) {
+                for (RoomRectangle room : allRoomsAsList) {
+                    room.getRoom().setRendered(false);
+                }
+            }
+
+            allRoomsAsList = new ArrayList<>();
+            RoomRectangle startRoom = new RoomRectangle(this.currentGame.getCurrentRoom());
+            startRoom.setX(400);
+            startRoom.setY(400);
+            renderView(startRoom);
+
+            // render unconnected rooms
+            for (RoomRectangle room : unconnectedRooms) {
+                room.getRoom().setRendered(false);
+                renderView(room);
+            }
+        });
+        renderThread.setName("renderThread");
+        renderThread.start();
     }
 
     private void renderView(@NotNull RoomRectangle currentRoom) {
         Objects.requireNonNull(currentRoom);
 
-        drawing.getChildren().add(currentRoom);
+        allRoomsAsList.add(currentRoom);
+        currentRoom.getRoom().setRendered(true);
+        Platform.runLater(() -> drawing.getChildren().add(currentRoom));
         for (Map.Entry<WalkDirection, Room> entry : currentRoom.getRoom().getAdjacentRooms().entrySet()) {
-            RoomRectangle newRoom = new RoomRectangle(entry.getValue());
+            if (!entry.getValue().isRendered()) {
+                RoomRectangle newRoom = new RoomRectangle(entry.getValue());
 
-            switch (entry.getKey()) {
-                case NORTH:
-                    newRoom.setY(currentRoom.getY() - 15);
-                    break;
-                case WEST:
-                    newRoom.setX(currentRoom.getX() - 15);
-                    break;
-                case EAST:
-                    newRoom.setX(currentRoom.getX() + 15);
-                    break;
-                case SOUTH:
-                    newRoom.setY(currentRoom.getY() + 15);
-                    break;
-                case NORTH_WEST:
-                    newRoom.setY(currentRoom.getY() - 15);
-                    newRoom.setX(currentRoom.getX() - 15);
-                    break;
-                case NORTH_EAST:
-                    newRoom.setY(currentRoom.getY() - 15);
-                    newRoom.setX(currentRoom.getX() + 15);
-                    break;
-                case SOUTH_WEST:
-                    newRoom.setY(currentRoom.getY() + 15);
-                    newRoom.setX(currentRoom.getX() - 15);
-                    break;
-                case SOUTH_EAST:
-                    newRoom.setY(currentRoom.getY() + 15);
-                    newRoom.setX(currentRoom.getX() + 15);
-                    break;
+                switch (entry.getKey()) {
+                    case NORTH:
+                        newRoom.setY(currentRoom.getY() - 15);
+                        break;
+                    case WEST:
+                        newRoom.setX(currentRoom.getX() - 15);
+                        break;
+                    case EAST:
+                        newRoom.setX(currentRoom.getX() + 15);
+                        break;
+                    case SOUTH:
+                        newRoom.setY(currentRoom.getY() + 15);
+                        break;
+                    case NORTH_WEST:
+                        newRoom.setY(currentRoom.getY() - 15);
+                        newRoom.setX(currentRoom.getX() - 15);
+                        break;
+                    case NORTH_EAST:
+                        newRoom.setY(currentRoom.getY() - 15);
+                        newRoom.setX(currentRoom.getX() + 15);
+                        break;
+                    case SOUTH_WEST:
+                        newRoom.setY(currentRoom.getY() + 15);
+                        newRoom.setX(currentRoom.getX() - 15);
+                        break;
+                    case SOUTH_EAST:
+                        newRoom.setY(currentRoom.getY() + 15);
+                        newRoom.setX(currentRoom.getX() + 15);
+                        break;
+                }
+
+                renderView(newRoom);
             }
-
-            renderView(newRoom);
         }
     }
 
@@ -226,6 +261,8 @@ public class EditorView extends Application {
         assert insertRoom != null : "fx:id=\"insertRoom\" was not injected: check your FXML file 'EditorMain.fxml'.";
         assert drawing != null : "fx:id=\"drawing\" was not injected: check your FXML file 'EditorMain.fxml'.";
         assert insertPath != null : "fx:id=\"insertPath\" was not injected: check your FXML file 'EditorMain.fxml'.";
+
+        currentEditorInstance = this;
 
         currentGame = new Game();
         renderView();

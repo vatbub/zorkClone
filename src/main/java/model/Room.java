@@ -39,6 +39,7 @@ public class Room implements Serializable {
     private List<Item> itemsInRoom;
     private List<Entity> entitiesInRoom;
     private Map<WalkDirection, Room> adjacentRooms;
+    private boolean rendered;
 
     public Room(){
         this(new Noun(""));
@@ -142,5 +143,13 @@ public class Room implements Serializable {
 
     public void setAdjacentRooms(Map<WalkDirection, Room> adjacentRooms) {
         this.adjacentRooms = adjacentRooms;
+    }
+
+    public boolean isRendered() {
+        return rendered;
+    }
+
+    public void setRendered(boolean rendered) {
+        this.rendered = rendered;
     }
 }
