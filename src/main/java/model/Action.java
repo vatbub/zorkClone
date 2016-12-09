@@ -21,11 +21,14 @@ package model;
  */
 
 
+import java.util.Map;
+
 /**
  * A action that can happen in the {@link Game} like picking up or moving an item, moving the player...
  */
 public abstract class Action {
     private String name;
+    private Map<String, Object> params;
 
     public String getName() {
         return name;
@@ -35,5 +38,13 @@ public abstract class Action {
         this.name = name;
     }
 
-    abstract void execute();
+    public Map<String, Object> getParams() {
+        return params;
+    }
+
+    public void setParams(Map<String, Object> params) {
+        this.params = params;
+    }
+
+    abstract void execute(Map<String, Object> params);
 }
