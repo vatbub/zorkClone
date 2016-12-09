@@ -90,12 +90,12 @@ public class RoomRectangle extends Rectangle {
                 RoomRectangle target = (RoomRectangle) ((CustomGroup) this.getParent()).getRectangleByCoordinatesPreferFront(event.getX(), event.getY());
 
                 if (target != null) {
-                    double lineAngle = Math.atan2(line.getEndY() - line.getStartY(), line.getEndX() - line.getStartX());
+                    double lineAngle = Math.atan2(line.getEndX() - line.getStartX(), line.getStartY() - line.getEndY());
 
                     WalkDirection fromThisToTarget = null;
                     WalkDirection fromTargetToThis = null;
 
-                    if (lineAngle <= (Math.PI / 8.0) || lineAngle >= (Math.PI * 15.0 / 8.0)) {
+                    if (lineAngle <= (Math.PI / 8.0) || lineAngle >= (-Math.PI / 8.0)) {
                         // north
                         fromThisToTarget = WalkDirection.NORTH;
                         fromTargetToThis = WalkDirection.SOUTH;
@@ -111,28 +111,29 @@ public class RoomRectangle extends Rectangle {
                         // se
                         fromThisToTarget = WalkDirection.SOUTH_EAST;
                         fromTargetToThis = WalkDirection.NORTH_WEST;
-                    } else if (lineAngle <= (Math.PI * 9.0 / 8.0) && lineAngle >= (Math.PI * 7.0 / 8.0)) {
+                    } else if (lineAngle <= (-Math.PI * 7.0 / 8.0) && lineAngle >= (Math.PI * 7.0 / 8.0)) {
                         // s
                         fromThisToTarget = WalkDirection.SOUTH;
                         fromTargetToThis = WalkDirection.NORTH;
-                    } else if (lineAngle < (Math.PI * 11.0 / 8.0) && lineAngle > (Math.PI * 9.0 / 8.0)) {
+                    } else if (lineAngle < (-Math.PI * 5.0 / 8.0) && lineAngle > (-Math.PI * 7.0 / 8.0)) {
                         // sw
                         fromThisToTarget = WalkDirection.SOUTH_WEST;
                         fromTargetToThis = WalkDirection.NORTH_EAST;
-                    } else if (lineAngle <= (Math.PI * 13.0 / 8.0) && lineAngle >= (Math.PI * 11.0 / 8.0)) {
+                    } else if (lineAngle <= (-Math.PI * 3.0 / 8.0) && lineAngle >= (-Math.PI * 5.0 / 8.0)) {
                         // w
                         fromThisToTarget = WalkDirection.WEST;
                         fromTargetToThis = WalkDirection.EAST;
-                    } else if (lineAngle < (Math.PI * 15.0 / 8.0) && lineAngle > (Math.PI * 13.0 / 8.0)) {
+                    } else if (lineAngle < (-Math.PI * 1.0 / 8.0) && lineAngle > (-Math.PI * 3.0 / 8.0)) {
                         // nw
                         fromThisToTarget = WalkDirection.NORTH_WEST;
                         fromTargetToThis = WalkDirection.SOUTH_WEST;
                     }
 
+                    System.out.println("Room is " + fromThisToTarget.toString());
                     this.getRoom().getAdjacentRooms().put(fromThisToTarget, target.getRoom());
                     target.getRoom().getAdjacentRooms().put(fromTargetToThis, this.getRoom());
-                    System.out.println(EditorView.currentEditorInstance.setRoomAsConnected(this));
-                    System.out.println(EditorView.currentEditorInstance.setRoomAsConnected(target));
+                    EditorView.currentEditorInstance.setRoomAsConnected(this);
+                    EditorView.currentEditorInstance.setRoomAsConnected(target);
                     EditorView.currentEditorInstance.renderView();
                 }
             }
