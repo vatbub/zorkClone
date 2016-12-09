@@ -81,6 +81,7 @@ public class RoomRectangle extends Rectangle {
             }
 
             previousTarget = newTarget;
+            System.out.println(event.getY());
         });
 
         this.setOnMouseReleased(event -> {
@@ -127,6 +128,14 @@ public class RoomRectangle extends Rectangle {
                         // nw
                         fromThisToTarget = WalkDirection.NORTH_WEST;
                         fromTargetToThis = WalkDirection.SOUTH_WEST;
+                    }
+
+                    // Delete old references
+                    if (this.getRoom().getAdjacentRooms().get(fromThisToTarget)!=null){
+                        this.getRoom().getAdjacentRooms().get(fromThisToTarget).getAdjacentRooms().remove(fromTargetToThis);
+                    }
+                    if (target.getRoom().getAdjacentRooms().get(fromTargetToThis)!=null){
+                        target.getRoom().getAdjacentRooms().get(fromTargetToThis).getAdjacentRooms().remove(fromThisToTarget);
                     }
 
                     System.out.println("Room is " + fromThisToTarget.toString());
