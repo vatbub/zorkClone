@@ -143,8 +143,8 @@ public class RoomRectangle extends Rectangle {
                     target.getRoom().getAdjacentRooms().put(fromTargetToThis, this.getRoom());
                     EditorView.currentEditorInstance.setRoomAsConnected(this);
                     EditorView.currentEditorInstance.setRoomAsConnected(target);
-                    EditorView.currentEditorInstance.renderView();
                 }
+                EditorView.currentEditorInstance.renderView();
             }
         });
 
