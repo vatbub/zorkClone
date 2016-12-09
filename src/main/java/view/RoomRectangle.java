@@ -111,7 +111,7 @@ public class RoomRectangle extends Rectangle {
                         // se
                         fromThisToTarget = WalkDirection.SOUTH_EAST;
                         fromTargetToThis = WalkDirection.NORTH_WEST;
-                    } else if (lineAngle <= (-Math.PI * 7.0 / 8.0) && lineAngle >= (Math.PI * 7.0 / 8.0)) {
+                    } else if ((lineAngle <= (-Math.PI * 7.0 / 8.0) && lineAngle >= (-Math.PI)) || (lineAngle <= (Math.PI) && lineAngle >= (Math.PI * 7.0 / 8.0))) {
                         // s
                         fromThisToTarget = WalkDirection.SOUTH;
                         fromTargetToThis = WalkDirection.NORTH;
