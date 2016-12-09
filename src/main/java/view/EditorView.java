@@ -45,12 +45,11 @@ import logging.FOKLogger;
 import model.Game;
 import model.Room;
 import model.WalkDirection;
-import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 
@@ -146,7 +145,7 @@ public class EditorView extends Application {
         room.setX(1000 * Math.abs(Math.random()));
         room.setY(1000 * Math.abs(Math.random()));
         unconnectedRooms.add(room);
-        renderView(room);
+        renderView();
     }
 
     @FXML
@@ -190,6 +189,11 @@ public class EditorView extends Application {
         }
 
         Thread renderThread = new Thread(() -> {
+            LinkedList<RoomRectangle> renderQueue = new LinkedList<>();
+
+            // The distance between connected rooms
+            double roomDistance = 150;
+
             if (allRoomsAsList != null) {
                 for (RoomRectangle room : allRoomsAsList) {
                     room.getRoom().setRendered(false);
@@ -200,107 +204,109 @@ public class EditorView extends Application {
             RoomRectangle startRoom = new RoomRectangle(this.currentGame.getCurrentRoom());
             startRoom.setX(400);
             startRoom.setY(400);
-            renderView(startRoom);
+            renderQueue.add(startRoom);
 
             // render unconnected rooms
             for (RoomRectangle room : unconnectedRooms) {
                 room.getRoom().setRendered(false);
-                renderView(room);
+                renderQueue.add(room);
+            }
+
+            while (!renderQueue.isEmpty()) {
+                RoomRectangle currentRoom = renderQueue.remove();
+
+                if (!currentRoom.getRoom().isRendered()) {
+                    allRoomsAsList.add(currentRoom);
+                    currentRoom.getRoom().setRendered(true);
+                    Platform.runLater(() -> drawing.getChildren().add(currentRoom));
+                }
+                for (Map.Entry<WalkDirection, Room> entry : currentRoom.getRoom().getAdjacentRooms().entrySet()) {
+                    RoomRectangle newRoom;
+                    if (!entry.getValue().isRendered()) {
+                        newRoom = new RoomRectangle(entry.getValue());
+
+                        // Set room position
+                        switch (entry.getKey()) {
+                            case NORTH:
+                                newRoom.setY(currentRoom.getY() - roomDistance);
+                                newRoom.setX(currentRoom.getX());
+                                break;
+                            case WEST:
+                                newRoom.setY(currentRoom.getY());
+                                newRoom.setX(currentRoom.getX() - roomDistance);
+                                break;
+                            case EAST:
+                                newRoom.setY(currentRoom.getY());
+                                newRoom.setX(currentRoom.getX() + roomDistance);
+                                break;
+                            case SOUTH:
+                                newRoom.setY(currentRoom.getY() + roomDistance);
+                                newRoom.setX(currentRoom.getX());
+                                break;
+                            case NORTH_WEST:
+                                newRoom.setY(currentRoom.getY() - roomDistance);
+                                newRoom.setX(currentRoom.getX() - roomDistance);
+                                break;
+                            case NORTH_EAST:
+                                newRoom.setY(currentRoom.getY() - roomDistance);
+                                newRoom.setX(currentRoom.getX() + roomDistance);
+                                break;
+                            case SOUTH_WEST:
+                                newRoom.setY(currentRoom.getY() + roomDistance);
+                                newRoom.setX(currentRoom.getX() - roomDistance);
+                                break;
+                            case SOUTH_EAST:
+                                newRoom.setY(currentRoom.getY() + roomDistance);
+                                newRoom.setX(currentRoom.getX() + roomDistance);
+                                break;
+                        }
+                    } else {
+                        newRoom = allRoomsAsList.findByRoom(entry.getValue());
+                    }
+                    Line connectionLine = new Line(0, 0, 0, 0);
+
+                    switch (entry.getKey()) {
+                        case NORTH:
+                            connectionLine = new Line(currentRoom.getX() + currentRoom.getWidth() / 2.0, currentRoom.getY(), newRoom.getX() + newRoom.getWidth() / 2.0, newRoom.getY() + newRoom.getHeight());
+                            break;
+                        case WEST:
+                            connectionLine = new Line(currentRoom.getX(), currentRoom.getY() + currentRoom.getHeight() / 2, newRoom.getX() + newRoom.getWidth(), newRoom.getY() + newRoom.getHeight() / 2);
+                            break;
+                        case EAST:
+                            connectionLine = new Line(currentRoom.getX() + currentRoom.getWidth(), currentRoom.getY() + currentRoom.getHeight() / 2, newRoom.getX(), newRoom.getY() + newRoom.getHeight() / 2);
+                            break;
+                        case SOUTH:
+                            connectionLine = new Line(currentRoom.getX() + currentRoom.getWidth() / 2.0, currentRoom.getY() + currentRoom.getHeight(), newRoom.getX() + newRoom.getWidth() / 2.0, newRoom.getY());
+                            break;
+                        case NORTH_WEST:
+                            connectionLine = new Line(currentRoom.getX(), currentRoom.getY(), newRoom.getX() + newRoom.getWidth(), newRoom.getY() + newRoom.getHeight());
+                            break;
+                        case NORTH_EAST:
+                            connectionLine = new Line(currentRoom.getX() + currentRoom.getWidth(), currentRoom.getY(), newRoom.getX(), newRoom.getY() + newRoom.getHeight());
+                            break;
+                        case SOUTH_WEST:
+                            connectionLine = new Line(currentRoom.getX(), currentRoom.getY() + currentRoom.getHeight(), newRoom.getX() + newRoom.getWidth(), newRoom.getY());
+                            break;
+                        case SOUTH_EAST:
+                            connectionLine = new Line(currentRoom.getX() + currentRoom.getWidth(), currentRoom.getY() + currentRoom.getHeight(), newRoom.getX(), newRoom.getY());
+                            break;
+                    }
+
+                    final Line connectionLineCopy = connectionLine;
+                    Platform.runLater(() -> drawing.getChildren().add(connectionLineCopy));
+
+                    if (!entry.getValue().isRendered()) {
+                        // render the child
+                        allRoomsAsList.add(newRoom);
+                        newRoom.getRoom().setRendered(true);
+                        Platform.runLater(() -> drawing.getChildren().add(newRoom));
+                        renderQueue.add(newRoom);
+                    }
+                }
             }
         });
         renderThread.setName("renderThread");
         renderThread.start();
-    }
-
-    private void renderView(@NotNull RoomRectangle currentRoom) {
-        Objects.requireNonNull(currentRoom);
-
-        // The distance between connected rooms
-        double roomDistance = 150;
-
-        allRoomsAsList.add(currentRoom);
-        currentRoom.getRoom().setRendered(true);
-        Platform.runLater(() -> drawing.getChildren().add(currentRoom));
-        for (Map.Entry<WalkDirection, Room> entry : currentRoom.getRoom().getAdjacentRooms().entrySet()) {
-            RoomRectangle newRoom;
-            if (!entry.getValue().isRendered()) {
-                newRoom = new RoomRectangle(entry.getValue());
-
-                // Set room position
-                switch (entry.getKey()) {
-                    case NORTH:
-                        newRoom.setY(currentRoom.getY() - roomDistance);
-                        newRoom.setX(currentRoom.getX());
-                        break;
-                    case WEST:
-                        newRoom.setY(currentRoom.getY());
-                        newRoom.setX(currentRoom.getX() - roomDistance);
-                        break;
-                    case EAST:
-                        newRoom.setY(currentRoom.getY());
-                        newRoom.setX(currentRoom.getX() + roomDistance);
-                        break;
-                    case SOUTH:
-                        newRoom.setY(currentRoom.getY() + roomDistance);
-                        newRoom.setX(currentRoom.getX());
-                        break;
-                    case NORTH_WEST:
-                        newRoom.setY(currentRoom.getY() - roomDistance);
-                        newRoom.setX(currentRoom.getX() - roomDistance);
-                        break;
-                    case NORTH_EAST:
-                        newRoom.setY(currentRoom.getY() - roomDistance);
-                        newRoom.setX(currentRoom.getX() + roomDistance);
-                        break;
-                    case SOUTH_WEST:
-                        newRoom.setY(currentRoom.getY() + roomDistance);
-                        newRoom.setX(currentRoom.getX() - roomDistance);
-                        break;
-                    case SOUTH_EAST:
-                        newRoom.setY(currentRoom.getY() + roomDistance);
-                        newRoom.setX(currentRoom.getX() + roomDistance);
-                        break;
-                }
-            } else {
-                newRoom = allRoomsAsList.findByRoom(entry.getValue());
-            }
-            Line connectionLine = new Line(0, 0, 0, 0);
-
-            switch (entry.getKey()) {
-                case NORTH:
-                    connectionLine = new Line(currentRoom.getX() + currentRoom.getWidth() / 2.0, currentRoom.getY(), newRoom.getX() + newRoom.getWidth() / 2.0, newRoom.getY() + newRoom.getHeight());
-                    break;
-                case WEST:
-                    connectionLine = new Line(currentRoom.getX(), currentRoom.getY() + currentRoom.getHeight() / 2, newRoom.getX() + newRoom.getWidth(), newRoom.getY() + newRoom.getHeight() / 2);
-                    break;
-                case EAST:
-                    connectionLine = new Line(currentRoom.getX() + currentRoom.getWidth(), currentRoom.getY() + currentRoom.getHeight() / 2, newRoom.getX(), newRoom.getY() + newRoom.getHeight() / 2);
-                    break;
-                case SOUTH:
-                    connectionLine = new Line(currentRoom.getX() + currentRoom.getWidth() / 2.0, currentRoom.getY() + currentRoom.getHeight(), newRoom.getX() + newRoom.getWidth() / 2.0, newRoom.getY());
-                    break;
-                case NORTH_WEST:
-                    connectionLine = new Line(currentRoom.getX(), currentRoom.getY(), newRoom.getX() + newRoom.getWidth(), newRoom.getY() + newRoom.getHeight());
-                    break;
-                case NORTH_EAST:
-                    connectionLine = new Line(currentRoom.getX() + currentRoom.getWidth(), currentRoom.getY(), newRoom.getX(), newRoom.getY() + newRoom.getHeight());
-                    break;
-                case SOUTH_WEST:
-                    connectionLine = new Line(currentRoom.getX(), currentRoom.getY() + currentRoom.getHeight(), newRoom.getX() + newRoom.getWidth(), newRoom.getY());
-                    break;
-                case SOUTH_EAST:
-                    connectionLine = new Line(currentRoom.getX() + currentRoom.getWidth(), currentRoom.getY() + currentRoom.getHeight(), newRoom.getX(), newRoom.getY());
-                    break;
-            }
-
-            final Line connectionLineCopy = connectionLine;
-            Platform.runLater(() -> drawing.getChildren().add(connectionLineCopy));
-
-            if (!entry.getValue().isRendered()) {
-                renderView(newRoom);
-            }
-
-        }
     }
 
     @FXML
