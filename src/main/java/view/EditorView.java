@@ -39,6 +39,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import logging.FOKLogger;
 import model.Game;
@@ -221,37 +222,49 @@ public class EditorView extends Application {
         for (Map.Entry<WalkDirection, Room> entry : currentRoom.getRoom().getAdjacentRooms().entrySet()) {
             if (!entry.getValue().isRendered()) {
                 RoomRectangle newRoom = new RoomRectangle(entry.getValue());
+                Line connectionLine= new Line(0,0,0,0);
 
                 switch (entry.getKey()) {
                     case NORTH:
                         newRoom.setY(currentRoom.getY() - roomDistance);
+                        connectionLine = new Line(currentRoom.getX()+currentRoom.getWidth()/2.0,currentRoom.getY(),newRoom.getX()+newRoom.getWidth()/2.0,newRoom.getY()+newRoom.getHeight());
                         break;
                     case WEST:
                         newRoom.setX(currentRoom.getX() - roomDistance);
+                        connectionLine = new Line(currentRoom.getX(),currentRoom.getY()+currentRoom.getHeight()/2,newRoom.getX()+newRoom.getWidth(),newRoom.getY()+newRoom.getHeight()/2);
                         break;
                     case EAST:
                         newRoom.setX(currentRoom.getX() + roomDistance);
+                        connectionLine = new Line(currentRoom.getX()+currentRoom.getWidth(),currentRoom.getY()+currentRoom.getHeight()/2,newRoom.getX(),newRoom.getY()+newRoom.getHeight()/2);
                         break;
                     case SOUTH:
                         newRoom.setY(currentRoom.getY() + roomDistance);
+                        connectionLine = new Line(currentRoom.getX()+currentRoom.getWidth()/2.0,currentRoom.getY()+currentRoom.getHeight(),newRoom.getX()+newRoom.getWidth()/2.0,newRoom.getY());
                         break;
                     case NORTH_WEST:
                         newRoom.setY(currentRoom.getY() - roomDistance);
                         newRoom.setX(currentRoom.getX() - roomDistance);
+                        connectionLine = new Line(currentRoom.getX(),currentRoom.getY(),newRoom.getX()+newRoom.getWidth(),newRoom.getY()+newRoom.getHeight());
                         break;
                     case NORTH_EAST:
                         newRoom.setY(currentRoom.getY() - roomDistance);
                         newRoom.setX(currentRoom.getX() + roomDistance);
+                        connectionLine = new Line(currentRoom.getX()+currentRoom.getWidth(),currentRoom.getY(),newRoom.getX(),newRoom.getY()+newRoom.getHeight());
                         break;
                     case SOUTH_WEST:
                         newRoom.setY(currentRoom.getY() + roomDistance);
                         newRoom.setX(currentRoom.getX() - roomDistance);
+                        connectionLine = new Line(currentRoom.getX(),currentRoom.getY()+currentRoom.getHeight(),newRoom.getX()+newRoom.getWidth(),newRoom.getY());
                         break;
                     case SOUTH_EAST:
                         newRoom.setY(currentRoom.getY() + roomDistance);
                         newRoom.setX(currentRoom.getX() + roomDistance);
+                        connectionLine = new Line(currentRoom.getX()+currentRoom.getWidth(),currentRoom.getY()+currentRoom.getHeight(),newRoom.getX(),newRoom.getY());
                         break;
                 }
+
+                final Line connectionLineCopy = connectionLine;
+                Platform.runLater(() -> drawing.getChildren().add(connectionLineCopy));
 
                 renderView(newRoom);
             }
