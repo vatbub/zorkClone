@@ -28,7 +28,10 @@
             <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
               <items>
                 <Button fx:id="insertRoom" mnemonicParsing="false" onAction="#insertRoomOnAction" text="insertRoom" />
-                  <Button fx:id="insertPath" mnemonicParsing="false" onAction="#insertPathOnAction" text="insertPath" />
+                  <ToggleButton fx:id="moveButton" mnemonicParsing="false" onAction="#moveButtonOnAction" text="move" />
+                  <ToggleButton fx:id="insertPath" mnemonicParsing="false" onAction="#insertPathOnAction" text="insertPath" />
+                  <Button fx:id="resetButton" mnemonicParsing="false" onAction="#resetButtonOnAction" text="reset" />
+                  <Button fx:id="autoLayoutButton" mnemonicParsing="false" onAction="#autoLayoutButtonOnAction" text="autoLayout" />
               </items>
             </ToolBar>
          </top>

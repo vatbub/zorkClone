@@ -37,6 +37,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Line;
@@ -65,6 +66,7 @@ public class EditorView extends Application {
     // Unconnected Rooms will not be saved but need to be hold in the RAM while editing
     private RoomList unconnectedRooms = new RoomList();
     private RoomList allRoomsAsList;
+    private EditMode currentEditMode;
 
     public static void main(String[] args) {
         common.Common.setAppName("zork");
@@ -109,7 +111,16 @@ public class EditorView extends Application {
     private CustomGroup drawing; // Value injected by FXMLLoader
 
     @FXML // fx:id="insertPath"
-    private Button insertPath; // Value injected by FXMLLoader
+    private ToggleButton insertPath; // Value injected by FXMLLoader
+
+    @FXML
+    private ToggleButton moveButton;
+
+    @FXML
+    private Button autoLayoutButton;
+
+    @FXML
+    private Button resetButton;
 
     @FXML
     private ScrollPane scrollPane;
@@ -142,6 +153,16 @@ public class EditorView extends Application {
     void insertRoomOnAction(ActionEvent event) {
         log.getLogger().fine("Added room to game");
         RoomRectangle room = new RoomRectangle();
+
+        int roomIndex;
+
+        if (allRoomsAsList==null){
+            roomIndex=0;
+        }else{
+            roomIndex=allRoomsAsList.size()+1;
+        }
+        System.out.println("Setting room name: " + "Room " + roomIndex);
+        room.getRoom().setName("Room " + roomIndex);
         room.setX(1000 * Math.abs(Math.random()));
         room.setY(1000 * Math.abs(Math.random()));
         unconnectedRooms.add(room);
@@ -150,8 +171,23 @@ public class EditorView extends Application {
 
     @FXML
     void insertPathOnAction(ActionEvent event) {
+        this.setCurrentEditMode(EditMode.INSERT_PATH);
+    }
+
+    @FXML
+    void resetButtonOnAction(ActionEvent event) {
         currentGame = new Game();
         unconnectedRooms = new RoomList();
+        renderView();
+    }
+
+    @FXML
+    void moveButtonOnAction(ActionEvent event) {
+        this.setCurrentEditMode(EditMode.MOVE);
+    }
+
+    @FXML
+    void autoLayoutButtonOnAction(ActionEvent event) {
         renderView();
     }
 
@@ -184,6 +220,10 @@ public class EditorView extends Application {
     }
 
     public void renderView() {
+        this.renderView(true);
+    }
+
+    public void renderView(boolean autoLayout) {
         while (drawing.getChildren().size() > 0) {
             drawing.getChildren().remove(0);
         }
@@ -226,39 +266,41 @@ public class EditorView extends Application {
                         newRoom = new RoomRectangle(entry.getValue());
 
                         // Set room position
-                        switch (entry.getKey()) {
-                            case NORTH:
-                                newRoom.setY(currentRoom.getY() - roomDistance);
-                                newRoom.setX(currentRoom.getX());
-                                break;
-                            case WEST:
-                                newRoom.setY(currentRoom.getY());
-                                newRoom.setX(currentRoom.getX() - roomDistance);
-                                break;
-                            case EAST:
-                                newRoom.setY(currentRoom.getY());
-                                newRoom.setX(currentRoom.getX() + roomDistance);
-                                break;
-                            case SOUTH:
-                                newRoom.setY(currentRoom.getY() + roomDistance);
-                                newRoom.setX(currentRoom.getX());
-                                break;
-                            case NORTH_WEST:
-                                newRoom.setY(currentRoom.getY() - roomDistance);
-                                newRoom.setX(currentRoom.getX() - roomDistance);
-                                break;
-                            case NORTH_EAST:
-                                newRoom.setY(currentRoom.getY() - roomDistance);
-                                newRoom.setX(currentRoom.getX() + roomDistance);
-                                break;
-                            case SOUTH_WEST:
-                                newRoom.setY(currentRoom.getY() + roomDistance);
-                                newRoom.setX(currentRoom.getX() - roomDistance);
-                                break;
-                            case SOUTH_EAST:
-                                newRoom.setY(currentRoom.getY() + roomDistance);
-                                newRoom.setX(currentRoom.getX() + roomDistance);
-                                break;
+                        if (autoLayout) {
+                            switch (entry.getKey()) {
+                                case NORTH:
+                                    newRoom.setY(currentRoom.getY() - roomDistance);
+                                    newRoom.setX(currentRoom.getX());
+                                    break;
+                                case WEST:
+                                    newRoom.setY(currentRoom.getY());
+                                    newRoom.setX(currentRoom.getX() - roomDistance);
+                                    break;
+                                case EAST:
+                                    newRoom.setY(currentRoom.getY());
+                                    newRoom.setX(currentRoom.getX() + roomDistance);
+                                    break;
+                                case SOUTH:
+                                    newRoom.setY(currentRoom.getY() + roomDistance);
+                                    newRoom.setX(currentRoom.getX());
+                                    break;
+                                case NORTH_WEST:
+                                    newRoom.setY(currentRoom.getY() - roomDistance);
+                                    newRoom.setX(currentRoom.getX() - roomDistance);
+                                    break;
+                                case NORTH_EAST:
+                                    newRoom.setY(currentRoom.getY() - roomDistance);
+                                    newRoom.setX(currentRoom.getX() + roomDistance);
+                                    break;
+                                case SOUTH_WEST:
+                                    newRoom.setY(currentRoom.getY() + roomDistance);
+                                    newRoom.setX(currentRoom.getX() - roomDistance);
+                                    break;
+                                case SOUTH_EAST:
+                                    newRoom.setY(currentRoom.getY() + roomDistance);
+                                    newRoom.setX(currentRoom.getX() + roomDistance);
+                                    break;
+                            }
                         }
                     } else {
                         newRoom = allRoomsAsList.findByRoom(entry.getValue());
@@ -357,5 +399,15 @@ public class EditorView extends Application {
         } catch (Exception e) {
             log.getLogger().log(Level.SEVERE, "An error occurred", e);
         }
+    }
+
+    public EditMode getCurrentEditMode() {
+        return currentEditMode;
+    }
+
+    public void setCurrentEditMode(EditMode currentEditMode) {
+        this.currentEditMode = currentEditMode;
+        this.insertPath.setSelected(currentEditMode == EditMode.INSERT_PATH);
+        this.moveButton.setSelected(currentEditMode == EditMode.MOVE);
     }
 }

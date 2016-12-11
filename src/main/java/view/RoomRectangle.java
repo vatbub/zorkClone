@@ -21,9 +21,11 @@ package view;
  */
 
 
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Group;
+import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -42,6 +44,9 @@ public class RoomRectangle extends Rectangle {
     private boolean dragStarted;
     private Line line;
     private RoomRectangle previousTarget;
+    private double moveStartLocalX = -1;
+    private double moveStartLocalY = -1;
+    private Label nameLabel = new Label();
 
     public RoomRectangle() {
         this(new Room());
@@ -50,6 +55,29 @@ public class RoomRectangle extends Rectangle {
     public RoomRectangle(Room room) {
         super();
         this.setRoom(room);
+
+        this.nameLabel.textProperty().bind(this.getRoom().nameProperty());
+        this.nameLabel.setTextFill(Color.BLACK);
+        // this.nameLabel.setPrefHeight(10);
+        // this.nameLabel.setPrefWidth(30);
+
+        Thread addNameLabelThread = new Thread(() -> {
+            updateNameLabelPosition();
+            while (this.getParent() == null) {
+                // wait for parent
+            }
+            System.out.println("Label added");
+            Platform.runLater(() -> ((Group) this.getParent()).getChildren().add(this.nameLabel));
+            System.out.println("Roomname: " + this.getRoom().getName());
+            System.out.println("Labeltext: " + this.nameLabel.getText());
+        });
+        addNameLabelThread.setName("addNameLabelThread");
+        addNameLabelThread.start();
+
+        this.heightProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
+        this.widthProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
+        this.xProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
+        this.yProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
 
         this.setOnMouseClicked(event -> {
             if (event.getClickCount() == 1) {
@@ -63,25 +91,36 @@ public class RoomRectangle extends Rectangle {
         // Add Path using drag and drop
         this.setOnDragDetected(event -> dragStarted = true);
 
+        this.setOnMousePressed(event -> {
+            this.moveStartLocalX = event.getX() - this.getX();
+            this.moveStartLocalY = event.getY() - this.getY();
+        });
+
         this.setOnMouseDragged(event -> {
-            if (line == null) {
-                line = new Line(this.getX() + (this.getWidth() / 2), this.getY() + (this.getHeight() / 2), event.getX(), event.getY());
-                ((Group) this.getParent()).getChildren().add(line);
-            } else {
-                line.setEndX(event.getX());
-                line.setEndY(event.getY());
-            }
+            if (EditorView.currentEditorInstance.getCurrentEditMode() == EditMode.INSERT_PATH) {
+                log.getLogger().fine("Inserting new path...");
+                if (line == null) {
+                    line = new Line(this.getX() + (this.getWidth() / 2), this.getY() + (this.getHeight() / 2), event.getX(), event.getY());
+                    ((Group) this.getParent()).getChildren().add(line);
+                } else {
+                    line.setEndX(event.getX());
+                    line.setEndY(event.getY());
+                }
 
-            RoomRectangle newTarget = (RoomRectangle) ((CustomGroup) this.getParent()).getRectangleByCoordinatesPreferFront(event.getX(), event.getY());
-            if (newTarget != previousTarget && previousTarget != null) {
-                previousTarget.setSelected(false);
-            }
-            if (newTarget != null && newTarget != thisRef) {
-                newTarget.setSelected(true);
-            }
+                RoomRectangle newTarget = (RoomRectangle) ((CustomGroup) this.getParent()).getRectangleByCoordinatesPreferFront(event.getX(), event.getY());
+                if (newTarget != previousTarget && previousTarget != null) {
+                    previousTarget.setSelected(false);
+                }
+                if (newTarget != null && newTarget != thisRef) {
+                    newTarget.setSelected(true);
+                }
 
-            previousTarget = newTarget;
-            System.out.println(event.getY());
+                previousTarget = newTarget;
+            } else if (EditorView.currentEditorInstance.getCurrentEditMode() == EditMode.MOVE) {
+                log.getLogger().fine("Moving room...");
+                this.setX(event.getX() - this.moveStartLocalX);
+                this.setY(event.getY() - this.moveStartLocalY);
+            }
         });
 
         this.setOnMouseReleased(event -> {
@@ -90,7 +129,7 @@ public class RoomRectangle extends Rectangle {
                 System.out.println("Drag done");
                 RoomRectangle target = (RoomRectangle) ((CustomGroup) this.getParent()).getRectangleByCoordinatesPreferFront(event.getX(), event.getY());
 
-                if (target != null) {
+                if (target != null && EditorView.currentEditorInstance.getCurrentEditMode() == EditMode.INSERT_PATH) {
                     double lineAngle = Math.atan2(line.getEndX() - line.getStartX(), line.getStartY() - line.getEndY());
 
                     WalkDirection fromThisToTarget = null;
@@ -131,10 +170,10 @@ public class RoomRectangle extends Rectangle {
                     }
 
                     // Delete old references
-                    if (this.getRoom().getAdjacentRooms().get(fromThisToTarget)!=null){
+                    if (this.getRoom().getAdjacentRooms().get(fromThisToTarget) != null) {
                         this.getRoom().getAdjacentRooms().get(fromThisToTarget).getAdjacentRooms().remove(fromTargetToThis);
                     }
-                    if (target.getRoom().getAdjacentRooms().get(fromTargetToThis)!=null){
+                    if (target.getRoom().getAdjacentRooms().get(fromTargetToThis) != null) {
                         target.getRoom().getAdjacentRooms().get(fromTargetToThis).getAdjacentRooms().remove(fromThisToTarget);
                     }
 
@@ -144,7 +183,7 @@ public class RoomRectangle extends Rectangle {
                     EditorView.currentEditorInstance.setRoomAsConnected(this);
                     EditorView.currentEditorInstance.setRoomAsConnected(target);
                 }
-                EditorView.currentEditorInstance.renderView();
+                EditorView.currentEditorInstance.renderView(false);
             }
         });
 
@@ -186,5 +225,15 @@ public class RoomRectangle extends Rectangle {
 
     public BooleanProperty isSelectedProperty() {
         return selected;
+    }
+
+    public void updateNameLabelPosition() {
+        // Get the center of this rectangle
+        double centerX = this.getLayoutX() + this.getWidth() / 2.0;
+        double centerY = this.getLayoutY() + this.getHeight() / 2.0;
+
+        // calculate the upper left corner of the label
+        this.nameLabel.setLayoutX(centerX - nameLabel.getWidth() / 2.0);
+        this.nameLabel.setLayoutY(centerY - nameLabel.getHeight() / 2.0);
     }
 }

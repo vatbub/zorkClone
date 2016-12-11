@@ -21,7 +21,8 @@ package model;
  */
 
 
-import parser.Noun;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ import java.util.Map;
  */
 public class Room implements Serializable {
     private String description;
-    private Noun name;
+    private StringProperty name;
     private boolean detailsTold;
     private List<Item> itemsInRoom;
     private List<Entity> entitiesInRoom;
@@ -42,26 +43,27 @@ public class Room implements Serializable {
     private boolean rendered;
 
     public Room(){
-        this(new Noun(""));
+        this("");
     }
 
-    public Room(Noun name){
+    public Room(String name){
         this(name, "");
     }
 
-    public Room(Noun name, String description){
+    public Room(String name, String description){
         this(name, description, new ArrayList<>());
     }
 
-    public Room(Noun name, String description, List<Item> itemsInRoom){
+    public Room(String name, String description, List<Item> itemsInRoom){
         this(name, description, itemsInRoom, new ArrayList<>());
     }
 
-    public Room(Noun name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom){
+    public Room(String name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom){
         this(name, description, itemsInRoom, entitiesInRoom, new HashMap<>(WalkDirection.values().length));
     }
 
-    public Room(Noun name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom, Map<WalkDirection, Room> adjacentRooms){
+    public Room(String name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom, Map<WalkDirection, Room> adjacentRooms){
+        this.name = new SimpleStringProperty();
         this.setName(name);
         this.setDescription(description);
         this.setItemsInRoom(itemsInRoom);
@@ -97,12 +99,16 @@ public class Room implements Serializable {
         return res;
     }
 
-    public Noun getName() {
-        return name;
+    public String getName() {
+        return name.get();
     }
 
-    public void setName(Noun name) {
-        this.name = name;
+    public void setName(String name) {
+        this.name.set(name);
+    }
+
+    public StringProperty nameProperty() {
+        return name;
     }
 
     public String getDescription() {
