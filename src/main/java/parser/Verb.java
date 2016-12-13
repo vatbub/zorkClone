@@ -26,8 +26,9 @@ import model.Action;
 import java.util.List;
 
 /**
- * Created by Frederik on 28/11/2016.
+ * The representation of a verb in a sentence.
  */
+@SuppressWarnings({"unused"})
 public class Verb extends Word {
     Action action;
 

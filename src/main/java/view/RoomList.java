@@ -35,10 +35,12 @@ public class RoomList extends ArrayList<RoomRectangle> {
         super();
     }
 
+    @SuppressWarnings({"unused"})
     public RoomList(Collection<? extends RoomRectangle> c) {
         super(c);
     }
 
+    @SuppressWarnings({"unused"})
     public RoomList(int initialCapacity) {
         super(initialCapacity);
     }

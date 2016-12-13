@@ -21,10 +21,6 @@ package view;
  */
 
 
-/**
- * Sample Skeleton for 'BasicApplication_i18n.fxml' Controller Class
- */
-
 import common.AppConfig;
 import common.Common;
 import common.UpdateChecker;
@@ -55,13 +51,13 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 
-public class MainWindow extends Application{
+public class MainWindow extends Application {
 
     private static FOKLogger log;
     private static boolean disableUpdateChecks;
     Game currentGame = new Game();
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         common.Common.setAppName("zork");
         log = new FOKLogger(MainWindow.class.getName());
         for (String arg : args) {
@@ -92,7 +88,6 @@ public class MainWindow extends Application{
     }
 
     public static ResourceBundle bundle;
-    private Stage stage;
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -109,7 +104,8 @@ public class MainWindow extends Application{
     @FXML
     private WebView messageView;
 
-    @FXML // This method is called by the FXMLLoader when initialization is complete
+    @FXML
+        // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         assert commandLine != null : "fx:id=\"commandLine\" was not injected: check your FXML file 'BasicApplication_i18n.fxml'.";
         assert getAvailableCommandsButton != null : "fx:id=\"getAvailableCommandsButton\" was not injected: check your FXML file 'BasicApplication_i18n.fxml'.";
@@ -123,7 +119,6 @@ public class MainWindow extends Application{
 
         // appConfig = new Config();
 
-        stage = primaryStage;
         try {
             Thread updateThread = new Thread(() -> {
                 UpdateInfo update = UpdateChecker.isUpdateAvailable(AppConfig.getUpdateRepoBaseURL(),
@@ -134,7 +129,10 @@ public class MainWindow extends Application{
                 }
             });
             updateThread.setName("updateThread");
-            updateThread.start();
+
+            if (!disableUpdateChecks) {
+                updateThread.start();
+            }
 
             Parent root = FXMLLoader.load(getClass().getResource("MainWindow.fxml"), bundle);
 
@@ -159,7 +157,7 @@ public class MainWindow extends Application{
 
     @FXML
     void commandLineOnKeyPressed(KeyEvent event) {
-        if (event.getCode().equals(KeyCode.ENTER)){
+        if (event.getCode().equals(KeyCode.ENTER)) {
             String playerMessage = this.commandLine.getText();
             currentGame.getMessages().add(new GameMessage(playerMessage, false));
             currentGame.getMessages().add(new GameMessage(Parser.parse(playerMessage), true));
@@ -168,7 +166,7 @@ public class MainWindow extends Application{
         }
     }
 
-    public void updateCommandView(){
+    public void updateCommandView() {
         String html = HTMLGenerator.generate(currentGame.getMessages());
         this.messageView.getEngine().loadContent(html);
         System.out.println("===================================================================");

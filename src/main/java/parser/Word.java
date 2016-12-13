@@ -61,6 +61,7 @@ public class Word implements Serializable {
         return word;
     }
 
+    @SuppressWarnings({"unused"})
     public void setWord(String word) {
         this.word = word;
     }
@@ -69,6 +70,7 @@ public class Word implements Serializable {
         return synonyms;
     }
 
+    @SuppressWarnings({"unused"})
     public void setSynonyms(List<String> synonyms) {
         this.synonyms = synonyms;
     }
@@ -77,6 +79,7 @@ public class Word implements Serializable {
         return permittedWordClassesThatFollow;
     }
 
+    @SuppressWarnings({"unused"})
     public void setPermittedWordClassesThatFollow(List<? extends Word> permittedWordClassesThatFollow) {
         this.permittedWordClassesThatFollow = permittedWordClassesThatFollow;
     }
@@ -86,12 +89,8 @@ public class Word implements Serializable {
     }
 
     public boolean isWordPermittedAsFollowingWord(Word word) {
-        if (!this.getPermittedWordClassesThatFollow().contains(word.getClass()))
-            return false;
-        if (!this.getPermittedWordsThatFollow().contains(word))
-            return false;
-
-        return true;
+        //noinspection SuspiciousMethodCalls
+        return this.getPermittedWordClassesThatFollow().contains(word.getClass()) && this.getPermittedWordsThatFollow().contains(word);
     }
 
     @Override
@@ -133,6 +132,7 @@ public class Word implements Serializable {
      * @param input The string to compare
      * @return {@code true} if {@code input} is equal to {@code this.}{@link #getWord()} or to one of the synonyms, {@code false} otherwise.
      */
+    @SuppressWarnings({"unused"})
     public boolean equals(String input) {
         return (this.getWord().equals(input) || this.getSynonyms().contains(input));
     }

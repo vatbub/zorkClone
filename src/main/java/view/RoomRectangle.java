@@ -178,6 +178,7 @@ public class RoomRectangle extends Rectangle {
                         target.getRoom().getAdjacentRooms().get(fromTargetToThis).getAdjacentRooms().remove(fromThisToTarget);
                     }
 
+                    //noinspection ConstantConditions
                     System.out.println("Room is " + fromThisToTarget.toString());
                     this.getRoom().getAdjacentRooms().put(fromThisToTarget, target.getRoom());
                     target.getRoom().getAdjacentRooms().put(fromTargetToThis, this.getRoom());
@@ -216,6 +217,7 @@ public class RoomRectangle extends Rectangle {
         this.room = room;
     }
 
+    @SuppressWarnings({"unused"})
     public boolean isSelected() {
         return selected.get();
     }
@@ -224,6 +226,7 @@ public class RoomRectangle extends Rectangle {
         this.selected.set(selected);
     }
 
+    @SuppressWarnings({"unused"})
     public BooleanProperty isSelectedProperty() {
         return selected;
     }
