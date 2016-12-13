@@ -309,8 +309,6 @@ public class EditorView extends Application {
                     }
                     Line connectionLine = new Line(0, 0, 0, 0);
 
-                    System.out.println("currentRoom==null: " + (currentRoom==null));
-                    System.out.println("newRoom==null: " + (newRoom==null));
                     switch (entry.getKey()) {
                         case NORTH:
                             connectionLine = new Line(currentRoom.getX() + currentRoom.getWidth() / 2.0, currentRoom.getY(), newRoom.getX() + newRoom.getWidth() / 2.0, newRoom.getY() + newRoom.getHeight());
