@@ -21,10 +21,6 @@ package view;
  */
 
 
-/**
- * Sample Skeleton for 'BasicApplication_i18n.fxml' Controller Class
- */
-
 import common.Common;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -96,7 +92,6 @@ public class EditorView extends Application {
     }
 
     public static ResourceBundle bundle;
-    private Stage stage;
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -365,13 +360,9 @@ public class EditorView extends Application {
         currentGame = new Game();
         renderView();
 
-        scrollPane.hvalueProperty().addListener((observable, oldValue, newValue) -> {
-            unselectingDisabled = true;
-        });
+        scrollPane.hvalueProperty().addListener((observable, oldValue, newValue) -> unselectingDisabled = true);
 
-        scrollPane.vvalueProperty().addListener((observable, oldValue, newValue) -> {
-            unselectingDisabled = true;
-        });
+        scrollPane.vvalueProperty().addListener((observable, oldValue, newValue) -> unselectingDisabled = true);
     }
 
     @Override
@@ -380,7 +371,6 @@ public class EditorView extends Application {
 
         // appConfig = new Config();
 
-        stage = primaryStage;
         try {
             Parent root = FXMLLoader.load(getClass().getResource("EditorMain.fxml"), bundle);
 
