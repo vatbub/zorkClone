@@ -152,14 +152,14 @@ public class EditorView extends Application {
     @FXML
     void insertRoomOnAction(ActionEvent event) {
         log.getLogger().fine("Added room to game");
-        RoomRectangle room = new RoomRectangle();
+        RoomRectangle room = new RoomRectangle(drawing);
 
         int roomIndex;
 
-        if (allRoomsAsList==null){
-            roomIndex=0;
-        }else{
-            roomIndex=allRoomsAsList.size()+1;
+        if (allRoomsAsList == null) {
+            roomIndex = 0;
+        } else {
+            roomIndex = allRoomsAsList.size() + 1;
         }
         System.out.println("Setting room name: " + "Room " + roomIndex);
         room.getRoom().setName("Room " + roomIndex);
@@ -234,36 +234,40 @@ public class EditorView extends Application {
             // The distance between connected rooms
             double roomDistance = 150;
 
-            if (allRoomsAsList != null) {
+            /*if (allRoomsAsList != null) {
                 for (RoomRectangle room : allRoomsAsList) {
                     room.getRoom().setRendered(false);
                 }
-            }
+            }*/
 
             allRoomsAsList = new RoomList();
-            RoomRectangle startRoom = new RoomRectangle(this.currentGame.getCurrentRoom());
+            RoomRectangle startRoom = new RoomRectangle(drawing, this.currentGame.getCurrentRoom());
             startRoom.setX(400);
             startRoom.setY(400);
             renderQueue.add(startRoom);
 
             // render unconnected rooms
             for (RoomRectangle room : unconnectedRooms) {
-                room.getRoom().setRendered(false);
+                // room.getRoom().setRendered(false);
                 renderQueue.add(room);
             }
 
             while (!renderQueue.isEmpty()) {
                 RoomRectangle currentRoom = renderQueue.remove();
 
-                if (!currentRoom.getRoom().isRendered()) {
+                if (!currentRoom.isRendered()) {
                     allRoomsAsList.add(currentRoom);
-                    currentRoom.getRoom().setRendered(true);
+                    // currentRoom.getRoom().setRendered(true);
+                    currentRoom.updateNameLabelPosition();
                     Platform.runLater(() -> drawing.getChildren().add(currentRoom));
                 }
                 for (Map.Entry<WalkDirection, Room> entry : currentRoom.getRoom().getAdjacentRooms().entrySet()) {
                     RoomRectangle newRoom;
-                    if (!entry.getValue().isRendered()) {
-                        newRoom = new RoomRectangle(entry.getValue());
+                    newRoom = allRoomsAsList.findByRoom(entry.getValue());
+
+                    if (newRoom==null) {
+                        // not rendered yet
+                        newRoom = new RoomRectangle(drawing, entry.getValue());
 
                         // Set room position
                         if (autoLayout) {
@@ -302,11 +306,11 @@ public class EditorView extends Application {
                                     break;
                             }
                         }
-                    } else {
-                        newRoom = allRoomsAsList.findByRoom(entry.getValue());
                     }
                     Line connectionLine = new Line(0, 0, 0, 0);
 
+                    System.out.println("currentRoom==null: " + (currentRoom==null));
+                    System.out.println("newRoom==null: " + (newRoom==null));
                     switch (entry.getKey()) {
                         case NORTH:
                             connectionLine = new Line(currentRoom.getX() + currentRoom.getWidth() / 2.0, currentRoom.getY(), newRoom.getX() + newRoom.getWidth() / 2.0, newRoom.getY() + newRoom.getHeight());
@@ -337,11 +341,11 @@ public class EditorView extends Application {
                     final Line connectionLineCopy = connectionLine;
                     Platform.runLater(() -> drawing.getChildren().add(connectionLineCopy));
 
-                    if (!entry.getValue().isRendered()) {
+                    if (!newRoom.isRendered()) {
                         // render the child
                         allRoomsAsList.add(newRoom);
-                        newRoom.getRoom().setRendered(true);
-                        Platform.runLater(() -> drawing.getChildren().add(newRoom));
+                        // newRoom.getRoom().setRendered(true);
+                        //Platform.runLater(() -> drawing.getChildren().add(newRoom));
                         renderQueue.add(newRoom);
                     }
                 }

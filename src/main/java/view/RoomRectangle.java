@@ -24,7 +24,6 @@ package view;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -47,32 +46,34 @@ public class RoomRectangle extends Rectangle {
     private double moveStartLocalX = -1;
     private double moveStartLocalY = -1;
     private Label nameLabel = new Label();
+    private CustomGroup parent;
 
-    public RoomRectangle() {
-        this(new Room());
+    public RoomRectangle(CustomGroup parent) {
+        this(parent, new Room());
     }
 
-    public RoomRectangle(Room room) {
+    public RoomRectangle(CustomGroup parent, Room room) {
         super();
         this.setRoom(room);
+        this.setCustomParent(parent);
 
         this.nameLabel.textProperty().bind(this.getRoom().nameProperty());
         this.nameLabel.setTextFill(Color.BLACK);
         // this.nameLabel.setPrefHeight(10);
         // this.nameLabel.setPrefWidth(30);
 
-        Thread addNameLabelThread = new Thread(() -> {
-            updateNameLabelPosition();
-            while (this.getParent() == null) {
-                // wait for parent
+
+        Platform.runLater(() -> this.getCustomParent().getChildren().add(this.nameLabel));
+
+        // track changes of the parent node
+        this.parentProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue instanceof CustomGroup || newValue == null) {
+                thisRef.setCustomParent((CustomGroup) newValue, false);
+            } else {
+                throw new IllegalStateException("The parent of a RoomRectangle must be an instance of view.CustomGroup");
             }
-            System.out.println("Label added");
-            Platform.runLater(() -> ((Group) this.getParent()).getChildren().add(this.nameLabel));
-            System.out.println("Roomname: " + this.getRoom().getName());
-            System.out.println("Labeltext: " + this.nameLabel.getText());
         });
-        addNameLabelThread.setName("addNameLabelThread");
-        addNameLabelThread.start();
+
 
         this.heightProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
         this.widthProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
@@ -101,13 +102,13 @@ public class RoomRectangle extends Rectangle {
                 log.getLogger().fine("Inserting new path...");
                 if (line == null) {
                     line = new Line(this.getX() + (this.getWidth() / 2), this.getY() + (this.getHeight() / 2), event.getX(), event.getY());
-                    ((Group) this.getParent()).getChildren().add(line);
+                    this.getCustomParent().getChildren().add(line);
                 } else {
                     line.setEndX(event.getX());
                     line.setEndY(event.getY());
                 }
 
-                RoomRectangle newTarget = (RoomRectangle) ((CustomGroup) this.getParent()).getRectangleByCoordinatesPreferFront(event.getX(), event.getY());
+                RoomRectangle newTarget = (RoomRectangle) this.getCustomParent().getRectangleByCoordinatesPreferFront(event.getX(), event.getY());
                 if (newTarget != previousTarget && previousTarget != null) {
                     previousTarget.setSelected(false);
                 }
@@ -127,7 +128,7 @@ public class RoomRectangle extends Rectangle {
             if (dragStarted) {
                 dragStarted = false;
                 System.out.println("Drag done");
-                RoomRectangle target = (RoomRectangle) ((CustomGroup) this.getParent()).getRectangleByCoordinatesPreferFront(event.getX(), event.getY());
+                RoomRectangle target = (RoomRectangle) this.getCustomParent().getRectangleByCoordinatesPreferFront(event.getX(), event.getY());
 
                 if (target != null && EditorView.currentEditorInstance.getCurrentEditMode() == EditMode.INSERT_PATH) {
                     double lineAngle = Math.atan2(line.getEndX() - line.getStartX(), line.getStartY() - line.getEndY());
@@ -229,11 +230,59 @@ public class RoomRectangle extends Rectangle {
 
     public void updateNameLabelPosition() {
         // Get the center of this rectangle
-        double centerX = this.getLayoutX() + this.getWidth() / 2.0;
-        double centerY = this.getLayoutY() + this.getHeight() / 2.0;
+        double centerX = this.getX() + this.getWidth() / 2.0;
+        double centerY = this.getY() + this.getHeight() / 2.0;
 
         // calculate the upper left corner of the label
         this.nameLabel.setLayoutX(centerX - nameLabel.getWidth() / 2.0);
         this.nameLabel.setLayoutY(centerY - nameLabel.getHeight() / 2.0);
+    }
+
+    /**
+     * Sets the parent of this node like {@code Node.getChildren.add(this)}. The custom implementation was required to enforce that this node always has a parent.
+     *
+     * @param parent The parent to set
+     */
+    public void setCustomParent(CustomGroup parent) {
+        this.setCustomParent(parent, true);
+    }
+
+    /**
+     * Sets the current parent of the node. The custom implementation was required to enforce that this node always has a parent.
+     *
+     * @param parent          The new parent to set
+     * @param registerAsChild If {@code true}, {@code Node.getParent()} will be updated too.
+     */
+    private void setCustomParent(CustomGroup parent, boolean registerAsChild) {
+        // remove from previous parent
+        if (registerAsChild && this.getCustomParent() != null) {
+            this.getCustomParent().getChildren().remove(this);
+        }
+
+        this.parent = parent;
+
+        // add to new parent
+        if (registerAsChild) {
+            Platform.runLater(() -> this.getCustomParent().getChildren().add(this));
+            //this.getRoom().setRendered(true);
+        }
+    }
+
+    /**
+     * Gets the current parent of the node. The custom implementation was required to enforce that this node always has a parent.
+     *
+     * @return The current parent of the node.
+     */
+    public CustomGroup getCustomParent() {
+        return parent;
+    }
+
+    public boolean isRendered(){
+        return this.getCustomParent()!=null;
+    }
+
+    @Override
+    public String toString() {
+        return this.getRoom().getName();
     }
 }
