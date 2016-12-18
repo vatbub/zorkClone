@@ -89,7 +89,7 @@ public class RoomRectangle extends Rectangle {
                     log.getLogger().log(Level.SEVERE, "An error occurred", e);
                 }
 
-                Platform.runLater(() -> updateNameLabelPosition());
+                Platform.runLater(this::updateNameLabelPosition);
             });
 
             t.start();
