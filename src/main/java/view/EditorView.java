@@ -248,9 +248,9 @@ public class EditorView extends Application {
 
             allRoomsAsList = new RoomList();
             RoomRectangle startRoom = new RoomRectangle(drawing, this.currentGame.getCurrentRoom());
-            startRoom.setX(400);
-            startRoom.setY(400);
             renderQueue.add(startRoom);
+            allRoomsAsList.add(startRoom);
+            startRoom.updateNameLabelPosition();
 
             // render unconnected rooms
             for (RoomRectangle room : unconnectedRooms) {
@@ -265,7 +265,7 @@ public class EditorView extends Application {
                     allRoomsAsList.add(currentRoom);
                     // currentRoom.getRoom().setRendered(true);
                     currentRoom.updateNameLabelPosition();
-                    Platform.runLater(() -> drawing.getChildren().add(currentRoom));
+                    currentRoom.setCustomParent(drawing);
                 }
                 for (Map.Entry<WalkDirection, Room> entry : currentRoom.getRoom().getAdjacentRooms().entrySet()) {
                     RoomRectangle newRoom;

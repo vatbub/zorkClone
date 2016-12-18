@@ -63,7 +63,7 @@ public class RoomRectangle extends Rectangle {
         // this.nameLabel.setPrefWidth(30);
 
 
-        Platform.runLater(() -> this.getCustomParent().getChildren().add(this.nameLabel));
+        // Platform.runLater(() -> this.getCustomParent().getChildren().add(this.nameLabel));
 
         // track changes of the parent node
         this.parentProperty().addListener((observable, oldValue, newValue) -> {
@@ -260,13 +260,17 @@ public class RoomRectangle extends Rectangle {
         // remove from previous parent
         if (registerAsChild && this.getCustomParent() != null) {
             this.getCustomParent().getChildren().remove(this);
+            this.getCustomParent().getChildren().remove(this.nameLabel);
         }
 
         this.parent = parent;
 
         // add to new parent
         if (registerAsChild) {
-            Platform.runLater(() -> this.getCustomParent().getChildren().add(this));
+            Platform.runLater(() -> {
+                this.getCustomParent().getChildren().add(this);
+                this.getCustomParent().getChildren().add(this.nameLabel);
+            });
             //this.getRoom().setRendered(true);
         }
     }
@@ -280,8 +284,8 @@ public class RoomRectangle extends Rectangle {
         return parent;
     }
 
-    public boolean isRendered(){
-        return this.getCustomParent()!=null;
+    public boolean isRendered() {
+        return this.getCustomParent() != null;
     }
 
     @Override
