@@ -55,9 +55,9 @@ public class RoomRectangle extends Rectangle {
     public RoomRectangle(CustomGroup parent, Room room) {
         super();
         this.setRoom(room);
+        this.nameLabel.textProperty().bind(this.getRoom().nameProperty());
         this.setCustomParent(parent);
 
-        this.nameLabel.textProperty().bind(this.getRoom().nameProperty());
         this.nameLabel.setTextFill(Color.BLACK);
         // this.nameLabel.setPrefHeight(10);
         // this.nameLabel.setPrefWidth(30);
@@ -266,7 +266,7 @@ public class RoomRectangle extends Rectangle {
         this.parent = parent;
 
         // add to new parent
-        if (registerAsChild) {
+        if (registerAsChild & parent!=null) {
             Platform.runLater(() -> {
                 this.getCustomParent().getChildren().add(this);
                 this.getCustomParent().getChildren().add(this.nameLabel);

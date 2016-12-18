@@ -148,7 +148,7 @@ public class EditorView extends Application {
     @FXML
     void insertRoomOnAction(ActionEvent event) {
         log.getLogger().fine("Added room to game");
-        RoomRectangle room = new RoomRectangle(drawing);
+        RoomRectangle room = new RoomRectangle(null);
 
         int roomIndex;
 
@@ -172,9 +172,7 @@ public class EditorView extends Application {
 
     @FXML
     void resetButtonOnAction(ActionEvent event) {
-        currentGame = new Game();
-        unconnectedRooms = new RoomList();
-        renderView();
+        initGame();
     }
 
     @FXML
@@ -188,10 +186,10 @@ public class EditorView extends Application {
     }
 
     @FXML
-    void scrollPaneOnZoom(ZoomEvent event){
+    void scrollPaneOnZoom(ZoomEvent event) {
         System.out.println(event.getZoomFactor());
-        drawing.setScaleX(drawing.getScaleX()*event.getZoomFactor());
-        drawing.setScaleY(drawing.getScaleY()*event.getZoomFactor());
+        drawing.setScaleX(drawing.getScaleX() * event.getZoomFactor());
+        drawing.setScaleY(drawing.getScaleY() * event.getZoomFactor());
         // TODO: Update the actual size in the scrollpane (so that scrollbars appear when zooming in
         // TODO: Add Keyboard and touchpad zoom
         // TODO: do the zoom with th eright zoom center
@@ -240,14 +238,14 @@ public class EditorView extends Application {
             // The distance between connected rooms
             double roomDistance = 150;
 
-            /*if (allRoomsAsList != null) {
-                for (RoomRectangle room : allRoomsAsList) {
-                    room.getRoom().setRendered(false);
-                }
-            }*/
-
+            RoomRectangle startRoom;
+            if (allRoomsAsList==null){
+                // First time to render
+                startRoom = new RoomRectangle(drawing, this.currentGame.getCurrentRoom());
+            }else {
+                startRoom = allRoomsAsList.findByRoom(this.currentGame.getCurrentRoom());
+            }
             allRoomsAsList = new RoomList();
-            RoomRectangle startRoom = new RoomRectangle(drawing, this.currentGame.getCurrentRoom());
             renderQueue.add(startRoom);
             allRoomsAsList.add(startRoom);
             startRoom.updateNameLabelPosition();
@@ -271,7 +269,7 @@ public class EditorView extends Application {
                     RoomRectangle newRoom;
                     newRoom = allRoomsAsList.findByRoom(entry.getValue());
 
-                    if (newRoom==null) {
+                    if (newRoom == null) {
                         // not rendered yet
                         newRoom = new RoomRectangle(drawing, entry.getValue());
 
@@ -368,12 +366,22 @@ public class EditorView extends Application {
 
         currentEditorInstance = this;
 
-        currentGame = new Game();
-        renderView();
+        initGame();
 
         scrollPane.hvalueProperty().addListener((observable, oldValue, newValue) -> unselectingDisabled = true);
 
         scrollPane.vvalueProperty().addListener((observable, oldValue, newValue) -> unselectingDisabled = true);
+    }
+
+    /**
+     * Initializes a new game
+     */
+    public void initGame(){
+        currentGame = new Game();
+        currentGame.getCurrentRoom().setName("startRoom");
+        unconnectedRooms = new RoomList();
+        allRoomsAsList = null;
+        renderView();
     }
 
     @Override
