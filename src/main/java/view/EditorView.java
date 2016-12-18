@@ -36,6 +36,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ZoomEvent;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import logging.FOKLogger;
@@ -184,6 +185,16 @@ public class EditorView extends Application {
     @FXML
     void autoLayoutButtonOnAction(ActionEvent event) {
         renderView();
+    }
+
+    @FXML
+    void scrollPaneOnZoom(ZoomEvent event){
+        System.out.println(event.getZoomFactor());
+        drawing.setScaleX(drawing.getScaleX()*event.getZoomFactor());
+        drawing.setScaleY(drawing.getScaleY()*event.getZoomFactor());
+        // TODO: Update the actual size in the scrollpane (so that scrollbars appear when zooming in
+        // TODO: Add Keyboard and touchpad zoom
+        // TODO: do the zoom with th eright zoom center
     }
 
     @FXML
