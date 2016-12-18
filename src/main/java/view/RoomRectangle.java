@@ -32,6 +32,8 @@ import logging.FOKLogger;
 import model.Room;
 import model.WalkDirection;
 
+import java.util.logging.Level;
+
 /**
  * The graphical representation of a {@link model.Room} in the {@link EditorView}
  */
@@ -79,6 +81,19 @@ public class RoomRectangle extends Rectangle {
         this.widthProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
         this.xProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
         this.yProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
+        this.nameLabel.textProperty().addListener((observable, oldValue, newValue) -> {
+            Thread t = new Thread(() -> {
+                try {
+                    Thread.sleep(12);
+                } catch (InterruptedException e) {
+                    log.getLogger().log(Level.SEVERE, "An error occurred", e);
+                }
+
+                Platform.runLater(() -> updateNameLabelPosition());
+            });
+
+            t.start();
+        });
 
         this.setOnMouseClicked(event -> {
             if (event.getClickCount() == 1) {
@@ -266,7 +281,7 @@ public class RoomRectangle extends Rectangle {
         this.parent = parent;
 
         // add to new parent
-        if (registerAsChild & parent!=null) {
+        if (registerAsChild & parent != null) {
             Platform.runLater(() -> {
                 this.getCustomParent().getChildren().add(this);
                 this.getCustomParent().getChildren().add(this.nameLabel);
