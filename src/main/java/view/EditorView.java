@@ -228,27 +228,38 @@ public class EditorView extends Application {
     }
 
     public void renderView(boolean autoLayout) {
-        while (drawing.getChildren().size() > 0) {
-            drawing.getChildren().remove(0);
+        this.renderView(autoLayout, false);
+    }
+
+    public void renderView(boolean autoLayout, boolean onlyUpdateLines) {
+        int indexCorrection = 0;
+        while (drawing.getChildren().size() > indexCorrection) {
+            if (!onlyUpdateLines || (onlyUpdateLines && drawing.getChildren().get(indexCorrection) instanceof Line)) {
+                drawing.getChildren().remove(indexCorrection);
+            } else {
+                indexCorrection++;
+            }
         }
 
         Thread renderThread = new Thread(() -> {
             LinkedList<RoomRectangle> renderQueue = new LinkedList<>();
-            RoomList  allRoomsAsListCopy;
+            RoomList allRoomsAsListCopy;
 
             // The distance between connected rooms
             double roomDistance = 150;
 
             RoomRectangle startRoom;
-            if (allRoomsAsList==null){
+            if (allRoomsAsList == null) {
                 // First time to render
                 startRoom = new RoomRectangle(drawing, this.currentGame.getCurrentRoom());
                 allRoomsAsListCopy = new RoomList();
-            }else {
+            } else {
                 startRoom = allRoomsAsList.findByRoom(this.currentGame.getCurrentRoom());
                 allRoomsAsListCopy = allRoomsAsList;
             }
-            allRoomsAsList = new RoomList();
+            if (!onlyUpdateLines) {
+                allRoomsAsList = new RoomList();
+            }
             renderQueue.add(startRoom);
             allRoomsAsList.add(startRoom);
             startRoom.updateNameLabelPosition();
@@ -379,7 +390,7 @@ public class EditorView extends Application {
     /**
      * Initializes a new game
      */
-    public void initGame(){
+    public void initGame() {
         currentGame = new Game();
         currentGame.getCurrentRoom().setName("startRoom");
         unconnectedRooms = new RoomList();

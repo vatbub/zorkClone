@@ -136,6 +136,7 @@ public class RoomRectangle extends Rectangle {
                 log.getLogger().fine("Moving room...");
                 this.setX(event.getX() - this.moveStartLocalX);
                 this.setY(event.getY() - this.moveStartLocalY);
+                EditorView.currentEditorInstance.renderView(false, true);
             }
         });
 
