@@ -263,17 +263,20 @@ public class EditorView extends Application {
                     // First time to render
                     startRoom = new RoomRectangle(drawing, this.currentGame.getCurrentRoom());
                     allRoomsAsListCopy = new RoomList();
+                    allRoomsAsList = new RoomList();
+                    allRoomsAsList.add(startRoom);
                 } else {
                     startRoom = allRoomsAsList.findByRoom(this.currentGame.getCurrentRoom());
                     allRoomsAsListCopy = allRoomsAsList;
+                    if (!onlyUpdateLines) {
+                        allRoomsAsList = new RoomList();
+                    }
                 }
-                if (!onlyUpdateLines) {
-                    allRoomsAsList = new RoomList();
-                }
+
                 renderQueue.add(startRoom);
-                allRoomsAsList.add(startRoom);
+                /*
                 assert startRoom != null;
-                startRoom.updateNameLabelPosition();
+                startRoom.updateNameLabelPosition();*/
 
                 // render unconnected rooms
                 for (RoomRectangle room : unconnectedRooms) {
