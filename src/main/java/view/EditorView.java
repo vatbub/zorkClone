@@ -94,9 +94,11 @@ public class EditorView extends Application {
 
     public static ResourceBundle bundle;
 
+    @SuppressWarnings("unused")
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
 
+    @SuppressWarnings("unused")
     @FXML // URL location of the FXML file that was given to the FXMLLoader
     private URL location;
 
@@ -234,7 +236,7 @@ public class EditorView extends Application {
     public void renderView(boolean autoLayout, boolean onlyUpdateLines) {
         int indexCorrection = 0;
         while (drawing.getChildren().size() > indexCorrection) {
-            if (!onlyUpdateLines || (onlyUpdateLines && drawing.getChildren().get(indexCorrection) instanceof Line)) {
+            if (!onlyUpdateLines || drawing.getChildren().get(indexCorrection) instanceof Line) {
                 drawing.getChildren().remove(indexCorrection);
             } else {
                 indexCorrection++;
@@ -262,6 +264,7 @@ public class EditorView extends Application {
             }
             renderQueue.add(startRoom);
             allRoomsAsList.add(startRoom);
+            assert startRoom != null;
             startRoom.updateNameLabelPosition();
 
             // render unconnected rooms
