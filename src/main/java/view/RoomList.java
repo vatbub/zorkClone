@@ -61,4 +61,28 @@ public class RoomList extends ArrayList<RoomRectangle> {
 
         return null;
     }
+
+    /**
+     * Finds the {@link RoomRectangle} from {@code this} list that has the least pythagorean distance to the specified source
+     *
+     * @param source The {@link RoomRectangle} to measure the distance from
+     * @return The {@link RoomRectangle} from {@code this} list that has the least pythagorean distance to the specified source or {@code null} if this list does not contain any room
+     */
+    @Nullable
+    public RoomRectangle findRoomWithMinimumDistanceTo(RoomRectangle source) {
+        if (this.isEmpty()) {
+            return null;
+        } else {
+            RoomRectangle res = this.get(0);
+
+            for (RoomRectangle room : this) {
+                if (source.distanceTo(room) < source.distanceTo(res)) {
+                    // found a room with a smaller distance
+                    res = room;
+                }
+            }
+
+            return res;
+        }
+    }
 }

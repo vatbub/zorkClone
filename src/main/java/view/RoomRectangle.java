@@ -31,7 +31,11 @@ import javafx.scene.shape.Rectangle;
 import logging.FOKLogger;
 import model.Room;
 import model.WalkDirection;
+import model.WalkDirectionUtils;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 
 /**
@@ -49,6 +53,7 @@ public class RoomRectangle extends Rectangle {
     private double moveStartLocalY = -1;
     private Label nameLabel = new Label();
     private CustomGroup parent;
+    private WalkDirection reevaluatedDirection;
 
     public RoomRectangle(CustomGroup parent) {
         this(parent, new Room());
@@ -116,7 +121,7 @@ public class RoomRectangle extends Rectangle {
             if (EditorView.currentEditorInstance.getCurrentEditMode() == EditMode.INSERT_PATH) {
                 log.getLogger().fine("Inserting new path...");
                 if (line == null) {
-                    line = new Line(this.getX() + (this.getWidth() / 2), this.getY() + (this.getHeight() / 2), event.getX(), event.getY());
+                    line = new Line(this.getCenterX(), this.getCenterY(), event.getX(), event.getY());
                     this.getCustomParent().getChildren().add(line);
                 } else {
                     line.setEndX(event.getX());
@@ -136,6 +141,65 @@ public class RoomRectangle extends Rectangle {
                 log.getLogger().fine("Moving room...");
                 this.setX(event.getX() - this.moveStartLocalX);
                 this.setY(event.getY() - this.moveStartLocalY);
+
+                RoomList reevaluatedAdjacentRooms = new RoomList();
+
+                for (Map.Entry<WalkDirection, Room> entry : this.getRoom().getAdjacentRooms().entrySet()) {
+                    // reevaluate connection
+                    RoomRectangle targetRoomRectangle = EditorView.currentEditorInstance.getAllRoomsAsList().findByRoom(entry.getValue());
+                    targetRoomRectangle.reevaluatedDirection = WalkDirectionUtils.getFromLine(this.getLineToRectangle(targetRoomRectangle));
+                    reevaluatedAdjacentRooms.add(targetRoomRectangle);
+                }
+
+                // apply the reevaluated directions
+                for (WalkDirection dir : WalkDirection.values()) {
+                    RoomList subListWithCurrentDirection = new RoomList();
+                    for (RoomRectangle r : reevaluatedAdjacentRooms) {
+                        if (r.reevaluatedDirection == dir) {
+                            subListWithCurrentDirection.add(r);
+                        }
+                    }
+
+                    // only use the one with the smallest distance to this room
+                    RoomRectangle finalRoom = subListWithCurrentDirection.findRoomWithMinimumDistanceTo(this);
+                    if (finalRoom != null) {
+                        if (this.getRoom().getAdjacentRooms().containsKey(dir)){
+                            // this has got a connection to another room in that direction that we need to delete
+                            EditorView.currentEditorInstance.setRoomAsUnconected(EditorView.currentEditorInstance.getAllRoomsAsList().findByRoom(this.getRoom().getAdjacentRooms().get(dir)));
+                            this.getRoom().getAdjacentRooms().get(dir).getAdjacentRooms().remove(WalkDirectionUtils.invert(dir));
+                            this.getRoom().getAdjacentRooms().remove(dir);
+                        }
+
+                        if (finalRoom.getRoom().getAdjacentRooms().containsKey(dir)){
+                            // finalRoom has got a connection to another room in our direction that we need to delete
+                            finalRoom.getRoom().getAdjacentRooms().get(dir).getAdjacentRooms().remove(WalkDirectionUtils.invert(dir));
+                            finalRoom.getRoom().getAdjacentRooms().remove(dir);
+                        }
+
+                        // delete the old connection between this and finalRoom
+                        WalkDirection oldDirThisToFinalRoom = null;
+                        for (Map.Entry<WalkDirection, Room> entry:this.getRoom().getAdjacentRooms().entrySet()){
+                            if (entry.getValue()==finalRoom.getRoom()){
+                                oldDirThisToFinalRoom = entry.getKey();
+                                break;
+                            }
+                        }
+
+                        // oldDirThisToFinalRoom will never be null as this and finalRoom must have had a connection already
+                        this.getRoom().getAdjacentRooms().remove(oldDirThisToFinalRoom);
+                        finalRoom.getRoom().getAdjacentRooms().remove(WalkDirectionUtils.invert(oldDirThisToFinalRoom));
+
+                        for (Map.Entry<WalkDirection, Room> entry:finalRoom.getRoom().getAdjacentRooms().entrySet()){
+                            if (entry.getValue()==this.getRoom()){
+                                finalRoom.getRoom().getAdjacentRooms().remove(entry.getKey());
+                            }
+                        }
+
+                        this.getRoom().getAdjacentRooms().put(dir, finalRoom.getRoom());
+                        finalRoom.getRoom().getAdjacentRooms().put(WalkDirectionUtils.invert(dir), this.getRoom());
+                    }
+                }
+
                 EditorView.currentEditorInstance.renderView(false, true);
             }
         });
@@ -147,44 +211,8 @@ public class RoomRectangle extends Rectangle {
                 RoomRectangle target = (RoomRectangle) this.getCustomParent().getRectangleByCoordinatesPreferFront(event.getX(), event.getY());
 
                 if (target != null && EditorView.currentEditorInstance.getCurrentEditMode() == EditMode.INSERT_PATH) {
-                    double lineAngle = Math.atan2(line.getEndX() - line.getStartX(), line.getStartY() - line.getEndY());
-
-                    WalkDirection fromThisToTarget = null;
-                    WalkDirection fromTargetToThis = null;
-
-                    if (lineAngle <= (Math.PI / 8.0) && lineAngle >= (-Math.PI / 8.0)) {
-                        // north
-                        fromThisToTarget = WalkDirection.NORTH;
-                        fromTargetToThis = WalkDirection.SOUTH;
-                    } else if (lineAngle < (Math.PI * 3.0 / 8.0) && lineAngle > (Math.PI / 8.0)) {
-                        // ne
-                        fromThisToTarget = WalkDirection.NORTH_EAST;
-                        fromTargetToThis = WalkDirection.SOUTH_WEST;
-                    } else if (lineAngle <= (Math.PI * 5.0 / 8.0) && lineAngle >= (Math.PI * 3.0 / 8.0)) {
-                        // e
-                        fromThisToTarget = WalkDirection.EAST;
-                        fromTargetToThis = WalkDirection.WEST;
-                    } else if (lineAngle < (Math.PI * 7.0 / 8.0) && lineAngle > (Math.PI * 5.0 / 8.0)) {
-                        // se
-                        fromThisToTarget = WalkDirection.SOUTH_EAST;
-                        fromTargetToThis = WalkDirection.NORTH_WEST;
-                    } else if ((lineAngle <= (-Math.PI * 7.0 / 8.0) && lineAngle >= (-Math.PI)) || (lineAngle <= (Math.PI) && lineAngle >= (Math.PI * 7.0 / 8.0))) {
-                        // s
-                        fromThisToTarget = WalkDirection.SOUTH;
-                        fromTargetToThis = WalkDirection.NORTH;
-                    } else if (lineAngle < (-Math.PI * 5.0 / 8.0) && lineAngle > (-Math.PI * 7.0 / 8.0)) {
-                        // sw
-                        fromThisToTarget = WalkDirection.SOUTH_WEST;
-                        fromTargetToThis = WalkDirection.NORTH_EAST;
-                    } else if (lineAngle <= (-Math.PI * 3.0 / 8.0) && lineAngle >= (-Math.PI * 5.0 / 8.0)) {
-                        // w
-                        fromThisToTarget = WalkDirection.WEST;
-                        fromTargetToThis = WalkDirection.EAST;
-                    } else if (lineAngle < (-Math.PI * 1.0 / 8.0) && lineAngle > (-Math.PI * 3.0 / 8.0)) {
-                        // nw
-                        fromThisToTarget = WalkDirection.NORTH_WEST;
-                        fromTargetToThis = WalkDirection.SOUTH_EAST;
-                    }
+                    WalkDirection fromThisToTarget = WalkDirectionUtils.getFromLine(line);
+                    WalkDirection fromTargetToThis = WalkDirectionUtils.invert(fromThisToTarget);
 
                     // Delete old references
                     if (this.getRoom().getAdjacentRooms().get(fromThisToTarget) != null) {
@@ -307,5 +335,45 @@ public class RoomRectangle extends Rectangle {
     @Override
     public String toString() {
         return this.getRoom().getName();
+    }
+
+    /**
+     * Returns the x coordinate of the center of this rectangle.
+     *
+     * @return The x coordinate of the center of this rectangle.
+     */
+    public double getCenterX() {
+        return this.getX() + (this.getWidth() / 2);
+    }
+
+    /**
+     * Returns the y coordinate of the center of this rectangle.
+     *
+     * @return The y coordinate of the center of this rectangle.
+     */
+    public double getCenterY() {
+        return this.getY() + (this.getHeight() / 2);
+    }
+
+    /**
+     * Calculates the pythagorean distance between the center coordinates of {@code this} and the {@code target}
+     *
+     * @param target The rectangle to calculate the distance to.
+     * @return the pythagorean distance between the center coordinates of {@code this} and the {@code target}
+     */
+    public double distanceTo(@NotNull RoomRectangle target) {
+        Objects.requireNonNull(target);
+
+        return Math.sqrt(Math.pow(target.getCenterX() - this.getCenterX(), 2) + Math.pow(target.getCenterY() - this.getCenterY(), 2));
+    }
+
+    /**
+     * Creates a Line between the centers of {@code this} and the target
+     *
+     * @param target The room rectangle whose center coordinates will serve as the end of the line
+     * @return A {@code Line} that starts at the center of {@code this} and ends at the center of {@code target}
+     */
+    public Line getLineToRectangle(RoomRectangle target) {
+        return new Line(this.getCenterX(), this.getCenterY(), target.getCenterX(), target.getCenterY());
     }
 }
