@@ -234,6 +234,7 @@ public class EditorView extends Application {
 
         Thread renderThread = new Thread(() -> {
             LinkedList<RoomRectangle> renderQueue = new LinkedList<>();
+            RoomList  allRoomsAsListCopy;
 
             // The distance between connected rooms
             double roomDistance = 150;
@@ -242,8 +243,10 @@ public class EditorView extends Application {
             if (allRoomsAsList==null){
                 // First time to render
                 startRoom = new RoomRectangle(drawing, this.currentGame.getCurrentRoom());
+                allRoomsAsListCopy = new RoomList();
             }else {
                 startRoom = allRoomsAsList.findByRoom(this.currentGame.getCurrentRoom());
+                allRoomsAsListCopy = allRoomsAsList;
             }
             allRoomsAsList = new RoomList();
             renderQueue.add(startRoom);
@@ -267,7 +270,7 @@ public class EditorView extends Application {
                 }
                 for (Map.Entry<WalkDirection, Room> entry : currentRoom.getRoom().getAdjacentRooms().entrySet()) {
                     RoomRectangle newRoom;
-                    newRoom = allRoomsAsList.findByRoom(entry.getValue());
+                    newRoom = allRoomsAsListCopy.findByRoom(entry.getValue());
 
                     if (newRoom == null) {
                         // not rendered yet
