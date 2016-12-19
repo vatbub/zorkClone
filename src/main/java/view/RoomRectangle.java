@@ -147,6 +147,7 @@ public class RoomRectangle extends Rectangle {
                 for (Map.Entry<WalkDirection, Room> entry : this.getRoom().getAdjacentRooms().entrySet()) {
                     // reevaluate connection
                     RoomRectangle targetRoomRectangle = EditorView.currentEditorInstance.getAllRoomsAsList().findByRoom(entry.getValue());
+                    assert targetRoomRectangle != null;
                     targetRoomRectangle.reevaluatedDirection = WalkDirectionUtils.getFromLine(this.getLineToRectangle(targetRoomRectangle));
                     reevaluatedAdjacentRooms.add(targetRoomRectangle);
                 }
@@ -180,8 +181,8 @@ public class RoomRectangle extends Rectangle {
                         WalkDirection oldDirThisToFinalRoom = null;
                         for (Map.Entry<WalkDirection, Room> entry : this.getRoom().getAdjacentRooms().entrySet()) {
                             if (entry.getValue() == finalRoom.getRoom()) {
-                                System.out.println("oldDirThisToFinalRoom = " + oldDirThisToFinalRoom.toString());
                                 oldDirThisToFinalRoom = entry.getKey();
+                                System.out.println("oldDirThisToFinalRoom = " + oldDirThisToFinalRoom.toString());
                                 break;
                             }
                         }

@@ -86,6 +86,6 @@ public class RoomList extends CopyOnWriteArrayList<RoomRectangle> {
         if (this.contains(roomRectangle)){
             throw new IllegalArgumentException("Duplicate child: ");
         }
-        return false;
+        return super.add(roomRectangle);
     }
 }
