@@ -24,13 +24,13 @@ package view;
 import model.Room;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A List of {@link RoomRectangle}s that can find a {@link RoomRectangle} by its {@link Room}
  */
-public class RoomList extends ArrayList<RoomRectangle> {
+public class RoomList extends CopyOnWriteArrayList<RoomRectangle> {
     public RoomList() {
         super();
     }
@@ -38,11 +38,6 @@ public class RoomList extends ArrayList<RoomRectangle> {
     @SuppressWarnings({"unused"})
     public RoomList(Collection<? extends RoomRectangle> c) {
         super(c);
-    }
-
-    @SuppressWarnings({"unused"})
-    public RoomList(int initialCapacity) {
-        super(initialCapacity);
     }
 
     /**
@@ -84,5 +79,13 @@ public class RoomList extends ArrayList<RoomRectangle> {
 
             return res;
         }
+    }
+
+    @Override
+    public boolean add(RoomRectangle roomRectangle){
+        if (this.contains(roomRectangle)){
+            throw new IllegalArgumentException("Duplicate child: ");
+        }
+        return false;
     }
 }

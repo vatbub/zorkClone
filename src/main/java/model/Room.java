@@ -26,9 +26,9 @@ import javafx.beans.property.StringProperty;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Represents a room in the {@link Game}
@@ -58,7 +58,7 @@ public class Room implements Serializable {
     }
 
     public Room(String name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom){
-        this(name, description, itemsInRoom, entitiesInRoom, new HashMap<>(WalkDirection.values().length));
+        this(name, description, itemsInRoom, entitiesInRoom, new ConcurrentHashMap<>(WalkDirection.values().length));
     }
 
     public Room(String name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom, Map<WalkDirection, Room> adjacentRooms){

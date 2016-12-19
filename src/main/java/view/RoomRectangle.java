@@ -163,14 +163,14 @@ public class RoomRectangle extends Rectangle {
                     // only use the one with the smallest distance to this room
                     RoomRectangle finalRoom = subListWithCurrentDirection.findRoomWithMinimumDistanceTo(this);
                     if (finalRoom != null) {
-                        if (this.getRoom().getAdjacentRooms().containsKey(dir)){
+                        if (this.getRoom().getAdjacentRooms().containsKey(dir)) {
                             // this has got a connection to another room in that direction that we need to delete
                             EditorView.currentEditorInstance.setRoomAsUnconected(EditorView.currentEditorInstance.getAllRoomsAsList().findByRoom(this.getRoom().getAdjacentRooms().get(dir)));
                             this.getRoom().getAdjacentRooms().get(dir).getAdjacentRooms().remove(WalkDirectionUtils.invert(dir));
                             this.getRoom().getAdjacentRooms().remove(dir);
                         }
 
-                        if (finalRoom.getRoom().getAdjacentRooms().containsKey(dir)){
+                        if (finalRoom.getRoom().getAdjacentRooms().containsKey(dir)) {
                             // finalRoom has got a connection to another room in our direction that we need to delete
                             finalRoom.getRoom().getAdjacentRooms().get(dir).getAdjacentRooms().remove(WalkDirectionUtils.invert(dir));
                             finalRoom.getRoom().getAdjacentRooms().remove(dir);
@@ -178,19 +178,21 @@ public class RoomRectangle extends Rectangle {
 
                         // delete the old connection between this and finalRoom
                         WalkDirection oldDirThisToFinalRoom = null;
-                        for (Map.Entry<WalkDirection, Room> entry:this.getRoom().getAdjacentRooms().entrySet()){
-                            if (entry.getValue()==finalRoom.getRoom()){
+                        for (Map.Entry<WalkDirection, Room> entry : this.getRoom().getAdjacentRooms().entrySet()) {
+                            if (entry.getValue() == finalRoom.getRoom()) {
+                                System.out.println("oldDirThisToFinalRoom = " + oldDirThisToFinalRoom.toString());
                                 oldDirThisToFinalRoom = entry.getKey();
                                 break;
                             }
                         }
 
-                        // oldDirThisToFinalRoom will never be null as this and finalRoom must have had a connection already
-                        this.getRoom().getAdjacentRooms().remove(oldDirThisToFinalRoom);
-                        finalRoom.getRoom().getAdjacentRooms().remove(WalkDirectionUtils.invert(oldDirThisToFinalRoom));
+                        if (oldDirThisToFinalRoom != null) {
+                            this.getRoom().getAdjacentRooms().remove(oldDirThisToFinalRoom);
+                            finalRoom.getRoom().getAdjacentRooms().remove(WalkDirectionUtils.invert(oldDirThisToFinalRoom));
+                        }
 
-                        for (Map.Entry<WalkDirection, Room> entry:finalRoom.getRoom().getAdjacentRooms().entrySet()){
-                            if (entry.getValue()==this.getRoom()){
+                        for (Map.Entry<WalkDirection, Room> entry : finalRoom.getRoom().getAdjacentRooms().entrySet()) {
+                            if (entry.getValue() == this.getRoom()) {
                                 finalRoom.getRoom().getAdjacentRooms().remove(entry.getKey());
                             }
                         }
