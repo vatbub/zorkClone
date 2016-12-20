@@ -109,7 +109,7 @@ public class MainWindow extends Application {
     void initialize() {
         assert commandLine != null : "fx:id=\"commandLine\" was not injected: check your FXML file 'BasicApplication_i18n.fxml'.";
         assert getAvailableCommandsButton != null : "fx:id=\"getAvailableCommandsButton\" was not injected: check your FXML file 'BasicApplication_i18n.fxml'.";
-        currentGame.getMessages().add(new GameMessage("ZORK I: The Great Underground Empire\nCopyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved.\nZORK is a registered trademark of Infocom, Inc.\n Revison " + Common.getAppVersion() + "\n\nThis game is not yet functional. Give the team some time and come back in some time. See ya :)", true));
+        currentGame.getMessages().add(new GameMessage("ZORK I: The Great Underground Empire\nCopyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved.\nZORK is a registered trademark of Infocom, Inc.\n Revison " + Common.getAppVersion() + "-" + Common.getBuildNumber() + "\n\nThis game is not yet functional. Give the team some time and come back in some time. See ya :)", true));
         updateCommandView();
     }
 
