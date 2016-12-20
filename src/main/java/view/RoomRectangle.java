@@ -166,7 +166,6 @@ public class RoomRectangle extends Rectangle {
                     if (finalRoom != null) {
                         if (this.getRoom().getAdjacentRooms().containsKey(dir)) {
                             // this has got a connection to another room in that direction that we need to delete
-                            EditorView.currentEditorInstance.setRoomAsUnconected(EditorView.currentEditorInstance.getAllRoomsAsList().findByRoom(this.getRoom().getAdjacentRooms().get(dir)));
                             this.getRoom().getAdjacentRooms().get(dir).getAdjacentRooms().remove(WalkDirectionUtils.invert(dir));
                             this.getRoom().getAdjacentRooms().remove(dir);
                         }
@@ -182,7 +181,6 @@ public class RoomRectangle extends Rectangle {
                         for (Map.Entry<WalkDirection, Room> entry : this.getRoom().getAdjacentRooms().entrySet()) {
                             if (entry.getValue() == finalRoom.getRoom()) {
                                 oldDirThisToFinalRoom = entry.getKey();
-                                System.out.println("oldDirThisToFinalRoom = " + oldDirThisToFinalRoom.toString());
                                 break;
                             }
                         }
@@ -229,8 +227,6 @@ public class RoomRectangle extends Rectangle {
                     System.out.println("Room is " + fromThisToTarget.toString());
                     this.getRoom().getAdjacentRooms().put(fromThisToTarget, target.getRoom());
                     target.getRoom().getAdjacentRooms().put(fromTargetToThis, this.getRoom());
-                    EditorView.currentEditorInstance.setRoomAsConnected(this);
-                    EditorView.currentEditorInstance.setRoomAsConnected(target);
                 }
                 EditorView.currentEditorInstance.renderView(false);
             }

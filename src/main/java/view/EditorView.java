@@ -213,26 +213,21 @@ public class EditorView extends Application {
     }
 
     /**
-     * Removes the specified room from the {@code unconnectedRooms}-list.
+     * Updates the internal connection status of a room (if it is connected to the current room of the game)
      *
-     * @param room The room to remove
-     * @return {@code true} if this list contained the specified element
+     * @param room The room to update
      */
-    public boolean setRoomAsConnected(RoomRectangle room) {
-        return unconnectedRooms.remove(room);
-    }
-
-    /**
-     * Adds the specified room to the {@code unconnectedRooms}-list.
-     *
-     * @param room The room to be added
-     */
-    public void setRoomAsUnconected(RoomRectangle room) {
-        try {
+    private void updateConnectionStatusOfRoom(RoomRectangle room) {
+        boolean isConnected = currentGame.getCurrentRoom().isConnectedTo(room.getRoom());
+        if (isConnected && unconnectedRooms.contains(room)) {
+            // room was marked as unconnected and now is connected
+            unconnectedRooms.remove(room);
+        } else if (!isConnected && !unconnectedRooms.contains(room)) {
+            // room was marked as connected and now is unconnected
             unconnectedRooms.add(room);
-        } catch (IllegalArgumentException e) {
-            log.getLogger().log(Level.FINEST, "Room that already was marked as unconnected was marked as such once again", e);
         }
+
+        // in any other case, the status did not change and we don't need to do anything
     }
 
     public void renderView() {
@@ -256,6 +251,13 @@ public class EditorView extends Application {
 
         Thread renderThread = new Thread(() -> {
             try {
+                // update the connection status of all rooms
+                if (allRoomsAsList != null) {
+                    for (RoomRectangle room : allRoomsAsList) {
+                        updateConnectionStatusOfRoom(room);
+                    }
+                }
+
                 LinkedList<RoomRectangle> renderQueue = new LinkedList<>();
                 RoomList allRoomsAsListCopy;
 

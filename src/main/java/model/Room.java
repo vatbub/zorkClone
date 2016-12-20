@@ -40,28 +40,32 @@ public class Room implements Serializable {
     private List<Item> itemsInRoom;
     private List<Entity> entitiesInRoom;
     private Map<WalkDirection, Room> adjacentRooms;
+    /**
+     * Used for {@link #isConnectedTo(Room)}
+     */
+    private List<Room> visitedRooms;
 
-    public Room(){
+    public Room() {
         this("");
     }
 
-    public Room(String name){
+    public Room(String name) {
         this(name, "");
     }
 
-    public Room(String name, String description){
+    public Room(String name, String description) {
         this(name, description, new ArrayList<>());
     }
 
-    public Room(String name, String description, List<Item> itemsInRoom){
+    public Room(String name, String description, List<Item> itemsInRoom) {
         this(name, description, itemsInRoom, new ArrayList<>());
     }
 
-    public Room(String name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom){
+    public Room(String name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom) {
         this(name, description, itemsInRoom, entitiesInRoom, new ConcurrentHashMap<>(WalkDirection.values().length));
     }
 
-    public Room(String name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom, Map<WalkDirection, Room> adjacentRooms){
+    public Room(String name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom, Map<WalkDirection, Room> adjacentRooms) {
         this.name = new SimpleStringProperty();
         this.setName(name);
         this.setDescription(description);
@@ -148,5 +152,53 @@ public class Room implements Serializable {
 
     public void setAdjacentRooms(Map<WalkDirection, Room> adjacentRooms) {
         this.adjacentRooms = adjacentRooms;
+    }
+
+    /**
+     * Checks if the specified room is connected to {@code this} room.
+     * This is done by exploring the room graph using the so called
+     * <a href="https://en.wikipedia.org/wiki/Depth-first_search">Depth first search</a>
+     * and checking if the specified room can be found like that.
+     *
+     * @param room The room to check connectivity from
+     * @return {@code true} if {@code this} and the specified room are connected to each other using paths and {@code false} if not
+     */
+    public boolean isConnectedTo(Room room) {
+        visitedRooms = new ArrayList();
+
+        boolean res = isConnectedTo(this,room);
+
+        // release resources
+        visitedRooms = null;
+        return res;
+    }
+
+    /**
+     * <b>DON'T call this method directly! It is private for important reasons. Please call {@link #isConnectedTo(Room)} instead!</b><br>
+     * Anyway, this method checks if {@code room1} and {@code room2} are connected. See {@link #isConnectedTo(Room)} for further information.
+     *
+     * @param room1 The first room
+     * @param room2 The second room
+     * @return {@code true} if {@code room1} and {@code room2} are connected to each other using paths and {@code false} if not
+     */
+    private boolean isConnectedTo(Room room1, Room room2) {
+        if (room1 == room2) {
+            return true;
+        }
+
+        // Check all adjacent rooms
+        visitedRooms.add(room1);
+
+        for (Map.Entry<WalkDirection, Room> entry : room1.getAdjacentRooms().entrySet()) {
+            if (!visitedRooms.contains(entry.getValue())) {
+                boolean tempRes = isConnectedTo(entry.getValue(), room2);
+                if (tempRes) {
+                    return true;
+                }
+            }
+        }
+
+        // we've searched through all children and no one is connected so we aren't connected too
+        return false;
     }
 }
