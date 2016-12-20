@@ -66,11 +66,6 @@ public class RoomRectangle extends Rectangle {
         this.setCustomParent(parent);
 
         this.nameLabel.setTextFill(Color.BLACK);
-        // this.nameLabel.setPrefHeight(10);
-        // this.nameLabel.setPrefWidth(30);
-
-
-        // Platform.runLater(() -> this.getCustomParent().getChildren().add(this.nameLabel));
 
         // track changes of the parent node
         this.parentProperty().addListener((observable, oldValue, newValue) -> {
@@ -314,7 +309,6 @@ public class RoomRectangle extends Rectangle {
                 this.getCustomParent().getChildren().add(this);
                 this.getCustomParent().getChildren().add(this.nameLabel);
             });
-            //this.getRoom().setRendered(true);
         }
     }
 

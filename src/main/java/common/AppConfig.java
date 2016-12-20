@@ -28,7 +28,7 @@ import java.net.URL;
 import java.util.logging.Level;
 
 /**
- * Created by Frederik on 28/11/2016.
+ * The config of this application
  */
 public class AppConfig {
     private static final FOKLogger log = new FOKLogger(AppConfig.class.getName());

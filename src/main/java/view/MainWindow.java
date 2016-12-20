@@ -89,9 +89,11 @@ public class MainWindow extends Application {
 
     public static ResourceBundle bundle;
 
+    @SuppressWarnings("unused")
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
 
+    @SuppressWarnings("unused")
     @FXML // URL location of the FXML file that was given to the FXMLLoader
     private URL location;
 
@@ -116,8 +118,6 @@ public class MainWindow extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         bundle = ResourceBundle.getBundle("view.strings");
-
-        // appConfig = new Config();
 
         try {
             Thread updateThread = new Thread(() -> {

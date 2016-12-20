@@ -286,7 +286,6 @@ public class EditorView extends Application {
 
                 // render unconnected rooms
                 for (RoomRectangle room : unconnectedRooms) {
-                    // room.getRoom().setRendered(false);
                     renderQueue.add(room);
                 }
 
@@ -295,7 +294,6 @@ public class EditorView extends Application {
 
                     if (!currentRoom.isRendered()) {
                         allRoomsAsList.add(currentRoom);
-                        // currentRoom.getRoom().setRendered(true);
                         currentRoom.updateNameLabelPosition();
                         currentRoom.setCustomParent(drawing);
                     }
@@ -381,9 +379,6 @@ public class EditorView extends Application {
 
                         if (!newRoom.isRendered()) {
                             // render the child
-                            // allRoomsAsList.add(newRoom);
-                            // newRoom.getRoom().setRendered(true);
-                            //Platform.runLater(() -> drawing.getChildren().add(newRoom));
                             renderQueue.add(newRoom);
                         }
                     }
@@ -430,8 +425,6 @@ public class EditorView extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         bundle = ResourceBundle.getBundle("view.strings");
-
-        // appConfig = new Config();
 
         try {
             Parent root = FXMLLoader.load(getClass().getResource("EditorMain.fxml"), bundle);

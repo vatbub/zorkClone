@@ -24,7 +24,7 @@ package parser;
 import java.util.List;
 
 /**
- * Created by Frederik on 28/11/2016.
+ * The representation of an adjective in a sentence.
  */
 public class Adjective extends Word {
     public Adjective() {
