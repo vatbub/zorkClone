@@ -161,7 +161,7 @@ public class EditorView extends Application {
         room.setX(1000 * Math.abs(Math.random()));
         room.setY(1000 * Math.abs(Math.random()));
         unconnectedRooms.add(room);
-        renderView();
+        renderView(false);
     }
 
     @FXML
@@ -231,7 +231,7 @@ public class EditorView extends Application {
         try {
             unconnectedRooms.add(room);
         } catch (IllegalArgumentException e) {
-            // do nothing, just ignore it
+            log.getLogger().log(Level.FINEST, "Room that already was marked as unconnected was marked as such once again", e);
         }
     }
 
@@ -304,45 +304,47 @@ public class EditorView extends Application {
                         if (newRoom == null) {
                             // not rendered yet
                             newRoom = new RoomRectangle(drawing, entry.getValue());
+                        }
 
-                            // Set room position
-                            if (autoLayout) {
-                                switch (entry.getKey()) {
-                                    case NORTH:
-                                        newRoom.setY(currentRoom.getY() - roomDistance);
-                                        newRoom.setX(currentRoom.getX());
-                                        break;
-                                    case WEST:
-                                        newRoom.setY(currentRoom.getY());
-                                        newRoom.setX(currentRoom.getX() - roomDistance);
-                                        break;
-                                    case EAST:
-                                        newRoom.setY(currentRoom.getY());
-                                        newRoom.setX(currentRoom.getX() + roomDistance);
-                                        break;
-                                    case SOUTH:
-                                        newRoom.setY(currentRoom.getY() + roomDistance);
-                                        newRoom.setX(currentRoom.getX());
-                                        break;
-                                    case NORTH_WEST:
-                                        newRoom.setY(currentRoom.getY() - roomDistance);
-                                        newRoom.setX(currentRoom.getX() - roomDistance);
-                                        break;
-                                    case NORTH_EAST:
-                                        newRoom.setY(currentRoom.getY() - roomDistance);
-                                        newRoom.setX(currentRoom.getX() + roomDistance);
-                                        break;
-                                    case SOUTH_WEST:
-                                        newRoom.setY(currentRoom.getY() + roomDistance);
-                                        newRoom.setX(currentRoom.getX() - roomDistance);
-                                        break;
-                                    case SOUTH_EAST:
-                                        newRoom.setY(currentRoom.getY() + roomDistance);
-                                        newRoom.setX(currentRoom.getX() + roomDistance);
-                                        break;
-                                }
+                        // Set room position
+                        if (autoLayout) {
+                            switch (entry.getKey()) {
+                                case NORTH:
+                                    newRoom.setY(currentRoom.getY() - roomDistance);
+                                    newRoom.setX(currentRoom.getX());
+                                    break;
+                                case WEST:
+                                    newRoom.setY(currentRoom.getY());
+                                    newRoom.setX(currentRoom.getX() - roomDistance);
+                                    break;
+                                case EAST:
+                                    newRoom.setY(currentRoom.getY());
+                                    newRoom.setX(currentRoom.getX() + roomDistance);
+                                    break;
+                                case SOUTH:
+                                    newRoom.setY(currentRoom.getY() + roomDistance);
+                                    newRoom.setX(currentRoom.getX());
+                                    break;
+                                case NORTH_WEST:
+                                    newRoom.setY(currentRoom.getY() - roomDistance);
+                                    newRoom.setX(currentRoom.getX() - roomDistance);
+                                    break;
+                                case NORTH_EAST:
+                                    newRoom.setY(currentRoom.getY() - roomDistance);
+                                    newRoom.setX(currentRoom.getX() + roomDistance);
+                                    break;
+                                case SOUTH_WEST:
+                                    newRoom.setY(currentRoom.getY() + roomDistance);
+                                    newRoom.setX(currentRoom.getX() - roomDistance);
+                                    break;
+                                case SOUTH_EAST:
+                                    newRoom.setY(currentRoom.getY() + roomDistance);
+                                    newRoom.setX(currentRoom.getX() + roomDistance);
+                                    break;
                             }
                         }
+
+
                         Line connectionLine = new Line(0, 0, 0, 0);
 
                         switch (entry.getKey()) {
