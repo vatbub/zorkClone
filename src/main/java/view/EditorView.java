@@ -228,7 +228,11 @@ public class EditorView extends Application {
      * @param room The room to be added
      */
     public void setRoomAsUnconected(RoomRectangle room) {
-        unconnectedRooms.add(room);
+        try {
+            unconnectedRooms.add(room);
+        } catch (IllegalArgumentException e) {
+            // do nothing, just ignore it
+        }
     }
 
     public void renderView() {
@@ -373,7 +377,7 @@ public class EditorView extends Application {
 
                         if (!newRoom.isRendered()) {
                             // render the child
-                            allRoomsAsList.add(newRoom);
+                            // allRoomsAsList.add(newRoom);
                             // newRoom.getRoom().setRendered(true);
                             //Platform.runLater(() -> drawing.getChildren().add(newRoom));
                             renderQueue.add(newRoom);
