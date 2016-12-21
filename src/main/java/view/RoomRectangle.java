@@ -230,6 +230,12 @@ public class RoomRectangle extends Rectangle {
                     this.getRoom().getAdjacentRooms().put(fromThisToTarget, target.getRoom());
                     target.getRoom().getAdjacentRooms().put(fromTargetToThis, this.getRoom());
                 }
+
+                // reset the dragging line if one was drawn
+                if (line!=null){
+                    line=null;
+                }
+
                 EditorView.currentEditorInstance.renderView(false);
             }
         });
