@@ -30,11 +30,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ZoomEvent;
 import javafx.scene.shape.Line;
@@ -118,7 +116,7 @@ public class EditorView extends Application {
     private Button autoLayoutButton;
 
     @FXML
-    private Button resetButton;
+    private MenuItem newMenuItem;
 
     @FXML
     private ScrollPane scrollPane;
@@ -173,7 +171,7 @@ public class EditorView extends Application {
     }
 
     @FXML
-    void resetButtonOnAction(ActionEvent event) {
+    void newMenuItemOnAction(ActionEvent event) {
         initGame();
     }
 
@@ -404,8 +402,20 @@ public class EditorView extends Application {
         initGame();
 
         scrollPane.hvalueProperty().addListener((observable, oldValue, newValue) -> unselectingDisabled = true);
-
         scrollPane.vvalueProperty().addListener((observable, oldValue, newValue) -> unselectingDisabled = true);
+
+        // add button icons
+        insertRoom.setGraphic(new ImageView(new Image(EditorView.class.getResourceAsStream("add-room.png"))));
+        moveButton.setGraphic(new ImageView(new Image(EditorView.class.getResourceAsStream("move-arrows.png"))));
+        insertPath.setGraphic(new ImageView(new Image(EditorView.class.getResourceAsStream("connecting-points.png"))));
+        autoLayoutButton.setGraphic(new ImageView(new Image(EditorView.class.getResourceAsStream("autoLayout.png"))));
+
+        // add tooltips
+        insertRoom.setTooltip(new Tooltip("Insert a new room"));
+        moveButton.setTooltip(new Tooltip("Move rooms"));
+        insertPath.setTooltip(new Tooltip("Connect rooms to create walk paths"));
+        autoLayoutButton.setTooltip(new Tooltip("Automatically rearrange the rooms in the view below"));
+
     }
 
     /**
