@@ -30,13 +30,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * A List of {@link RoomRectangle}s that can find a {@link RoomRectangle} by its {@link Room}
  */
-public class RoomList extends CopyOnWriteArrayList<RoomRectangle> {
-    public RoomList() {
+public class RoomRectangleList extends CopyOnWriteArrayList<RoomRectangle> {
+    public RoomRectangleList() {
         super();
     }
 
     @SuppressWarnings({"unused"})
-    public RoomList(Collection<? extends RoomRectangle> c) {
+    public RoomRectangleList(Collection<? extends RoomRectangle> c) {
         super(c);
     }
 

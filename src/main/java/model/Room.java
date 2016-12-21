@@ -28,7 +28,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Represents a room in the {@link Game}
@@ -39,7 +38,7 @@ public class Room implements Serializable {
     private boolean detailsTold;
     private List<Item> itemsInRoom;
     private List<Entity> entitiesInRoom;
-    private Map<WalkDirection, Room> adjacentRooms;
+    private RoomMap adjacentRooms;
     /**
      * Used for {@link #isConnectedTo(Room)}
      */
@@ -62,10 +61,10 @@ public class Room implements Serializable {
     }
 
     public Room(String name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom) {
-        this(name, description, itemsInRoom, entitiesInRoom, new ConcurrentHashMap<>(WalkDirection.values().length));
+        this(name, description, itemsInRoom, entitiesInRoom, new RoomMap(WalkDirection.values().length));
     }
 
-    public Room(String name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom, Map<WalkDirection, Room> adjacentRooms) {
+    public Room(String name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom, RoomMap adjacentRooms) {
         this.name = new SimpleStringProperty();
         this.setName(name);
         this.setDescription(description);
@@ -146,11 +145,11 @@ public class Room implements Serializable {
         this.entitiesInRoom = entitiesInRoom;
     }
 
-    public Map<WalkDirection, Room> getAdjacentRooms() {
+    public RoomMap getAdjacentRooms() {
         return adjacentRooms;
     }
 
-    public void setAdjacentRooms(Map<WalkDirection, Room> adjacentRooms) {
+    public void setAdjacentRooms(RoomMap adjacentRooms) {
         this.adjacentRooms = adjacentRooms;
     }
 

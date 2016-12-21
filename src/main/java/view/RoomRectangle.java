@@ -137,7 +137,7 @@ public class RoomRectangle extends Rectangle {
                 this.setX(event.getX() - this.moveStartLocalX);
                 this.setY(event.getY() - this.moveStartLocalY);
 
-                RoomList reevaluatedAdjacentRooms = new RoomList();
+                RoomRectangleList reevaluatedAdjacentRooms = new RoomRectangleList();
 
                 for (Map.Entry<WalkDirection, Room> entry : this.getRoom().getAdjacentRooms().entrySet()) {
                     // reevaluate connection
@@ -149,7 +149,7 @@ public class RoomRectangle extends Rectangle {
 
                 // apply the reevaluated directions
                 for (WalkDirection dir : WalkDirection.values()) {
-                    RoomList subListWithCurrentDirection = new RoomList();
+                    RoomRectangleList subListWithCurrentDirection = new RoomRectangleList();
                     for (RoomRectangle r : reevaluatedAdjacentRooms) {
                         if (r.reevaluatedDirection == dir) {
                             subListWithCurrentDirection.add(r);
@@ -206,7 +206,7 @@ public class RoomRectangle extends Rectangle {
                 System.out.println("Drag done");
                 RoomRectangle target = (RoomRectangle) this.getCustomParent().getRectangleByCoordinatesPreferFront(event.getX(), event.getY());
 
-                if (target != null && EditorView.currentEditorInstance.getCurrentEditMode() == EditMode.INSERT_PATH) {
+                if (target != null && target != thisRef && EditorView.currentEditorInstance.getCurrentEditMode() == EditMode.INSERT_PATH) {
                     WalkDirection fromThisToTarget = WalkDirectionUtils.getFromLine(line);
                     WalkDirection fromTargetToThis = WalkDirectionUtils.invert(fromThisToTarget);
 

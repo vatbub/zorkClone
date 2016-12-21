@@ -59,8 +59,8 @@ public class EditorView extends Application {
 
     private Game currentGame;
     // Unconnected Rooms will not be saved but need to be hold in the RAM while editing
-    private RoomList unconnectedRooms = new RoomList();
-    private RoomList allRoomsAsList;
+    private RoomRectangleList unconnectedRooms = new RoomRectangleList();
+    private RoomRectangleList allRoomsAsList;
     private EditMode currentEditMode;
 
     public static void main(String[] args) {
@@ -259,7 +259,7 @@ public class EditorView extends Application {
             }
 
             LinkedList<RoomRectangle> renderQueue = new LinkedList<>();
-            RoomList allRoomsAsListCopy;
+            RoomRectangleList allRoomsAsListCopy;
 
             // The distance between connected rooms
             double roomDistance = 150;
@@ -268,14 +268,14 @@ public class EditorView extends Application {
             if (allRoomsAsList == null) {
                 // First time to render
                 startRoom = new RoomRectangle(drawing, this.currentGame.getCurrentRoom());
-                allRoomsAsListCopy = new RoomList();
-                allRoomsAsList = new RoomList();
+                allRoomsAsListCopy = new RoomRectangleList();
+                allRoomsAsList = new RoomRectangleList();
                 allRoomsAsList.add(startRoom);
             } else {
                 startRoom = allRoomsAsList.findByRoom(this.currentGame.getCurrentRoom());
                 allRoomsAsListCopy = allRoomsAsList;
                 if (!onlyUpdateLines) {
-                    allRoomsAsList = new RoomList();
+                    allRoomsAsList = new RoomRectangleList();
                 }
             }
 
@@ -424,7 +424,7 @@ public class EditorView extends Application {
     public void initGame() {
         currentGame = new Game();
         currentGame.getCurrentRoom().setName("startRoom");
-        unconnectedRooms = new RoomList();
+        unconnectedRooms = new RoomRectangleList();
         allRoomsAsList = null;
         renderView();
     }
@@ -465,7 +465,7 @@ public class EditorView extends Application {
         this.moveButton.setSelected(currentEditMode == EditMode.MOVE);
     }
 
-    public RoomList getAllRoomsAsList() {
+    public RoomRectangleList getAllRoomsAsList() {
         return allRoomsAsList;
     }
 }
