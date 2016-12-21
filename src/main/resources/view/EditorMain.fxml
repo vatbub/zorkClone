@@ -18,7 +18,7 @@
    <children>
       <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="571.0" prefWidth="781.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
          <center>
-            <ScrollPane fx:id="scrollPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onMouseReleased="#drawingOnMouseReleased" onZoom="#scrollPaneOnZoom" pannable="true" prefHeight="200.0" prefWidth="200.0" styleClass="scrollPane" BorderPane.alignment="CENTER">
+            <ScrollPane fx:id="scrollPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onMouseEntered="#scrollPaneOnMouseEntered" onMouseExited="#scrollPaneOnMouseExited" onMouseMoved="#scrollPaneOnMouseMoved" onMouseReleased="#scrollPaneOnMouseReleased" onZoom="#scrollPaneOnZoom" pannable="true" prefHeight="200.0" prefWidth="200.0" styleClass="scrollPane" BorderPane.alignment="CENTER">
                <content>
                   <CustomGroup fx:id="drawing" />
                </content>
@@ -27,7 +27,7 @@
          <top>
             <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
               <items>
-                <Button fx:id="insertRoom" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#insertRoomOnAction" text="insertRoom" />
+                <ToggleButton fx:id="insertRoom" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#insertRoomOnAction" text="insertRoom" />
                   <ToggleButton fx:id="moveButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#moveButtonOnAction" text="move" />
                   <ToggleButton fx:id="insertPath" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#insertPathOnAction" text="insertPath" />
                   <Button fx:id="autoLayoutButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#autoLayoutButtonOnAction" text="autoLayout" />

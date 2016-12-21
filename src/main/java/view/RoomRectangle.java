@@ -232,8 +232,8 @@ public class RoomRectangle extends Rectangle {
                 }
 
                 // reset the dragging line if one was drawn
-                if (line!=null){
-                    line=null;
+                if (line != null) {
+                    line = null;
                 }
 
                 EditorView.currentEditorInstance.renderView(false);
@@ -310,19 +310,20 @@ public class RoomRectangle extends Rectangle {
     private void setCustomParent(CustomGroup parent, boolean registerAsChild) {
         // remove from previous parent
         if (registerAsChild && this.getCustomParent() != null) {
-            this.getCustomParent().getChildren().remove(this);
             this.getCustomParent().getChildren().remove(this.nameLabel);
+            this.getCustomParent().getChildren().remove(this);
         }
 
         this.parent = parent;
 
-        // add to new parent
-        if (registerAsChild & parent != null) {
-            Platform.runLater(() -> {
-                this.getCustomParent().getChildren().add(this);
-                this.getCustomParent().getChildren().add(this.nameLabel);
-            });
-        }
+        Platform.runLater(() -> {
+            // add to new parent
+            if (registerAsChild & parent != null) {
+                parent.getChildren().add(this);
+                parent.getChildren().add(this.nameLabel);
+            }
+        });
+
     }
 
     /**

@@ -62,6 +62,14 @@ public class EditorView extends Application {
     private RoomRectangleList unconnectedRooms = new RoomRectangleList();
     private RoomRectangleList allRoomsAsList;
     private EditMode currentEditMode;
+    private boolean isMouseOverDrawing = false;
+    /**
+     * Used to display a temporary room when in EditMode.INSERT_ROOM
+     */
+    private RoomRectangle tempRoomForRoomInsertion;
+
+    private double currentMouseX = 0;
+    private double currentMouseY = 0;
 
     public static void main(String[] args) {
         common.Common.setAppName("zork");
@@ -101,7 +109,7 @@ public class EditorView extends Application {
     private URL location;
 
     @FXML // fx:id="insertRoom"
-    private Button insertRoom; // Value injected by FXMLLoader
+    private ToggleButton insertRoom; // Value injected by FXMLLoader
 
     @FXML // fx:id="drawing"
     private CustomGroup drawing; // Value injected by FXMLLoader
@@ -150,22 +158,7 @@ public class EditorView extends Application {
 
     @FXML
     void insertRoomOnAction(ActionEvent event) {
-        log.getLogger().fine("Added room to game");
-        RoomRectangle room = new RoomRectangle(null);
-
-        int roomIndex;
-
-        if (allRoomsAsList == null) {
-            roomIndex = 0;
-        } else {
-            roomIndex = allRoomsAsList.size();
-        }
-        System.out.println("Setting room name: " + "Room " + roomIndex);
-        room.getRoom().setName("Room " + roomIndex);
-        room.setX(1000 * Math.abs(Math.random()));
-        room.setY(1000 * Math.abs(Math.random()));
-        unconnectedRooms.add(room);
-        renderView(false);
+        this.setCurrentEditMode(EditMode.INSERT_ROOM);
     }
 
     @FXML
@@ -189,7 +182,7 @@ public class EditorView extends Application {
     }
 
     @FXML
-    void refreshViewButtonOnAction(ActionEvent event){
+    void refreshViewButtonOnAction(ActionEvent event) {
         renderView(false);
     }
 
@@ -204,13 +197,87 @@ public class EditorView extends Application {
     }
 
     @FXML
-    void drawingOnMouseReleased(MouseEvent event) {
+    void scrollPaneOnMouseReleased(MouseEvent event) {
         if (!event.isControlDown() & !unselectingDisabled) {
             log.getLogger().finest("Unselected all rooms through clicking the scroll pane");
             unselectEverything();
         }
 
         unselectingDisabled = false;
+
+        System.out.println(event.getClickCount());
+        if (currentEditMode == EditMode.INSERT_ROOM) {
+            event.consume();
+            // add tempRoomForRoomInsertion to the game
+            log.getLogger().fine("Added room to game: " + tempRoomForRoomInsertion.getRoom().getName());
+            unconnectedRooms.add(tempRoomForRoomInsertion);
+            this.renderView(false);
+            initInsertRoomEditMode();
+        }
+    }
+
+    @FXML
+    void scrollPaneOnMouseEntered(MouseEvent event) {
+        isMouseOverDrawing = true;
+        if (this.getCurrentEditMode() == EditMode.INSERT_ROOM) {
+            initInsertRoomEditMode();
+        }
+    }
+
+    @FXML
+    void scrollPaneOnMouseExited(MouseEvent event) {
+        isMouseOverDrawing = false;
+        if (this.getCurrentEditMode() == EditMode.INSERT_ROOM) {
+            terminateInsertRoomEditMode();
+        }
+    }
+
+    @FXML
+    void scrollPaneOnMouseMoved(MouseEvent event) {
+        currentMouseX = event.getX();
+        currentMouseY = event.getY();
+        if (currentEditMode == EditMode.INSERT_ROOM) {
+            insertRoomUpdateTempRoomPosition();
+        }
+    }
+
+    /**
+     * Performs initializing actions for the EditMode.INSERT_ROOM
+     */
+    private void initInsertRoomEditMode() {
+        tempRoomForRoomInsertion = new RoomRectangle(null);
+
+        int roomIndex;
+
+        if (allRoomsAsList == null) {
+            roomIndex = 0;
+        } else {
+            roomIndex = allRoomsAsList.size();
+        }
+
+        tempRoomForRoomInsertion.getRoom().setName("Room " + roomIndex);
+        tempRoomForRoomInsertion.setCustomParent(drawing);
+        insertRoomUpdateTempRoomPosition();
+    }
+
+    /**
+     * Performs terminating actions for the EditMode.INSERT_ROOM
+     */
+    private void terminateInsertRoomEditMode() {
+        if (tempRoomForRoomInsertion != null) {
+            tempRoomForRoomInsertion.setCustomParent(null);
+            tempRoomForRoomInsertion = null;
+        }
+    }
+
+    /**
+     * Updates the position of tempRoomForRoomInsertion when the current edit mode is EditMode.INSERT_ROOM
+     */
+    private void insertRoomUpdateTempRoomPosition() {
+        if (tempRoomForRoomInsertion != null) {
+            tempRoomForRoomInsertion.setX(currentMouseX - tempRoomForRoomInsertion.getWidth() / 2.0);
+            tempRoomForRoomInsertion.setY(currentMouseY - tempRoomForRoomInsertion.getHeight() / 2.0);
+        }
     }
 
     public void unselectEverything() {
@@ -469,9 +536,22 @@ public class EditorView extends Application {
     }
 
     public void setCurrentEditMode(EditMode currentEditMode) {
+        log.getLogger().finer("Setting currentEditMode to " + currentEditMode.toString());
+
+        // Initialize or terminate the insert room mode
+        if (isMouseOverDrawing) {
+            if (currentEditMode == EditMode.INSERT_ROOM && this.currentEditMode != EditMode.INSERT_ROOM) {
+                initInsertRoomEditMode();
+            } else if (currentEditMode != EditMode.INSERT_ROOM && this.currentEditMode == EditMode.INSERT_ROOM) {
+                terminateInsertRoomEditMode();
+            }
+        }
+
         this.currentEditMode = currentEditMode;
         this.insertPath.setSelected(currentEditMode == EditMode.INSERT_PATH);
         this.moveButton.setSelected(currentEditMode == EditMode.MOVE);
+        this.insertRoom.setSelected(currentEditMode == EditMode.INSERT_ROOM);
+
     }
 
     public RoomRectangleList getAllRoomsAsList() {
