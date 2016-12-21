@@ -67,6 +67,13 @@ public class RoomRectangle extends Rectangle {
 
         this.nameLabel.setTextFill(Color.BLACK);
 
+        // forward events from nameLabel to this rectangle
+        nameLabel.setOnMousePressed(event -> thisRef.fireEvent(event));
+        nameLabel.setOnMouseClicked(event -> thisRef.fireEvent(event));
+        nameLabel.setOnMouseReleased(event -> thisRef.fireEvent(event));
+        nameLabel.setOnDragDetected(event -> thisRef.fireEvent(event));
+        nameLabel.setOnMouseDragged(event -> thisRef.fireEvent(event));
+
         // track changes of the parent node
         this.parentProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue instanceof CustomGroup || newValue == null) {
