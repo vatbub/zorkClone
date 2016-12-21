@@ -116,6 +116,9 @@ public class EditorView extends Application {
     private Button autoLayoutButton;
 
     @FXML
+    private Button refreshViewButton;
+
+    @FXML
     private MenuItem newMenuItem;
 
     @FXML
@@ -183,6 +186,11 @@ public class EditorView extends Application {
     @FXML
     void autoLayoutButtonOnAction(ActionEvent event) {
         renderView();
+    }
+
+    @FXML
+    void refreshViewButtonOnAction(ActionEvent event){
+        renderView(false);
     }
 
     @FXML
@@ -409,13 +417,14 @@ public class EditorView extends Application {
         moveButton.setGraphic(new ImageView(new Image(EditorView.class.getResourceAsStream("move-arrows.png"))));
         insertPath.setGraphic(new ImageView(new Image(EditorView.class.getResourceAsStream("connecting-points.png"))));
         autoLayoutButton.setGraphic(new ImageView(new Image(EditorView.class.getResourceAsStream("autoLayout.png"))));
+        refreshViewButton.setGraphic(new ImageView(new Image(EditorView.class.getResourceAsStream("refreshView.png"))));
 
         // add tooltips
         insertRoom.setTooltip(new Tooltip("Insert a new room"));
         moveButton.setTooltip(new Tooltip("Move rooms"));
         insertPath.setTooltip(new Tooltip("Connect rooms to create walk paths"));
         autoLayoutButton.setTooltip(new Tooltip("Automatically rearrange the rooms in the view below"));
-
+        autoLayoutButton.setTooltip(new Tooltip("Refresh the current view"));
     }
 
     /**

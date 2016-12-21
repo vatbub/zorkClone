@@ -31,6 +31,7 @@
                   <ToggleButton fx:id="moveButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#moveButtonOnAction" text="move" />
                   <ToggleButton fx:id="insertPath" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#insertPathOnAction" text="insertPath" />
                   <Button fx:id="autoLayoutButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#autoLayoutButtonOnAction" text="autoLayout" />
+                  <Button fx:id="refreshViewButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#refreshViewButtonOnAction" text="refreshView" />
               </items>
             </ToolBar>
          </top>
