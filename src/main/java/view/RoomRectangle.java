@@ -26,6 +26,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import logging.FOKLogger;
@@ -45,6 +46,7 @@ public class RoomRectangle extends Rectangle {
     private Room room;
     private static FOKLogger log = new FOKLogger(RoomRectangle.class.getName());
     private BooleanProperty selected = new SimpleBooleanProperty();
+    private BooleanProperty isTemporary = new SimpleBooleanProperty();
     private RoomRectangle thisRef = this;
     private boolean dragStarted;
     private Line line;
@@ -66,6 +68,21 @@ public class RoomRectangle extends Rectangle {
         this.setCustomParent(parent);
 
         this.nameLabel.setTextFill(Color.BLACK);
+
+        isTemporary.addListener((observable, oldValue, newValue) -> {
+            Paint color;
+
+            if (newValue) {
+                // is temporary
+                color = Color.GRAY;
+            } else {
+                // not temporary
+                color = Color.BLACK;
+            }
+
+            nameLabel.setTextFill(color);
+            this.setStroke(color);
+        });
 
         // forward events from nameLabel to this rectangle
         nameLabel.setOnMousePressed(event -> thisRef.fireEvent(event));
@@ -339,6 +356,18 @@ public class RoomRectangle extends Rectangle {
 
     public boolean isRendered() {
         return this.getCustomParent() != null;
+    }
+
+    public void setTemporary(boolean isTemporary) {
+        this.isTemporary.set(isTemporary);
+    }
+
+    public boolean isTemporary() {
+        return isTemporary.get();
+    }
+
+    public BooleanProperty isTemporaryProperty() {
+        return isTemporary;
     }
 
     @Override

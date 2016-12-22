@@ -61,7 +61,8 @@ public class EditorView extends Application {
     // Unconnected Rooms will not be saved but need to be hold in the RAM while editing
     private RoomRectangleList unconnectedRooms = new RoomRectangleList();
     private RoomRectangleList allRoomsAsList;
-    private EditMode currentEditMode;
+    private EditMode currentEditMode = EditMode.MOVE;
+    private EditMode previousEditMode;
     private boolean isMouseOverDrawing = false;
     /**
      * Used to display a temporary room when in EditMode.INSERT_ROOM
@@ -222,9 +223,12 @@ public class EditorView extends Application {
         if (currentEditMode == EditMode.INSERT_ROOM && event.getTarget() instanceof RoomRectangle) {
             // add tempRoomForRoomInsertion to the game
             log.getLogger().fine("Added room to game: " + tempRoomForRoomInsertion.getRoom().getName());
+            tempRoomForRoomInsertion.setTemporary(false);
+            tempRoomForRoomInsertion.setSelected(false);
             allRoomsAsList.add(tempRoomForRoomInsertion);
             this.renderView(false, false, true);
-            initInsertRoomEditMode();
+
+            this.setCurrentEditMode(this.getPreviousEditMode());
         }
     }
 
@@ -268,6 +272,7 @@ public class EditorView extends Application {
         }
 
         tempRoomForRoomInsertion.getRoom().setName("Room " + roomIndex);
+        tempRoomForRoomInsertion.setTemporary(true);
         tempRoomForRoomInsertion.setCustomParent(drawing);
         insertRoomUpdateTempRoomPosition();
     }
@@ -586,12 +591,13 @@ public class EditorView extends Application {
 
     public void setCurrentEditMode(EditMode currentEditMode) {
         log.getLogger().finer("Setting currentEditMode to " + currentEditMode.toString());
+        previousEditMode = this.currentEditMode;
 
         // Initialize or terminate the insert room mode
         if (isMouseOverDrawing) {
-            if (currentEditMode == EditMode.INSERT_ROOM && this.currentEditMode != EditMode.INSERT_ROOM) {
+            if (currentEditMode == EditMode.INSERT_ROOM && previousEditMode != EditMode.INSERT_ROOM) {
                 initInsertRoomEditMode();
-            } else if (currentEditMode != EditMode.INSERT_ROOM && this.currentEditMode == EditMode.INSERT_ROOM) {
+            } else if (currentEditMode != EditMode.INSERT_ROOM && previousEditMode == EditMode.INSERT_ROOM) {
                 terminateInsertRoomEditMode();
             }
         }
@@ -601,6 +607,10 @@ public class EditorView extends Application {
         this.moveButton.setSelected(currentEditMode == EditMode.MOVE);
         this.insertRoom.setSelected(currentEditMode == EditMode.INSERT_ROOM);
 
+    }
+
+    public EditMode getPreviousEditMode() {
+        return previousEditMode;
     }
 
     public RoomRectangleList getAllRoomsAsList() {
