@@ -227,7 +227,7 @@ public class RoomRectangle extends Rectangle {
         this.setOnMouseReleased(event -> {
             if (dragStarted) {
                 dragStarted = false;
-                System.out.println("Drag done");
+                log.getLogger().fine("Drag done");
                 RoomRectangle target = (RoomRectangle) this.getCustomParent().getRectangleByCoordinatesPreferFront(event.getX(), event.getY());
 
                 if (target != null && target != thisRef && EditorView.currentEditorInstance.getCurrentEditMode() == EditMode.INSERT_PATH) {
@@ -242,8 +242,7 @@ public class RoomRectangle extends Rectangle {
                         target.getRoom().getAdjacentRooms().get(fromTargetToThis).getAdjacentRooms().remove(fromThisToTarget);
                     }
 
-                    //noinspection ConstantConditions
-                    System.out.println("Room is " + fromThisToTarget.toString());
+                    log.getLogger().fine("Room is " + fromThisToTarget.toString());
                     this.getRoom().getAdjacentRooms().put(fromThisToTarget, target.getRoom());
                     target.getRoom().getAdjacentRooms().put(fromTargetToThis, this.getRoom());
                 }

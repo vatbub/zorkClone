@@ -43,9 +43,6 @@ import model.Game;
 import parser.Parser;
 import view.updateAvailableDialog.UpdateAvailableDialog;
 
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -169,10 +166,5 @@ public class MainWindow extends Application {
     public void updateCommandView() {
         String html = HTMLGenerator.generate(currentGame.getMessages());
         this.messageView.getEngine().loadContent(html);
-        System.out.println("===================================================================");
-        System.out.println(html);
-        StringSelection selection = new StringSelection(html);
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clipboard.setContents(selection, selection);
     }
 }

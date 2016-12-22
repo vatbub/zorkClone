@@ -194,7 +194,7 @@ public class EditorView extends Application {
 
     @FXML
     void scrollPaneOnZoom(ZoomEvent event) {
-        System.out.println(event.getZoomFactor());
+        log.getLogger().fine("Zooming in view, new Zoom level: " + event.getZoomFactor());
         drawing.setScaleX(drawing.getScaleX() * event.getZoomFactor());
         drawing.setScaleY(drawing.getScaleY() * event.getZoomFactor());
         // TODO: Update the actual size in the scrollpane (so that scrollbars appear when zooming in
