@@ -59,20 +59,6 @@
     <description>A clone for the pouplar game Zork.</description>
     <url>https://github.com/vatbub/foklauncher</url>
 
-    <developers>
-        <developer>
-            <id>fkammel</id>
-            <name>Frederik Kammel</name>
-            <email>vatbub123@googlemail.com</email>
-            <url>https://fokprojects.mo-mar.de/</url>
-            <roles>
-                <role>architect</role>
-                <role>developer</role>
-            </roles>
-            <timezone>Europe/Berlin</timezone>
-        </developer>
-    </developers>
-
     <properties>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <gitRepoName>zorkClone</gitRepoName>
