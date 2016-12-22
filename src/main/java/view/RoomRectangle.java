@@ -189,10 +189,10 @@ public class RoomRectangle extends Rectangle {
                             this.getRoom().getAdjacentRooms().remove(dir);
                         }
 
-                        if (finalRoom.getRoom().getAdjacentRooms().containsKey(dir)) {
+                        if (finalRoom.getRoom().getAdjacentRooms().containsKey(WalkDirectionUtils.invert(dir))) {
                             // finalRoom has got a connection to another room in our direction that we need to delete
-                            finalRoom.getRoom().getAdjacentRooms().get(dir).getAdjacentRooms().remove(WalkDirectionUtils.invert(dir));
-                            finalRoom.getRoom().getAdjacentRooms().remove(dir);
+                            finalRoom.getRoom().getAdjacentRooms().get(WalkDirectionUtils.invert(dir)).getAdjacentRooms().remove(dir);
+                            finalRoom.getRoom().getAdjacentRooms().remove(WalkDirectionUtils.invert(dir));
                         }
 
                         // delete the old connection between this and finalRoom
