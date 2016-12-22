@@ -213,14 +213,14 @@ public class EditorView extends Application {
     }
 
     @FXML
-    void scrollPaneOnMouseClicked(MouseEvent event){
+    void scrollPaneOnMouseClicked(MouseEvent event) {
         /*
         event.getTarget() instanceof RoomRectangle is necessary because the event is required twice:
             - once with event.getTarget() instanceof RoomRectangle and
             - once with event.getTarget() instanceof Label (the name label of the room)
         ... and we need to suppress one of the two because we don't want to insert two rooms
          */
-        if (currentEditMode == EditMode.INSERT_ROOM && event.getTarget() instanceof RoomRectangle) {
+        if (currentEditMode == EditMode.INSERT_ROOM && event.getTarget() instanceof RoomRectangle && event.getClickCount() == 1) {
             // add tempRoomForRoomInsertion to the game
             log.getLogger().fine("Added room to game: " + tempRoomForRoomInsertion.getRoom().getName());
             tempRoomForRoomInsertion.setTemporary(false);
