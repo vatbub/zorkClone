@@ -68,6 +68,11 @@ public class EditorView extends Application {
      */
     private RoomRectangle tempRoomForRoomInsertion;
 
+    /**
+     * A thread safe room counter
+     */
+    private int currentRoomCount = 0;
+
     private double currentMouseX = 0;
     private double currentMouseY = 0;
 
@@ -204,7 +209,10 @@ public class EditorView extends Application {
         }
 
         unselectingDisabled = false;
+    }
 
+    @FXML
+    void scrollPaneOnMouseClicked(MouseEvent event){
         /*
         event.getTarget() instanceof RoomRectangle is necessary because the event is required twice:
             - once with event.getTarget() instanceof RoomRectangle and
@@ -214,8 +222,8 @@ public class EditorView extends Application {
         if (currentEditMode == EditMode.INSERT_ROOM && event.getTarget() instanceof RoomRectangle) {
             // add tempRoomForRoomInsertion to the game
             log.getLogger().fine("Added room to game: " + tempRoomForRoomInsertion.getRoom().getName());
-            unconnectedRooms.add(tempRoomForRoomInsertion);
-            this.renderView(false);
+            allRoomsAsList.add(tempRoomForRoomInsertion);
+            this.renderView(false, false, true);
             initInsertRoomEditMode();
         }
     }
@@ -256,7 +264,7 @@ public class EditorView extends Application {
         if (allRoomsAsList == null) {
             roomIndex = 0;
         } else {
-            roomIndex = allRoomsAsList.size();
+            roomIndex = currentRoomCount;
         }
 
         tempRoomForRoomInsertion.getRoom().setName("Room " + roomIndex);
@@ -310,15 +318,40 @@ public class EditorView extends Application {
         // in any other case, the status did not change and we don't need to do anything
     }
 
+    /**
+     * Renders the current game and unconnected rooms in the view.
+     */
     public void renderView() {
         this.renderView(true);
     }
 
+    /**
+     * Renders the current game and unconnected rooms in the view.
+     *
+     * @param autoLayout If {@code true}, the rooms will be automatically laid out according to their topology.
+     */
     public void renderView(boolean autoLayout) {
         this.renderView(autoLayout, false);
     }
 
+    /**
+     * Renders the current game and unconnected rooms in the view.
+     *
+     * @param autoLayout      If {@code true}, the rooms will be automatically laid out according to their topology.
+     * @param onlyUpdateLines If {@code true}, onyl connecting lines between the rooms are rendered, rooms are left as they are. Useful if the user is currently moving the room around with the mouse.
+     */
     public void renderView(boolean autoLayout, boolean onlyUpdateLines) {
+        renderView(autoLayout, onlyUpdateLines, false);
+    }
+
+    /**
+     * Renders the current game and unconnected rooms in the view.
+     *
+     * @param autoLayout           If {@code true}, the rooms will be automatically laid out according to their topology.
+     * @param onlyUpdateLines      If {@code true}, onyl connecting lines between the rooms are rendered, rooms are left as they are. Useful if the user is currently moving the room around with the mouse.
+     * @param synchronousRendering If {@code true}, the rendering will happen synchronously, otherwise asynchronously.
+     */
+    public void renderView(boolean autoLayout, boolean onlyUpdateLines, @SuppressWarnings("SameParameterValue") boolean synchronousRendering) {
         // Only render if it's not already rendering
         int indexCorrection = 0;
         while (drawing.getChildren().size() > indexCorrection) {
@@ -462,10 +495,22 @@ public class EditorView extends Application {
                     }
                 }
             }
+
+            // set the room count
+            currentRoomCount = allRoomsAsList.size();
         });
 
         renderThread.setName("renderThread");
         renderThread.start();
+
+        // Wait for thread to finish if specified
+        if (synchronousRendering) {
+            try {
+                renderThread.join();
+            } catch (InterruptedException e) {
+                log.getLogger().log(Level.SEVERE, "An error occurred", e);
+            }
+        }
     }
 
 

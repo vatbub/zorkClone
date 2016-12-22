@@ -236,7 +236,9 @@ public class RoomRectangle extends Rectangle {
                     line = null;
                 }
 
-                EditorView.currentEditorInstance.renderView(false);
+                if (EditorView.currentEditorInstance.getCurrentEditMode() != EditMode.INSERT_ROOM) {
+                    EditorView.currentEditorInstance.renderView(false);
+                }
             }
         });
 
