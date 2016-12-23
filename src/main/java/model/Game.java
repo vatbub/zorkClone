@@ -128,6 +128,7 @@ public class Game implements Serializable {
 
     /**
      * Checks if this game was modified since the last save.
+     *
      * @return {@code true} if this game was modified since the last save, {@code false} otherwise
      */
     public boolean isModified() {
@@ -135,7 +136,11 @@ public class Game implements Serializable {
     }
 
     public void setCurrentRoom(Room currentRoom) {
+        if (this.currentRoom != null) {
+            this.currentRoom.setIsCurrentRoom(false);
+        }
         this.currentRoom = currentRoom;
+        this.currentRoom.setIsCurrentRoom(true);
         modified = true;
     }
 

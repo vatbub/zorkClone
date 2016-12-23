@@ -25,6 +25,8 @@ import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
@@ -54,6 +56,10 @@ public class RoomRectangle extends Rectangle {
     private double moveStartLocalX = -1;
     private double moveStartLocalY = -1;
     private Label nameLabel = new Label();
+    /**
+     * Label to show the user that this is the current room
+     */
+    private ImageView currentPlayerIcon = new ImageView(new Image(this.getClass().getResourceAsStream("playerIcon.png")));
     private CustomGroup parent;
     private WalkDirection reevaluatedDirection;
 
@@ -100,6 +106,9 @@ public class RoomRectangle extends Rectangle {
                 throw new IllegalStateException("The parent of a RoomRectangle must be an instance of view.CustomGroup");
             }
         });
+
+        this.currentPlayerIcon.setVisible(this.getRoom().isCurrentRoom());
+        this.getRoom().isCurrentRoomProperty().addListener((observable, oldValue, newValue) -> currentPlayerIcon.setVisible(newValue));
 
 
         this.heightProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
@@ -309,6 +318,10 @@ public class RoomRectangle extends Rectangle {
         // calculate the upper left corner of the label
         this.nameLabel.setLayoutX(centerX - nameLabel.getWidth() / 2.0);
         this.nameLabel.setLayoutY(centerY - nameLabel.getHeight() / 2.0);
+
+        // calculate the upper left corner of the player icon
+        this.currentPlayerIcon.setLayoutX(centerX - currentPlayerIcon.getImage().getWidth() / 2.0);
+        this.currentPlayerIcon.setLayoutY(centerY + (nameLabel.getHeight() / 2.0) + 15 - currentPlayerIcon.getImage().getHeight() / 2.0);
     }
 
     /**
@@ -330,6 +343,7 @@ public class RoomRectangle extends Rectangle {
         // remove from previous parent
         if (registerAsChild && this.getCustomParent() != null) {
             this.getCustomParent().getChildren().remove(this.nameLabel);
+            this.getCustomParent().getChildren().remove(this.currentPlayerIcon);
             this.getCustomParent().getChildren().remove(this);
         }
 
@@ -352,6 +366,7 @@ public class RoomRectangle extends Rectangle {
             if (registerAsChild & parent != null) {
                 parent.getChildren().add(thisRef);
                 parent.getChildren().add(this.nameLabel);
+                parent.getChildren().add(this.currentPlayerIcon);
             }
         });
 

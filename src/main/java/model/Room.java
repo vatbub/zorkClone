@@ -21,6 +21,8 @@ package model;
  */
 
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -39,6 +41,7 @@ public class Room implements Serializable {
     private List<Item> itemsInRoom;
     private List<Entity> entitiesInRoom;
     private RoomMap adjacentRooms;
+    private BooleanProperty isCurrentRoom = new SimpleBooleanProperty();
     /**
      * Used for {@link #isConnectedTo(Room)}
      */
@@ -199,5 +202,17 @@ public class Room implements Serializable {
 
         // we've searched through all children and no one is connected so we aren't connected too
         return false;
+    }
+
+    void setIsCurrentRoom(boolean isCurrentRoom) {
+        this.isCurrentRoom.set(isCurrentRoom);
+    }
+
+    public boolean isCurrentRoom() {
+        return isCurrentRoom.get();
+    }
+
+    public BooleanProperty isCurrentRoomProperty() {
+        return isCurrentRoom;
     }
 }
