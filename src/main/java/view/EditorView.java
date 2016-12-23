@@ -660,6 +660,7 @@ public class EditorView extends Application {
      */
     public void loadGame(File file) throws IOException, ClassNotFoundException {
         Game game = Game.load(file);
+        loadGame(game);
     }
 
     /**
