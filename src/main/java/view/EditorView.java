@@ -545,7 +545,7 @@ public class EditorView extends Application {
         moveButton.setTooltip(new Tooltip("Move rooms"));
         insertPath.setTooltip(new Tooltip("Connect rooms to create walk paths"));
         autoLayoutButton.setTooltip(new Tooltip("Automatically rearrange the rooms in the view below"));
-        autoLayoutButton.setTooltip(new Tooltip("Refresh the current view"));
+        refreshViewButton.setTooltip(new Tooltip("Refresh the current view"));
     }
 
     /**
