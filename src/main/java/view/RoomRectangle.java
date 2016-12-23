@@ -37,6 +37,7 @@ import model.WalkDirection;
 import model.WalkDirectionUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -44,7 +45,7 @@ import java.util.logging.Level;
 /**
  * The graphical representation of a {@link model.Room} in the {@link EditorView}
  */
-public class RoomRectangle extends Rectangle {
+public class RoomRectangle extends Rectangle implements Serializable {
     private Room room;
     private static FOKLogger log = new FOKLogger(RoomRectangle.class.getName());
     private BooleanProperty selected = new SimpleBooleanProperty();
@@ -73,7 +74,7 @@ public class RoomRectangle extends Rectangle {
         this.setCustomParent(parent);
 
         //this.nameLabel.textProperty().bind(this.getRoom().nameProperty());
-        this.getRoom().setNameChangeListener(() -> {
+        this.getRoom().setNameChangeListener((Runnable & Serializable)() -> {
             thisRef.nameLabel.setText(thisRef.getRoom().getName());
             Platform.runLater(this::updateNameLabelPosition);
         });
@@ -126,7 +127,7 @@ public class RoomRectangle extends Rectangle {
         this.xProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
         this.yProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
         /*this.getRoom().nameProperty().addListener((observable, oldValue, newValue) -> {
-            Thread t = new Thread(() -> {
+            Thread t = new Thread((Runnable & Serializable)() -> {
                 try {
                     Thread.sleep(12);
                 } catch (InterruptedException e) {
@@ -361,7 +362,7 @@ public class RoomRectangle extends Rectangle {
 
         this.parent = parent;
 
-        Thread t = new Thread(() -> {
+        Thread t = new Thread((Runnable & Serializable)() -> {
             try {
                 Thread.sleep(12);
             } catch (InterruptedException e) {
@@ -373,7 +374,7 @@ public class RoomRectangle extends Rectangle {
 
         t.start();
 
-        Platform.runLater(() -> {
+        Platform.runLater((Runnable & Serializable)() -> {
             // add to new parent
             if (registerAsChild & parent != null) {
                 parent.getChildren().add(thisRef);

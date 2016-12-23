@@ -21,13 +21,14 @@ package model;
  */
 
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A map of rooms designed to save adjacent rooms of a {@link Room}
  */
-public class RoomMap extends ConcurrentHashMap<WalkDirection, Room> {
+public class RoomMap extends ConcurrentHashMap<WalkDirection, Room> implements Serializable {
     @SuppressWarnings("unused")
     public RoomMap() {
         super();

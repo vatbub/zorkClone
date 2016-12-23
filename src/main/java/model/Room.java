@@ -35,7 +35,7 @@ import java.util.Map;
 public class Room implements Serializable {
     private String description;
     private String name;
-    private Runnable nameChangeListener;
+    private transient Runnable nameChangeListener;
     private boolean detailsTold;
     private List<Item> itemsInRoom;
     private List<Entity> entitiesInRoom;

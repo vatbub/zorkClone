@@ -53,12 +53,12 @@ public class Game implements Serializable {
     private int score;
     private int moveCount;
     private List<GameMessage> messages;
-    private static FOKLogger log = new FOKLogger(Game.class.getName());
+    private transient static FOKLogger log = new FOKLogger(Game.class.getName());
 
     /**
      * If the game was loaded from a file, this specifies the file it was loaded from. {@code null} if the game was not loaded from a file.
      */
-    private File fileSource;
+    private transient File fileSource;
 
     /**
      * {@code true} if this game was modified since the last save, {@code false} otherwise
