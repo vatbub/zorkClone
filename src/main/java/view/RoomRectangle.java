@@ -91,12 +91,18 @@ public class RoomRectangle extends Rectangle {
             this.setStroke(color);
         });
 
-        // forward events from nameLabel to this rectangle
+        // forward events from nameLabel and currentPlayerIcon to this rectangle
         nameLabel.setOnMousePressed(event -> thisRef.fireEvent(event));
         nameLabel.setOnMouseClicked(event -> thisRef.fireEvent(event));
         nameLabel.setOnMouseReleased(event -> thisRef.fireEvent(event));
         nameLabel.setOnDragDetected(event -> thisRef.fireEvent(event));
         nameLabel.setOnMouseDragged(event -> thisRef.fireEvent(event));
+
+        currentPlayerIcon.setOnMousePressed(event -> thisRef.fireEvent(event));
+        currentPlayerIcon.setOnMouseClicked(event -> thisRef.fireEvent(event));
+        currentPlayerIcon.setOnMouseReleased(event -> thisRef.fireEvent(event));
+        currentPlayerIcon.setOnDragDetected(event -> thisRef.fireEvent(event));
+        currentPlayerIcon.setOnMouseDragged(event -> thisRef.fireEvent(event));
 
         // track changes of the parent node
         this.parentProperty().addListener((observable, oldValue, newValue) -> {
