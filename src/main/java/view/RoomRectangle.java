@@ -64,8 +64,9 @@ public class RoomRectangle extends Rectangle {
     public RoomRectangle(CustomGroup parent, Room room) {
         super();
         this.setRoom(room);
-        this.nameLabel.textProperty().bind(this.getRoom().nameProperty());
         this.setCustomParent(parent);
+
+        this.nameLabel.textProperty().bind(this.getRoom().nameProperty());
 
         this.nameLabel.setTextFill(Color.BLACK);
 
@@ -105,7 +106,7 @@ public class RoomRectangle extends Rectangle {
         this.widthProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
         this.xProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
         this.yProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
-        this.nameLabel.textProperty().addListener((observable, oldValue, newValue) -> {
+        this.getRoom().nameProperty().addListener((observable, oldValue, newValue) -> {
             Thread t = new Thread(() -> {
                 try {
                     Thread.sleep(12);
@@ -334,10 +335,22 @@ public class RoomRectangle extends Rectangle {
 
         this.parent = parent;
 
+        Thread t = new Thread(() -> {
+            try {
+                Thread.sleep(12);
+            } catch (InterruptedException e) {
+                log.getLogger().log(Level.SEVERE, "An error occurred", e);
+            }
+
+            Platform.runLater(this::updateNameLabelPosition);
+        });
+
+        t.start();
+
         Platform.runLater(() -> {
             // add to new parent
             if (registerAsChild & parent != null) {
-                parent.getChildren().add(this);
+                parent.getChildren().add(thisRef);
                 parent.getChildren().add(this.nameLabel);
             }
         });
