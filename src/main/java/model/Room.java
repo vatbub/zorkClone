@@ -23,8 +23,6 @@ package model;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,12 +34,13 @@ import java.util.Map;
  */
 public class Room implements Serializable {
     private String description;
-    private StringProperty name;
+    private String name;
+    private Runnable nameChangeListener;
     private boolean detailsTold;
     private List<Item> itemsInRoom;
     private List<Entity> entitiesInRoom;
     private RoomMap adjacentRooms;
-    private BooleanProperty isCurrentRoom = new SimpleBooleanProperty();
+    private transient BooleanProperty isCurrentRoom = new SimpleBooleanProperty();
     /**
      * Used for {@link #isConnectedTo(Room)}
      */
@@ -68,7 +67,7 @@ public class Room implements Serializable {
     }
 
     public Room(String name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom, RoomMap adjacentRooms) {
-        this.name = new SimpleStringProperty();
+        //this.name = new SimpleStringProperty();
         this.setName(name);
         this.setDescription(description);
         this.setItemsInRoom(itemsInRoom);
@@ -105,16 +104,19 @@ public class Room implements Serializable {
     }
 
     public String getName() {
-        return name.get();
+        return name;
     }
 
     public void setName(String name) {
-        this.name.set(name);
+        this.name=name;
+        if (this.getNameChangeListener()!=null){
+            this.getNameChangeListener().run();
+        }
     }
 
-    public StringProperty nameProperty() {
+    /*public StringProperty nameProperty() {
         return name;
-    }
+    }*/
 
     public String getDescription() {
         return description;
@@ -214,5 +216,13 @@ public class Room implements Serializable {
 
     public BooleanProperty isCurrentRoomProperty() {
         return isCurrentRoom;
+    }
+
+    public Runnable getNameChangeListener() {
+        return nameChangeListener;
+    }
+
+    public void setNameChangeListener(Runnable nameChangeListener) {
+        this.nameChangeListener = nameChangeListener;
     }
 }

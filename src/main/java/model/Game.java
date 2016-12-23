@@ -22,12 +22,13 @@ package model;
 
 
 import common.Common;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import logging.FOKLogger;
 import org.jetbrains.annotations.NotNull;
 import view.GameMessage;
 
 import java.io.*;
-import java.nio.file.FileAlreadyExistsException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class Game implements Serializable {
     /**
      * {@code true} if this game was modified since the last save, {@code false} otherwise
      */
-    private boolean modified;
+    private transient BooleanProperty modified = new SimpleBooleanProperty();
     // TODO: Listen to modifications of the rooms
 
     public Game() {
@@ -132,6 +133,10 @@ public class Game implements Serializable {
      * @return {@code true} if this game was modified since the last save, {@code false} otherwise
      */
     public boolean isModified() {
+        return modified.getValue();
+    }
+
+    public BooleanProperty modifiedProperty() {
         return modified;
     }
 
@@ -141,27 +146,27 @@ public class Game implements Serializable {
         }
         this.currentRoom = currentRoom;
         this.currentRoom.setIsCurrentRoom(true);
-        modified = true;
+        modified.setValue(true);
     }
 
     public void setMoveCount(int moveCount) {
         this.moveCount = moveCount;
-        modified = true;
+        modified.setValue(true);
     }
 
     public void setPlayer(Player player) {
         this.player = player;
-        modified = true;
+        modified.setValue(true);
     }
 
     public void setScore(int score) {
         this.score = score;
-        modified = true;
+        modified.setValue(true);
     }
 
     public void setMessages(List<GameMessage> messages) {
         this.messages = messages;
-        modified = true;
+        modified.setValue(true);
     }
 
     public void setFileSource(File fileSource) {
@@ -214,8 +219,8 @@ public class Game implements Serializable {
     /**
      * Saves this game state to the specified file so that it can be loaded later on using {@link #load(String)} or {@link #load(File)}.
      *
-     * @param fileToSave The file to save the game in.
-     * @throws IOException If the specified file already exists or cannot be written for any other reason.
+     * @param fileToSave The file to save the game in. If the file exists already, it is overwritten.
+     * @throws IOException If the specified file cannot be written for any reason.
      * @see #load(File)
      * @see #load(String)
      */
@@ -223,7 +228,8 @@ public class Game implements Serializable {
         Objects.requireNonNull(fileToSave);
 
         if (fileToSave.exists()) {
-            throw new FileAlreadyExistsException("The file " + fileToSave.toPath().toString() + " exists already.");
+            // delete the file
+            fileToSave.delete();
         }
 
         // Serialize this object at the given file

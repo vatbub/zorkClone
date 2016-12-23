@@ -72,7 +72,11 @@ public class RoomRectangle extends Rectangle {
         this.setRoom(room);
         this.setCustomParent(parent);
 
-        this.nameLabel.textProperty().bind(this.getRoom().nameProperty());
+        //this.nameLabel.textProperty().bind(this.getRoom().nameProperty());
+        this.getRoom().setNameChangeListener(() -> {
+            thisRef.nameLabel.setText(thisRef.getRoom().getName());
+            Platform.runLater(this::updateNameLabelPosition);
+        });
 
         this.nameLabel.setTextFill(Color.BLACK);
 
@@ -121,7 +125,7 @@ public class RoomRectangle extends Rectangle {
         this.widthProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
         this.xProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
         this.yProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
-        this.getRoom().nameProperty().addListener((observable, oldValue, newValue) -> {
+        /*this.getRoom().nameProperty().addListener((observable, oldValue, newValue) -> {
             Thread t = new Thread(() -> {
                 try {
                     Thread.sleep(12);
@@ -133,7 +137,7 @@ public class RoomRectangle extends Rectangle {
             });
 
             t.start();
-        });
+        });*/
 
         this.setOnMouseClicked(event -> {
             if (event.getClickCount() == 1) {

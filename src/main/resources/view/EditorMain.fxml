@@ -33,6 +33,7 @@
                       <Menu mnemonicParsing="false" text="File">
                         <items>
                               <MenuItem fx:id="newMenuItem" mnemonicParsing="false" onAction="#newMenuItemOnAction" text="New" />
+                        <MenuItem fx:id="menuItemOpen" mnemonicParsing="false" onAction="#menuItemOpenOnAction" text="Open" />
                               <MenuItem fx:id="menuItemSave" mnemonicParsing="false" onAction="#menuItemSaveOnAction" text="Save" />
                               <MenuItem fx:id="menuItemSaveAs" mnemonicParsing="false" onAction="#menuItemSaveAsOnAction" text="Save as..." />
                           <MenuItem fx:id="menuItemClose" mnemonicParsing="false" onAction="#menuItemCloseOnAction" text="Close" />

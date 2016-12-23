@@ -25,6 +25,8 @@ import common.Common;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -38,13 +40,17 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ZoomEvent;
 import javafx.scene.shape.Line;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import logging.FOKLogger;
 import model.Game;
 import model.Room;
 import model.WalkDirection;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.Locale;
@@ -60,7 +66,7 @@ public class EditorView extends Application {
 
     private boolean unselectingDisabled;
 
-    private Game currentGame;
+    private ObjectProperty<Game> currentGame = new SimpleObjectProperty<>();
     // Unconnected Rooms will not be saved but need to be hold in the RAM while editing
     private RoomRectangleList unconnectedRooms = new RoomRectangleList();
     private RoomRectangleList allRoomsAsList;
@@ -68,6 +74,7 @@ public class EditorView extends Application {
     private EditMode previousEditMode;
     private boolean isMouseOverDrawing = false;
     private boolean compassIconFaded = false;
+    private static Stage stage;
     /**
      * Used to display a temporary room when in EditMode.INSERT_ROOM
      */
@@ -149,6 +156,9 @@ public class EditorView extends Application {
     private MenuItem menuItemClose;
 
     @FXML
+    private MenuItem menuItemOpen;
+
+    @FXML
     private MenuItem menuItemSave;
 
     @FXML
@@ -156,12 +166,51 @@ public class EditorView extends Application {
 
     @FXML
     void menuItemSaveOnAction(ActionEvent event) {
-
+        if (getCurrentGame().getFileSource() == null) {
+            // show the save as dialog
+            menuItemSaveAsOnAction(event);
+        } else {
+            // simply save
+            try {
+                getCurrentGame().save(getCurrentGame().getFileSource());
+            } catch (IOException e) {
+                log.getLogger().log(Level.SEVERE, "Could not save the game from the \"Save\" menu", e);
+                new Alert(Alert.AlertType.ERROR, "Could not save the game file: \n\n" + ExceptionUtils.getStackTrace(e)).show();
+            }
+        }
     }
 
     @FXML
     void menuItemSaveAsOnAction(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save game file");
+        File file = fileChooser.showSaveDialog(stage);
 
+        if (file != null) {
+            // if file == null the action was aborted
+            try {
+                getCurrentGame().save(file);
+            } catch (IOException e) {
+                log.getLogger().log(Level.SEVERE, "Could not save the game from the \"Save As\" menu", e);
+                new Alert(Alert.AlertType.ERROR, "Could not save the game file: \n\n" + ExceptionUtils.getStackTrace(e)).show();
+            }
+        }
+    }
+
+    @FXML
+    void menuItemOpenOnAction(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open a game file");
+        File file = fileChooser.showOpenDialog(stage);
+        if (file != null) {
+            // if file == null the action was aborted
+            try {
+                loadGame(file);
+            } catch (IOException | ClassNotFoundException e) {
+                log.getLogger().log(Level.SEVERE, "Failed to open game " + file.toString(), e);
+                new Alert(Alert.AlertType.ERROR, "Could not open the game file: \n\n" + ExceptionUtils.getStackTrace(e)).show();
+            }
+        }
     }
 
     @FXML
@@ -348,7 +397,7 @@ public class EditorView extends Application {
      * @param room The room to update
      */
     private void updateConnectionStatusOfRoom(RoomRectangle room) {
-        boolean isConnected = currentGame.getCurrentRoom().isConnectedTo(room.getRoom());
+        boolean isConnected = getCurrentGame().getCurrentRoom().isConnectedTo(room.getRoom());
         if (isConnected && unconnectedRooms.contains(room)) {
             // room was marked as unconnected and now is connected
             unconnectedRooms.remove(room);
@@ -421,12 +470,12 @@ public class EditorView extends Application {
             RoomRectangle startRoom;
             if (allRoomsAsList == null) {
                 // First time to render
-                startRoom = new RoomRectangle(drawing, this.currentGame.getCurrentRoom());
+                startRoom = new RoomRectangle(drawing, this.getCurrentGame().getCurrentRoom());
                 allRoomsAsListCopy = new RoomRectangleList();
                 allRoomsAsList = new RoomRectangleList();
                 allRoomsAsList.add(startRoom);
             } else {
-                startRoom = allRoomsAsList.findByRoom(this.currentGame.getCurrentRoom());
+                startRoom = allRoomsAsList.findByRoom(this.getCurrentGame().getCurrentRoom());
                 allRoomsAsListCopy = allRoomsAsList;
                 if (!onlyUpdateLines) {
                     allRoomsAsList = new RoomRectangleList();
@@ -565,6 +614,16 @@ public class EditorView extends Application {
 
         currentEditorInstance = this;
 
+        currentGame.addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                newValue.modifiedProperty().addListener((observable1, oldValue1, newValue1) -> {
+                    this.menuItemSave.setDisable(!newValue1);
+                    setWindowTitle(newValue);
+                });
+            }
+            setWindowTitle(newValue);
+        });
+
         initGame();
 
         scrollPane.hvalueProperty().addListener((observable, oldValue, newValue) -> unselectingDisabled = true);
@@ -589,24 +648,66 @@ public class EditorView extends Application {
      * Initializes a new game
      */
     public void initGame() {
-        currentGame = new Game();
-        currentGame.getCurrentRoom().setName("startRoom");
+        Game game = new Game();
+        game.getCurrentRoom().setName("startRoom");
+        loadGame(game);
+    }
+
+    /**
+     * Loads the specified game file to this gui
+     *
+     * @param file The file to load
+     */
+    public void loadGame(File file) throws IOException, ClassNotFoundException {
+        Game game = Game.load(file);
+    }
+
+    /**
+     * Loads the specified game to this gui
+     *
+     * @param game The game to load
+     */
+    public void loadGame(Game game) {
+        currentGame.setValue(game);
         unconnectedRooms = new RoomRectangleList();
         allRoomsAsList = null;
         renderView();
     }
 
+    public void setWindowTitle() {
+        setWindowTitle(currentGame.getValue());
+    }
+
+    public void setWindowTitle(Game game) {
+        String title = bundle.getString("windowTitle");
+
+        if (game != null) {
+            title = title + " - ";
+
+            if (game.getFileSource() == null) {
+                title = title + "unsaved game";
+            } else {
+                title = title + game.getFileSource().getName();
+            }
+
+            if (game.isModified()) {
+                title = title + "*";
+            }
+        }
+
+        stage.setTitle(title);
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         bundle = ResourceBundle.getBundle("view.strings");
+        stage = primaryStage;
 
         try {
             Parent root = FXMLLoader.load(getClass().getResource("EditorMain.fxml"), bundle);
 
             Scene scene = new Scene(root);
             scene.getStylesheets().add(getClass().getResource("EditorMain.css").toExternalForm());
-
-            primaryStage.setTitle(bundle.getString("windowTitle"));
 
             primaryStage.setMinWidth(scene.getRoot().minWidth(0) + 70);
             primaryStage.setMinHeight(scene.getRoot().minHeight(0) + 70);
@@ -652,5 +753,13 @@ public class EditorView extends Application {
 
     public RoomRectangleList getAllRoomsAsList() {
         return allRoomsAsList;
+    }
+
+    public Game getCurrentGame() {
+        return currentGame.get();
+    }
+
+    public ObjectProperty<Game> currentGameProperty() {
+        return currentGame;
     }
 }

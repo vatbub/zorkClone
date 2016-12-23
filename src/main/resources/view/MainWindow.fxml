@@ -34,17 +34,17 @@
       </menus>
     </MenuBar>
       <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-         <bottom>
-            <AnchorPane prefHeight="34.0" prefWidth="640.0" BorderPane.alignment="CENTER">
-               <children>
-                  <TextField fx:id="commandLine" layoutX="106.0" layoutY="-1.0" onKeyPressed="#commandLineOnKeyPressed" prefHeight="72.0" prefWidth="640.0" promptText="%commandLine.promptText" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                  <Button fx:id="getAvailableCommandsButton" layoutX="561.0" layoutY="5.0" mnemonicParsing="false" text="Button" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-               </children>
-            </AnchorPane>
-         </bottom>
          <center>
             <WebView fx:id="messageView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
          </center>
+         <bottom>
+            <HBox maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
+               <children>
+                  <TextField fx:id="commandLine" layoutX="106.0" layoutY="-1.0" maxWidth="1.7976931348623157E308" onKeyPressed="#commandLineOnKeyPressed" prefWidth="640.0" promptText="%commandLine.promptText" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="getAvailableCommandsButton" mnemonicParsing="false" text="Button" />
+               </children>
+            </HBox>
+         </bottom>
       </BorderPane>
   </children>
 </VBox>
