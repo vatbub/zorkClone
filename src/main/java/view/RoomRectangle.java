@@ -247,9 +247,11 @@ public class RoomRectangle extends Rectangle {
                     // Delete old references
                     if (this.getRoom().getAdjacentRooms().get(fromThisToTarget) != null) {
                         this.getRoom().getAdjacentRooms().get(fromThisToTarget).getAdjacentRooms().remove(fromTargetToThis);
+                        this.getRoom().getAdjacentRooms().remove(fromThisToTarget);
                     }
                     if (target.getRoom().getAdjacentRooms().get(fromTargetToThis) != null) {
                         target.getRoom().getAdjacentRooms().get(fromTargetToThis).getAdjacentRooms().remove(fromThisToTarget);
+                        target.getRoom().getAdjacentRooms().remove(fromTargetToThis);
                     }
 
                     log.getLogger().fine("Room is " + fromThisToTarget.toString());
