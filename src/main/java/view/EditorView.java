@@ -27,6 +27,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -250,8 +251,8 @@ public class EditorView extends Application {
 
     @FXML
     void scrollPaneOnMouseMoved(MouseEvent event) {
-        currentMouseX = event.getX();
-        currentMouseY = event.getY();
+        currentMouseX = event.getScreenX();
+        currentMouseY = event.getScreenY();
         if (currentEditMode == EditMode.INSERT_ROOM) {
             insertRoomUpdateTempRoomPosition();
         }
@@ -292,8 +293,10 @@ public class EditorView extends Application {
      */
     private void insertRoomUpdateTempRoomPosition() {
         if (tempRoomForRoomInsertion != null) {
-            tempRoomForRoomInsertion.setX(currentMouseX - tempRoomForRoomInsertion.getWidth() / 2.0);
-            tempRoomForRoomInsertion.setY(currentMouseY - tempRoomForRoomInsertion.getHeight() / 2.0);
+            // convert coordinates
+            Point2D point = drawing.screenToLocal(currentMouseX - tempRoomForRoomInsertion.getWidth() / 2.0, currentMouseY - tempRoomForRoomInsertion.getHeight() / 2.0);
+            tempRoomForRoomInsertion.setX(point.getX());
+            tempRoomForRoomInsertion.setY(point.getY());
         }
     }
 
