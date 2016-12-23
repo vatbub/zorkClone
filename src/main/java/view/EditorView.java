@@ -22,6 +22,7 @@ package view;
 
 
 import common.Common;
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -38,6 +39,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ZoomEvent;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import logging.FOKLogger;
 import model.Game;
 import model.Room;
@@ -65,6 +67,7 @@ public class EditorView extends Application {
     private EditMode currentEditMode = EditMode.MOVE;
     private EditMode previousEditMode;
     private boolean isMouseOverDrawing = false;
+    private boolean compassIconFaded = false;
     /**
      * Used to display a temporary room when in EditMode.INSERT_ROOM
      */
@@ -138,6 +141,9 @@ public class EditorView extends Application {
 
     @FXML
     private ScrollPane scrollPane;
+
+    @FXML
+    private ImageView compassImage;
 
     @FXML
     private MenuItem menuItemClose;
@@ -256,6 +262,18 @@ public class EditorView extends Application {
         if (currentEditMode == EditMode.INSERT_ROOM) {
             insertRoomUpdateTempRoomPosition();
         }
+
+        // Fade compassIcon
+        if (event.getX() >= compassImage.getLayoutX() && event.getX() <= (compassImage.getLayoutX() + compassImage.getFitWidth()) && event.getY() >= compassImage.getLayoutY() && event.getY() <= (compassImage.getLayoutY() + compassImage.getFitHeight()) && !compassIconFaded) {
+            // fade out
+            compassIconFaded = true;
+            compassImageFadeOut();
+        }
+        if ((event.getX() < compassImage.getLayoutX() || event.getX() > (compassImage.getLayoutX() + compassImage.getFitWidth()) || event.getY() < compassImage.getLayoutY() || event.getY() > (compassImage.getLayoutY() + compassImage.getFitHeight())) && compassIconFaded) {
+            // fade in
+            compassIconFaded = false;
+            compassImageFadeIn();
+        }
     }
 
     /**
@@ -298,6 +316,22 @@ public class EditorView extends Application {
             tempRoomForRoomInsertion.setX(point.getX());
             tempRoomForRoomInsertion.setY(point.getY());
         }
+    }
+
+    private void compassImageFadeOut() {
+        FadeTransition ft = new FadeTransition(Duration.millis(250), compassImage);
+        ft.setFromValue(compassImage.getOpacity());
+        ft.setToValue(0.2);
+        ft.setAutoReverse(false);
+        ft.play();
+    }
+
+    private void compassImageFadeIn() {
+        FadeTransition ft = new FadeTransition(Duration.millis(250), compassImage);
+        ft.setFromValue(compassImage.getOpacity());
+        ft.setAutoReverse(false);
+        ft.setToValue(0.5);
+        ft.play();
     }
 
     public void unselectEverything() {
