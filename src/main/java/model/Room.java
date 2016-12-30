@@ -40,7 +40,7 @@ public class Room implements Serializable {
     private List<Item> itemsInRoom;
     private List<Entity> entitiesInRoom;
     private RoomMap adjacentRooms;
-    private transient BooleanProperty isCurrentRoom = new SimpleBooleanProperty();
+    private transient BooleanProperty isCurrentRoom;
     /**
      * Used for {@link #isConnectedTo(Room)}
      */
@@ -67,7 +67,7 @@ public class Room implements Serializable {
     }
 
     public Room(String name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom, RoomMap adjacentRooms) {
-        //this.name = new SimpleStringProperty();
+        isCurrentRoom = new SimpleBooleanProperty();
         this.setName(name);
         this.setDescription(description);
         this.setItemsInRoom(itemsInRoom);

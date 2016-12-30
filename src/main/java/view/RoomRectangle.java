@@ -73,7 +73,7 @@ public class RoomRectangle extends Rectangle implements Serializable {
         this.setRoom(room);
         this.setCustomParent(parent);
 
-        //this.nameLabel.textProperty().bind(this.getRoom().nameProperty());
+        thisRef.nameLabel.setText(thisRef.getRoom().getName());
         this.getRoom().setNameChangeListener((Runnable & Serializable)() -> {
             thisRef.nameLabel.setText(thisRef.getRoom().getName());
             Platform.runLater(this::updateNameLabelPosition);
