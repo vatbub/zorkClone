@@ -63,7 +63,7 @@ public class Game implements Serializable {
     /**
      * {@code true} if this game was modified since the last save, {@code false} otherwise
      */
-    private transient BooleanProperty modified = new SimpleBooleanProperty();
+    private transient BooleanProperty modified;
     // TODO: Listen to modifications of the rooms
 
     public Game() {
@@ -133,10 +133,26 @@ public class Game implements Serializable {
      * @return {@code true} if this game was modified since the last save, {@code false} otherwise
      */
     public boolean isModified() {
+        if (this.modified==null){
+            modified = new SimpleBooleanProperty();
+        }
+
         return modified.getValue();
+    }
+    
+    private void setModified(boolean modified){
+        if (this.modified==null){
+            this.modified = new SimpleBooleanProperty();
+        }
+        
+        this.modified.set(modified);
     }
 
     public BooleanProperty modifiedProperty() {
+        if (this.modified==null){
+            modified = new SimpleBooleanProperty();
+        }
+
         return modified;
     }
 
@@ -146,27 +162,27 @@ public class Game implements Serializable {
         }
         this.currentRoom = currentRoom;
         this.currentRoom.setIsCurrentRoom(true);
-        modified.setValue(true);
+        setModified(true);
     }
 
     public void setMoveCount(int moveCount) {
         this.moveCount = moveCount;
-        modified.setValue(true);
+        setModified(true);
     }
 
     public void setPlayer(Player player) {
         this.player = player;
-        modified.setValue(true);
+        setModified(true);
     }
 
     public void setScore(int score) {
         this.score = score;
-        modified.setValue(true);
+        setModified(true);
     }
 
     public void setMessages(List<GameMessage> messages) {
         this.messages = messages;
-        modified.setValue(true);
+        setModified(true);
     }
 
     public void setFileSource(File fileSource) {
@@ -274,6 +290,7 @@ public class Game implements Serializable {
 
         Game res = (Game) objIn.readObject();
         res.setFileSource(saveFile);
+        res.getCurrentRoom().setIsCurrentRoom(true);
         return res;
     }
 }

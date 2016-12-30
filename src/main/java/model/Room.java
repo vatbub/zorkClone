@@ -67,7 +67,6 @@ public class Room implements Serializable {
     }
 
     public Room(String name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom, RoomMap adjacentRooms) {
-        isCurrentRoom = new SimpleBooleanProperty();
         this.setName(name);
         this.setDescription(description);
         this.setItemsInRoom(itemsInRoom);
@@ -207,14 +206,29 @@ public class Room implements Serializable {
     }
 
     void setIsCurrentRoom(boolean isCurrentRoom) {
+        if (this.isCurrentRoom==null){
+            // initialize the variable
+            this.isCurrentRoom = new SimpleBooleanProperty();
+        }
+
         this.isCurrentRoom.set(isCurrentRoom);
     }
 
     public boolean isCurrentRoom() {
+        if (this.isCurrentRoom==null){
+            // initialize the variable
+            this.isCurrentRoom = new SimpleBooleanProperty();
+        }
+
         return isCurrentRoom.get();
     }
 
     public BooleanProperty isCurrentRoomProperty() {
+        if (this.isCurrentRoom==null){
+            // initialize the variable
+            this.isCurrentRoom = new SimpleBooleanProperty();
+        }
+
         return isCurrentRoom;
     }
 

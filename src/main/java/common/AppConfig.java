@@ -31,15 +31,13 @@ import java.util.logging.Level;
  * The config of this application
  */
 public class AppConfig {
-    private static final FOKLogger log = new FOKLogger(AppConfig.class.getName());
-
     // Project setup
     public static URL getUpdateRepoBaseURL() {
         URL res = null;
         try {
             res = new URL("http://dl.bintray.com/vatbub/fokprojectsReleases");
         } catch (MalformedURLException e) {
-            log.getLogger().log(Level.SEVERE, "An error occurred", e);
+            FOKLogger.log(AppConfig.class.getName(), Level.SEVERE, "An error occurred", e);
         }
 
         return res;

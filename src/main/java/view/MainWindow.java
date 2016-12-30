@@ -50,13 +50,11 @@ import java.util.logging.Level;
 
 public class MainWindow extends Application {
 
-    private static FOKLogger log;
     private static boolean disableUpdateChecks;
     Game currentGame = new Game();
 
     public static void main(String[] args) {
         common.Common.setAppName("zork");
-        log = new FOKLogger(MainWindow.class.getName());
         for (String arg : args) {
             if (arg.toLowerCase().matches("mockappversion=.*")) {
                 // Set the mock version
@@ -67,7 +65,7 @@ public class MainWindow extends Application {
                 String buildnumber = arg.substring(arg.toLowerCase().indexOf('=') + 1);
                 Common.setMockBuildNumber(buildnumber);
             } else if (arg.toLowerCase().matches("disableupdatechecks")) {
-                log.getLogger().info("Update checks are disabled as app was launched from launcher.");
+                FOKLogger.info(MainWindow.class.getName(), "Update checks are disabled as app was launched from launcher.");
                 disableUpdateChecks = true;
             } else if (arg.toLowerCase().matches("mockpackaging=.*")) {
                 // Set the mock packaging
@@ -76,7 +74,7 @@ public class MainWindow extends Application {
             } else if (arg.toLowerCase().matches("locale=.*")) {
                 // set the gui language
                 String guiLanguageCode = arg.substring(arg.toLowerCase().indexOf('=') + 1);
-                log.getLogger().info("Setting language: " + guiLanguageCode);
+                FOKLogger.info(MainWindow.class.getName(), "Setting language: " + guiLanguageCode);
                 Locale.setDefault(new Locale(guiLanguageCode));
             }
         }
@@ -148,7 +146,7 @@ public class MainWindow extends Application {
 
             primaryStage.show();
         } catch (Exception e) {
-            log.getLogger().log(Level.SEVERE, "An error occurred", e);
+            FOKLogger.log(MainWindow.class.getName(), Level.SEVERE, "An error occurred", e);
         }
     }
 

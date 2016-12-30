@@ -47,7 +47,6 @@ import java.util.logging.Level;
  */
 public class RoomRectangle extends Rectangle implements Serializable {
     private Room room;
-    private static FOKLogger log = new FOKLogger(RoomRectangle.class.getName());
     private BooleanProperty selected = new SimpleBooleanProperty();
     private BooleanProperty isTemporary = new SimpleBooleanProperty();
     private RoomRectangle thisRef = this;
@@ -145,7 +144,7 @@ public class RoomRectangle extends Rectangle implements Serializable {
                 this.setSelected(true);
             } else if (event.getClickCount() == 2) {
                 // launch editor
-                log.getLogger().info("RoomEditor launched");
+                FOKLogger.info(RoomRectangle.class.getName(), "RoomEditor launched");
             }
         });
 
@@ -159,7 +158,7 @@ public class RoomRectangle extends Rectangle implements Serializable {
 
         this.setOnMouseDragged(event -> {
             if (EditorView.currentEditorInstance.getCurrentEditMode() == EditMode.INSERT_PATH) {
-                log.getLogger().fine("Inserting new path...");
+                FOKLogger.fine(RoomRectangle.class.getName(), "Inserting new path...");
                 if (line == null) {
                     line = new Line(this.getCenterX(), this.getCenterY(), event.getX(), event.getY());
                     this.getCustomParent().getChildren().add(line);
@@ -178,7 +177,7 @@ public class RoomRectangle extends Rectangle implements Serializable {
 
                 previousTarget = newTarget;
             } else if (EditorView.currentEditorInstance.getCurrentEditMode() == EditMode.MOVE) {
-                log.getLogger().fine("Moving room...");
+                FOKLogger.fine(RoomRectangle.class.getName(), "Moving room...");
                 this.setX(event.getX() - this.moveStartLocalX);
                 this.setY(event.getY() - this.moveStartLocalY);
 
@@ -248,7 +247,7 @@ public class RoomRectangle extends Rectangle implements Serializable {
         this.setOnMouseReleased(event -> {
             if (dragStarted) {
                 dragStarted = false;
-                log.getLogger().fine("Drag done");
+                FOKLogger.fine(RoomRectangle.class.getName(), "Drag done");
                 RoomRectangle target = (RoomRectangle) this.getCustomParent().getRectangleByCoordinatesPreferFront(event.getX(), event.getY());
 
                 if (target != null && target != thisRef && EditorView.currentEditorInstance.getCurrentEditMode() == EditMode.INSERT_PATH) {
@@ -265,7 +264,7 @@ public class RoomRectangle extends Rectangle implements Serializable {
                         target.getRoom().getAdjacentRooms().remove(fromTargetToThis);
                     }
 
-                    log.getLogger().fine("Room is " + fromThisToTarget.toString());
+                    FOKLogger.fine(RoomRectangle.class.getName(), "Room is " + fromThisToTarget.toString());
                     this.getRoom().getAdjacentRooms().put(fromThisToTarget, target.getRoom());
                     target.getRoom().getAdjacentRooms().put(fromTargetToThis, this.getRoom());
                 }
@@ -288,7 +287,7 @@ public class RoomRectangle extends Rectangle implements Serializable {
         this.setStroke(Color.BLACK);
 
         selected.addListener((observable, oldValue, newValue) -> {
-            log.getLogger().finest("Room selected = " + newValue);
+            FOKLogger.finest(RoomRectangle.class.getName(), "Room selected = " + newValue);
             if (newValue) {
                 // is selected
                 thisRef.setStroke(Color.GRAY);
@@ -366,7 +365,7 @@ public class RoomRectangle extends Rectangle implements Serializable {
             try {
                 Thread.sleep(12);
             } catch (InterruptedException e) {
-                log.getLogger().log(Level.SEVERE, "An error occurred", e);
+                FOKLogger.log(RoomRectangle.class.getName(), Level.SEVERE, "An error occurred", e);
             }
 
             Platform.runLater(this::updateNameLabelPosition);
@@ -402,10 +401,12 @@ public class RoomRectangle extends Rectangle implements Serializable {
         this.isTemporary.set(isTemporary);
     }
 
+    @SuppressWarnings("unused")
     public boolean isTemporary() {
         return isTemporary.get();
     }
 
+    @SuppressWarnings("unused")
     public BooleanProperty isTemporaryProperty() {
         return isTemporary;
     }

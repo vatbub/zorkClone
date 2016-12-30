@@ -60,8 +60,6 @@ import java.util.logging.Level;
 
 public class EditorView extends Application {
 
-    private static FOKLogger log;
-
     public static EditorView currentEditorInstance;
 
     private boolean unselectingDisabled;
@@ -90,7 +88,6 @@ public class EditorView extends Application {
 
     public static void main(String[] args) {
         common.Common.setAppName("zork");
-        log = new FOKLogger(MainWindow.class.getName());
         for (String arg : args) {
             if (arg.toLowerCase().matches("mockappversion=.*")) {
                 // Set the mock version
@@ -107,7 +104,7 @@ public class EditorView extends Application {
             } else if (arg.toLowerCase().matches("locale=.*")) {
                 // set the gui language
                 String guiLanguageCode = arg.substring(arg.toLowerCase().indexOf('=') + 1);
-                log.getLogger().info("Setting language: " + guiLanguageCode);
+                FOKLogger.info(MainWindow.class.getName(), "Setting language: " + guiLanguageCode);
                 Locale.setDefault(new Locale(guiLanguageCode));
             }
         }
@@ -174,7 +171,7 @@ public class EditorView extends Application {
             try {
                 getCurrentGame().save(getCurrentGame().getFileSource());
             } catch (IOException e) {
-                log.getLogger().log(Level.SEVERE, "Could not save the game from the \"Save\" menu", e);
+                FOKLogger.log(MainWindow.class.getName(), Level.SEVERE, "Could not save the game from the \"Save\" menu", e);
                 new Alert(Alert.AlertType.ERROR, "Could not save the game file: \n\n" + ExceptionUtils.getStackTrace(e)).show();
             }
         }
@@ -191,7 +188,7 @@ public class EditorView extends Application {
             try {
                 getCurrentGame().save(file);
             } catch (IOException e) {
-                log.getLogger().log(Level.SEVERE, "Could not save the game from the \"Save As\" menu", e);
+                FOKLogger.log(MainWindow.class.getName(), Level.SEVERE, "Could not save the game from the \"Save As\" menu", e);
                 new Alert(Alert.AlertType.ERROR, "Could not save the game file: \n\n" + ExceptionUtils.getStackTrace(e)).show();
             }
         }
@@ -207,7 +204,7 @@ public class EditorView extends Application {
             try {
                 loadGame(file);
             } catch (IOException | ClassNotFoundException e) {
-                log.getLogger().log(Level.SEVERE, "Failed to open game " + file.toString(), e);
+                FOKLogger.log(MainWindow.class.getName(), Level.SEVERE, "Failed to open game " + file.toString(), e);
                 new Alert(Alert.AlertType.ERROR, "Could not open the game file: \n\n" + ExceptionUtils.getStackTrace(e)).show();
             }
         }
@@ -250,7 +247,7 @@ public class EditorView extends Application {
 
     @FXML
     void scrollPaneOnZoom(ZoomEvent event) {
-        log.getLogger().fine("Zooming in view, new Zoom level: " + event.getZoomFactor());
+        FOKLogger.fine(MainWindow.class.getName(), "Zooming in view, new Zoom level: " + event.getZoomFactor());
         drawing.setScaleX(drawing.getScaleX() * event.getZoomFactor());
         drawing.setScaleY(drawing.getScaleY() * event.getZoomFactor());
         // TODO: Update the actual size in the scrollpane (so that scrollbars appear when zooming in
@@ -261,7 +258,7 @@ public class EditorView extends Application {
     @FXML
     void scrollPaneOnMouseReleased(MouseEvent event) {
         if (!event.isControlDown() & !unselectingDisabled) {
-            log.getLogger().finest("Unselected all rooms through clicking the scroll pane");
+            FOKLogger.finest(MainWindow.class.getName(), "Unselected all rooms through clicking the scroll pane");
             unselectEverything();
         }
 
@@ -278,7 +275,7 @@ public class EditorView extends Application {
          */
         if (currentEditMode == EditMode.INSERT_ROOM && event.getTarget() instanceof RoomRectangle && event.getClickCount() == 1) {
             // add tempRoomForRoomInsertion to the game
-            log.getLogger().fine("Added room to game: " + tempRoomForRoomInsertion.getRoom().getName());
+            FOKLogger.fine(MainWindow.class.getName(), "Added room to game: " + tempRoomForRoomInsertion.getRoom().getName());
             tempRoomForRoomInsertion.setTemporary(false);
             tempRoomForRoomInsertion.setSelected(false);
             allRoomsAsList.add(tempRoomForRoomInsertion);
@@ -599,7 +596,7 @@ public class EditorView extends Application {
             try {
                 renderThread.join();
             } catch (InterruptedException e) {
-                log.getLogger().log(Level.SEVERE, "An error occurred", e);
+                FOKLogger.log(MainWindow.class.getName(), Level.SEVERE, "An error occurred", e);
             }
         }
     }
@@ -720,7 +717,7 @@ public class EditorView extends Application {
 
             primaryStage.show();
         } catch (Exception e) {
-            log.getLogger().log(Level.SEVERE, "An error occurred", e);
+            FOKLogger.log(MainWindow.class.getName(), Level.SEVERE, "An error occurred", e);
         }
     }
 
@@ -729,7 +726,7 @@ public class EditorView extends Application {
     }
 
     public void setCurrentEditMode(EditMode currentEditMode) {
-        log.getLogger().finer("Setting currentEditMode to " + currentEditMode.toString());
+        FOKLogger.finer(MainWindow.class.getName(), "Setting currentEditMode to " + currentEditMode.toString());
         previousEditMode = this.currentEditMode;
 
         // Initialize or terminate the insert room mode
