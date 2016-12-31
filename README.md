@@ -9,9 +9,14 @@ This project aims to reimplement the good old nerdy game [Zork](https://en.wikip
 **Note:** This project has just started so nothing works right now and no downloads are offered at this stage.
 
 ## Download
-As this project just started, we do not offer any downloads yet. Once available, downloads will be offered using the FOKLauncher ([GitHubRepo](https://github.com/vatbub/fokLauncher)|[Download](https://bintray.com/vatbub/fokprojectsReleases/foklauncher#downloads)).
+As this project just started, we do not offer any official downloads yet. If you want to try a cutting edge version of the code (still very buggy), you can do the following:
+1. Download the FOKLauncher ([GitHubRepo](https://github.com/vatbub/fokLauncher)|[Download](https://bintray.com/vatbub/fokprojectsReleases/foklauncher#downloads))
+2. Download [those two files](https://github.com/vatbub/zorkClone/tree/master/foklauncher_info).
+3. Open the FOKLauncher and drag the two files into the FOKLauncher-Window
+4. Make sure to check the "Enable Snapshot Builds"-Checkbox or else you will get plenty of errors
+5. Select Zork (the game) or the game editor and enjoy using a completely buggy software :)
 
-While you are waiting, you might want to try the [original version](https://www.infocom-if.org/downloads/downloads.html).
+While you are waiting for a official release, you might want to try the [original version](https://www.infocom-if.org/downloads/downloads.html).
 
 ## Compile
 If you wish to compile the project, just clone the repo and run `mvn package` ([Maven](http://maven.apache.org/) required)
@@ -22,7 +27,7 @@ Feel free to [file issues](https://github.com/vatbub/zorkClone/issues/new), fork
 
 ## The roadmap ![progress](https://img.shields.io/badge/overall_progress-20%25-orange.svg)
 - create a functioning framework for textbased adventure games (data model, gui, parser) ![progress](https://img.shields.io/badge/progress-40%25-yellow.svg)
-- Rewrite the story of Zork I, II and III using the framework - create a functioning framework for textbased adventure games (data model, gui, parser) ![progress](https://img.shields.io/badge/progress-0%25-red.svg)
+- Rewrite the story of Zork I, II and III using the framework ![progress](https://img.shields.io/badge/progress-0%25-red.svg)
 
 
 ##Docs
