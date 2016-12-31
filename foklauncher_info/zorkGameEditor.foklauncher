@@ -1,0 +1,9 @@
+#This file stores info about a java app. To open this file, get the foklauncher
+#Fri Dec 02 01:12:18 CET 2016
+name=Zork GameEditor (prerelease)
+groupId=com.github.vatbub
+repoBaseURL=https\://dl.bintray.com/vatbub/fokprojectsReleases
+additionalInfoURL=https\://github.com/vatbub/zorkClone#zorkclone-
+classifier=gameEditor
+snapshotRepoBaseURL=https\://oss.jfrog.org/artifactory/repo
+artifactId=zorkClone
