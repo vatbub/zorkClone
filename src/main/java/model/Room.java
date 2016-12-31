@@ -205,6 +205,21 @@ public class Room implements Serializable {
         return false;
     }
 
+    /**
+     * Checks if this and the specified room are direct neighbours
+     * @param room The room to be checked
+     * @return {@code true} if this and the specified room are direct neighbours, {@code false} otherwise
+     */
+    public boolean isDirectlyConnectedTo(Room room){
+        for(Map.Entry entry:this.getAdjacentRooms().entrySet()){
+            if (entry.getValue()==room){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     void setIsCurrentRoom(boolean isCurrentRoom) {
         if (this.isCurrentRoom==null){
             // initialize the variable

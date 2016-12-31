@@ -78,6 +78,8 @@ public class EditorView extends Application {
      */
     private RoomRectangle tempRoomForRoomInsertion;
 
+    private ConnectionLineList lineList = new ConnectionLineList();
+
     /**
      * A thread safe room counter
      */
@@ -160,6 +162,12 @@ public class EditorView extends Application {
 
     @FXML
     private MenuItem menuItemSaveAs;
+
+    private ConnectionLine.InvalidationRunnable lineInvalidationRunnable = (lineToDispose) -> {
+        FOKLogger.info(EditorView.class.getName(), "Invalidated line that connected " + lineToDispose.getStartRoom().getRoom().getName() + " and " + lineToDispose.getEndRoom().getRoom().getName());
+        lineList.remove(lineToDispose);
+        drawing.getChildren().remove(lineToDispose);
+    };
 
     @FXML
     void menuItemSaveOnAction(ActionEvent event) {
@@ -443,7 +451,7 @@ public class EditorView extends Application {
         // Only render if it's not already rendering
         int indexCorrection = 0;
         while (drawing.getChildren().size() > indexCorrection) {
-            if (!onlyUpdateLines || drawing.getChildren().get(indexCorrection) instanceof Line) {
+            if (!onlyUpdateLines && !(drawing.getChildren().get(indexCorrection) instanceof Line)) {
                 drawing.getChildren().remove(indexCorrection);
             } else {
                 indexCorrection++;
@@ -495,6 +503,7 @@ public class EditorView extends Application {
                 if (!currentRoom.isRendered()) {
                     allRoomsAsList.add(currentRoom);
                     currentRoom.updateNameLabelPosition();
+                    // TODO Exception occurring here
                     currentRoom.setCustomParent(drawing);
                 }
                 for (Map.Entry<WalkDirection, Room> entry : currentRoom.getRoom().getAdjacentRooms().entrySet()) {
@@ -545,37 +554,18 @@ public class EditorView extends Application {
                     }
 
 
-                    Line connectionLine = new Line(0, 0, 0, 0);
+                    ConnectionLine connectionLine = lineList.findByStartAndEndRoom(currentRoom, newRoom);
+                    if (connectionLine == null) {
+                        // create a new line
+                        connectionLine = new ConnectionLine(currentRoom, newRoom);
+                        connectionLine.setInvalidationRunnable(lineInvalidationRunnable);
+                        lineList.add(connectionLine);
 
-                    switch (entry.getKey()) {
-                        case NORTH:
-                            connectionLine = new Line(currentRoom.getX() + currentRoom.getWidth() / 2.0, currentRoom.getY(), newRoom.getX() + newRoom.getWidth() / 2.0, newRoom.getY() + newRoom.getHeight());
-                            break;
-                        case WEST:
-                            connectionLine = new Line(currentRoom.getX(), currentRoom.getY() + currentRoom.getHeight() / 2, newRoom.getX() + newRoom.getWidth(), newRoom.getY() + newRoom.getHeight() / 2);
-                            break;
-                        case EAST:
-                            connectionLine = new Line(currentRoom.getX() + currentRoom.getWidth(), currentRoom.getY() + currentRoom.getHeight() / 2, newRoom.getX(), newRoom.getY() + newRoom.getHeight() / 2);
-                            break;
-                        case SOUTH:
-                            connectionLine = new Line(currentRoom.getX() + currentRoom.getWidth() / 2.0, currentRoom.getY() + currentRoom.getHeight(), newRoom.getX() + newRoom.getWidth() / 2.0, newRoom.getY());
-                            break;
-                        case NORTH_WEST:
-                            connectionLine = new Line(currentRoom.getX(), currentRoom.getY(), newRoom.getX() + newRoom.getWidth(), newRoom.getY() + newRoom.getHeight());
-                            break;
-                        case NORTH_EAST:
-                            connectionLine = new Line(currentRoom.getX() + currentRoom.getWidth(), currentRoom.getY(), newRoom.getX(), newRoom.getY() + newRoom.getHeight());
-                            break;
-                        case SOUTH_WEST:
-                            connectionLine = new Line(currentRoom.getX(), currentRoom.getY() + currentRoom.getHeight(), newRoom.getX() + newRoom.getWidth(), newRoom.getY());
-                            break;
-                        case SOUTH_EAST:
-                            connectionLine = new Line(currentRoom.getX() + currentRoom.getWidth(), currentRoom.getY() + currentRoom.getHeight(), newRoom.getX(), newRoom.getY());
-                            break;
+                        final Line connectionLineCopy = connectionLine;
+                        Platform.runLater(() -> drawing.getChildren().add(connectionLineCopy));
                     }
 
-                    final Line connectionLineCopy = connectionLine;
-                    Platform.runLater(() -> drawing.getChildren().add(connectionLineCopy));
+                    connectionLine.updateLocation();
 
                     if (!newRoom.isRendered()) {
                         // render the child
