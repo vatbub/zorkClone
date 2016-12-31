@@ -20,9 +20,10 @@ If you wish to compile the project, just clone the repo and run `mvn package` ([
 I am glad to know that I am not the only nerd around here so let me know via [eMail](mailto:vatbub123@googlemail.com) and I'll happily add you to the team.
 Feel free to [file issues](https://github.com/vatbub/zorkClone/issues/new), fork or submit PRs.
 
-## The roadmap
-- create a functioning framework for textbased adventure games (data model, gui, parser)
-- Rewrite the story of Zork I, II and III using the framework
+## The roadmap ![progress](https://img.shields.io/badge/overall_progress-20%25-orange.svg)
+- create a functioning framework for textbased adventure games (data model, gui, parser) ![progress](https://img.shields.io/badge/progress-40%25-yellow.svg)
+- Rewrite the story of Zork I, II and III using the framework - create a functioning framework for textbased adventure games (data model, gui, parser) ![progress](https://img.shields.io/badge/progress-0%25-red.svg)
+
 
 ##Docs
 [Maven Site](http://vatbubmvnsites.s3-website-us-west-2.amazonaws.com/zorkClone/1.1-SNAPSHOT/site/zorkClone/), [JavaDoc](http://vatbubmvnsites.s3-website-us-west-2.amazonaws.com/zorkClone/1.1-SNAPSHOT/site/zorkClone/apidocs/index.html)
