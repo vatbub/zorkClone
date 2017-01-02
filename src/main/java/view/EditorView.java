@@ -89,7 +89,8 @@ public class EditorView extends Application {
     private double currentMouseY = 0;
 
     public static void main(String[] args) {
-        common.Common.setAppName("zork");
+        common.Common.setAppName("zorkGameEditor");
+        FOKLogger.enableLoggingOfUncaughtExceptions();
         for (String arg : args) {
             if (arg.toLowerCase().matches("mockappversion=.*")) {
                 // Set the mock version

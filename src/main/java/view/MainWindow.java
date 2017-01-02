@@ -55,6 +55,7 @@ public class MainWindow extends Application {
 
     public static void main(String[] args) {
         common.Common.setAppName("zork");
+        FOKLogger.enableLoggingOfUncaughtExceptions();
         for (String arg : args) {
             if (arg.toLowerCase().matches("mockappversion=.*")) {
                 // Set the mock version
