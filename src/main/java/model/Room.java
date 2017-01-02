@@ -211,13 +211,23 @@ public class Room implements Serializable {
      * @return {@code true} if this and the specified room are direct neighbours, {@code false} otherwise
      */
     public boolean isDirectlyConnectedTo(Room room){
+        return getDirectionTo(room)!=null;
+    }
+
+    /**
+     * Returns the direction that needs to be taken to get from {@code this} room to the specified room
+     * @param room The room to get the direction for
+     * @return The direction to take to get from {@code this} to {@code room} or {@code null} if {@code this} and {@code room} are not directly connected
+     * @see #isDirectlyConnectedTo(Room)
+     */
+    public WalkDirection getDirectionTo(Room room){
         for(Map.Entry entry:this.getAdjacentRooms().entrySet()){
             if (entry.getValue()==room){
-                return true;
+                return (WalkDirection) entry.getKey();
             }
         }
 
-        return false;
+        return null;
     }
 
     void setIsCurrentRoom(boolean isCurrentRoom) {

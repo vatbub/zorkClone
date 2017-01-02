@@ -266,6 +266,15 @@ public class RoomRectangle extends Rectangle implements Serializable {
                         target.getRoom().getAdjacentRooms().remove(fromTargetToThis);
                     }
 
+                    // Delete old connection between this and target
+                    WalkDirection dir = this.getRoom().getDirectionTo(target.getRoom());
+                    if (dir != null) {
+                        if (dir != fromThisToTarget) {
+                            this.getRoom().getAdjacentRooms().remove(dir);
+                            target.getRoom().getAdjacentRooms().remove(WalkDirectionUtils.invert(dir));
+                        }
+                    }
+
                     FOKLogger.fine(RoomRectangle.class.getName(), "Room is " + fromThisToTarget.toString());
                     this.getRoom().getAdjacentRooms().put(fromThisToTarget, target.getRoom());
                     target.getRoom().getAdjacentRooms().put(fromTargetToThis, this.getRoom());
