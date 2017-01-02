@@ -128,4 +128,9 @@ public class ConnectionLine extends Line {
     public interface InvalidationRunnable{
         void run(ConnectionLine lineToDispose);
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + ", connecting " + getStartRoom().getRoom().getName() + " and " + getEndRoom().getRoom().getName();
+    }
 }

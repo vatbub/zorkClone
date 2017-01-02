@@ -451,7 +451,7 @@ public class EditorView extends Application {
         // Only render if it's not already rendering
         int indexCorrection = 0;
         while (drawing.getChildren().size() > indexCorrection) {
-            if (!onlyUpdateLines && !(drawing.getChildren().get(indexCorrection) instanceof Line)) {
+            if (!onlyUpdateLines && !(drawing.getChildren().get(indexCorrection) instanceof ConnectionLine)) {
                 drawing.getChildren().remove(indexCorrection);
             } else {
                 indexCorrection++;
@@ -503,7 +503,6 @@ public class EditorView extends Application {
                 if (!currentRoom.isRendered()) {
                     allRoomsAsList.add(currentRoom);
                     currentRoom.updateNameLabelPosition();
-                    // TODO Exception occurring here
                     currentRoom.setCustomParent(drawing);
                 }
                 for (Map.Entry<WalkDirection, Room> entry : currentRoom.getRoom().getAdjacentRooms().entrySet()) {
@@ -554,7 +553,7 @@ public class EditorView extends Application {
                     }
 
 
-                    ConnectionLine connectionLine = lineList.findByStartAndEndRoom(currentRoom, newRoom);
+                    ConnectionLine connectionLine = lineList.findByStartAndEndRoomIgnoreLineDirection(currentRoom, newRoom);
                     if (connectionLine == null) {
                         // create a new line
                         connectionLine = new ConnectionLine(currentRoom, newRoom);
