@@ -256,6 +256,7 @@ public class Game implements Serializable {
         fileOut.close();
 
         this.setFileSource(fileToSave);
+        this.setModified(false);
     }
 
     /**
