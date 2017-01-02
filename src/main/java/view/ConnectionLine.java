@@ -21,7 +21,11 @@ package view;
  */
 
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import logging.FOKLogger;
 import model.WalkDirection;
 
 import java.util.Map;
@@ -33,6 +37,8 @@ public class ConnectionLine extends Line {
     private RoomRectangle startRoom;
     private RoomRectangle endRoom;
     private InvalidationRunnable invalidationRunnable;
+    private BooleanProperty selected = new SimpleBooleanProperty();
+    private ConnectionLine thisRef = this;
 
     public ConnectionLine() {
         this(null, null);
@@ -42,6 +48,25 @@ public class ConnectionLine extends Line {
         setStartRoom(startRoom);
         setEndRoom(endRoom);
         updateLocation();
+
+        this.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 1) {
+                this.setSelected(true);
+            }
+        });
+
+        selected.addListener((observable, oldValue, newValue) -> {
+            FOKLogger.finest(RoomRectangle.class.getName(), "Room selected = " + newValue);
+            if (newValue) {
+                // is selected
+                thisRef.setStroke(Color.GRAY);
+                thisRef.setStrokeWidth(4);
+            } else {
+                // not selected
+                thisRef.setStroke(Color.BLACK);
+                thisRef.setStrokeWidth(1);
+            }
+        });
     }
 
     public RoomRectangle getEndRoom() {
@@ -65,8 +90,7 @@ public class ConnectionLine extends Line {
     /**
      * Invalidates this line
      */
-    public void invalidate(){
-        // TODO dispose object
+    public void invalidate() {
         if (invalidationRunnable != null) {
             invalidationRunnable.run(this);
         }
@@ -153,7 +177,21 @@ public class ConnectionLine extends Line {
         this.invalidationRunnable = invalidationRunnable;
     }
 
-    public interface InvalidationRunnable{
+    @SuppressWarnings({"unused"})
+    public boolean isSelected() {
+        return selected.get();
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected.set(selected);
+    }
+
+    @SuppressWarnings({"unused"})
+    public BooleanProperty isSelectedProperty() {
+        return selected;
+    }
+
+    public interface InvalidationRunnable {
         void run(ConnectionLine lineToDispose);
     }
 

@@ -47,6 +47,7 @@ import logging.FOKLogger;
 import model.Game;
 import model.Room;
 import model.WalkDirection;
+import model.WalkDirectionUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import java.io.File;
@@ -166,6 +167,11 @@ public class EditorView extends Application {
     private ConnectionLine.InvalidationRunnable lineInvalidationRunnable = (lineToDispose) -> {
         FOKLogger.info(EditorView.class.getName(), "Invalidated line that connected " + lineToDispose.getStartRoom().getRoom().getName() + " and " + lineToDispose.getEndRoom().getRoom().getName());
         lineList.remove(lineToDispose);
+        if (lineToDispose.getStartRoom().getRoom().isDirectlyConnectedTo(lineToDispose.getEndRoom().getRoom())) {
+            // Connection between rooms must be deleted
+            lineToDispose.getStartRoom().getRoom().getAdjacentRooms().remove(WalkDirectionUtils.getFromLine(lineToDispose));
+            lineToDispose.getEndRoom().getRoom().getAdjacentRooms().remove(WalkDirectionUtils.invert(WalkDirectionUtils.getFromLine(lineToDispose)));
+        }
         Platform.runLater(() -> drawing.getChildren().remove(lineToDispose));
     };
 
@@ -392,6 +398,8 @@ public class EditorView extends Application {
         for (Node child : drawing.getChildren()) {
             if (child instanceof RoomRectangle) {
                 ((RoomRectangle) child).setSelected(false);
+            } else if (child instanceof ConnectionLine) {
+                ((ConnectionLine) child).setSelected(false);
             }
         }
     }
@@ -453,7 +461,7 @@ public class EditorView extends Application {
         while (drawing.getChildren().size() > indexCorrection) {
             if (!onlyUpdateLines && !(drawing.getChildren().get(indexCorrection) instanceof ConnectionLine)) {
                 drawing.getChildren().remove(indexCorrection);
-            }else if (drawing.getChildren().get(indexCorrection) instanceof ConnectionLine){
+            } else if (drawing.getChildren().get(indexCorrection) instanceof ConnectionLine) {
                 // Check if line is still valid
                 ((ConnectionLine) drawing.getChildren().get(indexCorrection)).updateLocation();
                 indexCorrection++;
