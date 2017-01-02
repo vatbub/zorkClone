@@ -78,7 +78,7 @@ public class EditorView extends Application {
      */
     private RoomRectangle tempRoomForRoomInsertion;
 
-    private ConnectionLineList lineList = new ConnectionLineList();
+    public ConnectionLineList lineList = new ConnectionLineList();
 
     /**
      * A thread safe room counter
@@ -166,7 +166,7 @@ public class EditorView extends Application {
     private ConnectionLine.InvalidationRunnable lineInvalidationRunnable = (lineToDispose) -> {
         FOKLogger.info(EditorView.class.getName(), "Invalidated line that connected " + lineToDispose.getStartRoom().getRoom().getName() + " and " + lineToDispose.getEndRoom().getRoom().getName());
         lineList.remove(lineToDispose);
-        drawing.getChildren().remove(lineToDispose);
+        Platform.runLater(() -> drawing.getChildren().remove(lineToDispose));
     };
 
     @FXML
@@ -453,6 +453,10 @@ public class EditorView extends Application {
         while (drawing.getChildren().size() > indexCorrection) {
             if (!onlyUpdateLines && !(drawing.getChildren().get(indexCorrection) instanceof ConnectionLine)) {
                 drawing.getChildren().remove(indexCorrection);
+            }else if (drawing.getChildren().get(indexCorrection) instanceof ConnectionLine){
+                // Check if line is still valid
+                ((ConnectionLine) drawing.getChildren().get(indexCorrection)).updateLocation();
+                indexCorrection++;
             } else {
                 indexCorrection++;
             }

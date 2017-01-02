@@ -73,7 +73,7 @@ public class RoomRectangle extends Rectangle implements Serializable {
         this.setCustomParent(parent);
 
         thisRef.nameLabel.setText(thisRef.getRoom().getName());
-        this.getRoom().setNameChangeListener((Runnable & Serializable)() -> {
+        this.getRoom().setNameChangeListener((Runnable & Serializable) () -> {
             thisRef.nameLabel.setText(thisRef.getRoom().getName());
             Platform.runLater(this::updateNameLabelPosition);
         });
@@ -204,9 +204,11 @@ public class RoomRectangle extends Rectangle implements Serializable {
                     RoomRectangle finalRoom = subListWithCurrentDirection.findRoomWithMinimumDistanceTo(this);
                     if (finalRoom != null) {
                         if (this.getRoom().getAdjacentRooms().containsKey(dir)) {
-                            // this has got a connection to another room in that direction that we need to delete
-                            this.getRoom().getAdjacentRooms().get(dir).getAdjacentRooms().remove(WalkDirectionUtils.invert(dir));
-                            this.getRoom().getAdjacentRooms().remove(dir);
+                            if (this.getRoom().getAdjacentRooms().get(dir) != finalRoom.getRoom()) {
+                                // this has got a connection to another room in that direction that we need to delete
+                                this.getRoom().getAdjacentRooms().get(dir).getAdjacentRooms().remove(WalkDirectionUtils.invert(dir));
+                                this.getRoom().getAdjacentRooms().remove(dir);
+                            }
                         }
 
                         if (finalRoom.getRoom().getAdjacentRooms().containsKey(WalkDirectionUtils.invert(dir))) {
@@ -361,7 +363,7 @@ public class RoomRectangle extends Rectangle implements Serializable {
 
         this.parent = parent;
 
-        Thread t = new Thread((Runnable & Serializable)() -> {
+        Thread t = new Thread((Runnable & Serializable) () -> {
             try {
                 Thread.sleep(12);
             } catch (InterruptedException e) {
@@ -373,7 +375,7 @@ public class RoomRectangle extends Rectangle implements Serializable {
 
         t.start();
 
-        Platform.runLater((Runnable & Serializable)() -> {
+        Platform.runLater((Runnable & Serializable) () -> {
             // add to new parent
             if (registerAsChild & parent != null) {
                 parent.getChildren().add(thisRef);

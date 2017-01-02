@@ -42,16 +42,23 @@ public class ConnectionLine extends Line {
     }
 
     /**
+     * Invalidates this line
+     */
+    public void invalidate(){
+        // TODO dispose object
+        if (invalidationRunnable != null) {
+            invalidationRunnable.run(this);
+        }
+    }
+
+    /**
      * Updates the location of this line
      */
     public void updateLocation() {
         if (getStartRoom() != null && getEndRoom() != null) {
             if (!getStartRoom().getRoom().isDirectlyConnectedTo(getEndRoom().getRoom())) {
                 // rooms not connected, detach this line
-                // TODO dispose object
-                if (invalidationRunnable != null) {
-                    invalidationRunnable.run(this);
-                }
+                invalidate();
                 return;
             }
 
