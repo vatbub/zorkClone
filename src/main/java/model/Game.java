@@ -24,6 +24,7 @@ package model;
 import common.Common;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
 import logging.FOKLogger;
 import org.jetbrains.annotations.NotNull;
 import view.GameMessage;
@@ -31,10 +32,7 @@ import view.GameMessage;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -64,7 +62,10 @@ public class Game implements Serializable {
      * {@code true} if this game was modified since the last save, {@code false} otherwise
      */
     private transient BooleanProperty modified;
-    // TODO: Listen to modifications of the rooms
+
+    private transient ChangeListener<Boolean> roomModificationListener;
+
+    private transient RoomMap.ChangeListener roomMapModificationListener;
 
     public Game() {
         this(new Room());
@@ -87,6 +88,61 @@ public class Game implements Serializable {
     }
 
     public Game(Room currentRoom, Player player, int score, int moveCount, List<GameMessage> messages) {
+        roomModificationListener = ((observable, oldValue, newValue) -> {
+            if (newValue) {
+                System.out.println("Room was modified");
+                setModified(true);
+            }
+        });
+        roomMapModificationListener = new RoomMap.ChangeListener() {
+            @Override
+            public void removed(WalkDirection key, Room value) {
+                System.out.println("Adjacent room was removed");
+                value.modifiedProperty().removeListener(roomModificationListener);
+                if (value.getAdjacentRooms().getChangeListenerList().contains(roomModificationListener)){
+                    value.getAdjacentRooms().getChangeListenerList().remove(roomMapModificationListener);
+                }
+            }
+
+            @Override
+            public void added(WalkDirection key, Room value) {
+                System.out.println("Adjacent room was added");
+                value.modifiedProperty().removeListener(roomModificationListener);
+                value.modifiedProperty().addListener(roomModificationListener);
+                if (!value.getAdjacentRooms().getChangeListenerList().contains(roomModificationListener)){
+                    value.getAdjacentRooms().getChangeListenerList().add(roomMapModificationListener);
+                }
+            }
+
+            @Override
+            public void replaced(WalkDirection key, Room oldValue, Room newValue) {
+                System.out.println("Adjacent room was replaced");
+                newValue.modifiedProperty().removeListener(roomModificationListener);
+                newValue.modifiedProperty().addListener(roomModificationListener);
+                if (!newValue.getAdjacentRooms().getChangeListenerList().contains(roomModificationListener)){
+                    newValue.getAdjacentRooms().getChangeListenerList().add(roomMapModificationListener);
+                }
+            }
+        };
+
+        modifiedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue){
+                // set modified for all rooms
+                LinkedList<Room> roomQueue = new LinkedList<>();
+                roomQueue.add(this.getCurrentRoom());
+                while(!roomQueue.isEmpty()){
+                    Room room = roomQueue.remove();
+                    System.out.println(room.getName());
+                    room.setModified(false);
+                    for (Map.Entry<WalkDirection, Room> entry:room.getAdjacentRooms().entrySet()){
+                        if (entry.getValue().isModified()){
+                            roomQueue.add(entry.getValue());
+                        }
+                    }
+                }
+            }
+        });
+
         this.setMessages(messages);
         this.setMoveCount(moveCount);
         this.setScore(score);
@@ -133,23 +189,23 @@ public class Game implements Serializable {
      * @return {@code true} if this game was modified since the last save, {@code false} otherwise
      */
     public boolean isModified() {
-        if (this.modified==null){
+        if (this.modified == null) {
             modified = new SimpleBooleanProperty();
         }
 
         return modified.getValue();
     }
-    
-    private void setModified(boolean modified){
-        if (this.modified==null){
+
+    private void setModified(boolean modified) {
+        if (this.modified == null) {
             this.modified = new SimpleBooleanProperty();
         }
-        
+
         this.modified.set(modified);
     }
 
     public BooleanProperty modifiedProperty() {
-        if (this.modified==null){
+        if (this.modified == null) {
             modified = new SimpleBooleanProperty();
         }
 
@@ -162,6 +218,10 @@ public class Game implements Serializable {
         }
         this.currentRoom = currentRoom;
         this.currentRoom.setIsCurrentRoom(true);
+        this.currentRoom.modifiedProperty().addListener(roomModificationListener);
+        if (!this.currentRoom.getAdjacentRooms().getChangeListenerList().contains(roomModificationListener)){
+            this.currentRoom.getAdjacentRooms().getChangeListenerList().add(roomMapModificationListener);
+        }
         setModified(true);
     }
 

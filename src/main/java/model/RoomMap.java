@@ -22,6 +22,8 @@ package model;
 
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,6 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * A map of rooms designed to save adjacent rooms of a {@link Room}
  */
 public class RoomMap extends ConcurrentHashMap<WalkDirection, Room> implements Serializable {
+    private transient List<ChangeListener> changeListenerList;
+
     @SuppressWarnings("unused")
     public RoomMap() {
         super();
@@ -50,15 +54,65 @@ public class RoomMap extends ConcurrentHashMap<WalkDirection, Room> implements S
     }
 
     @SuppressWarnings("unused")
-    public RoomMap(Map<WalkDirection, Room> m){
+    public RoomMap(Map<WalkDirection, Room> m) {
         super(m);
     }
 
     @Override
     public Room put(WalkDirection key, Room value) {
+        for (ChangeListener changeListener : this.changeListenerList) {
+            changeListener.added(key, value);
+        }
         if (this.contains(value)) {
             throw new IllegalArgumentException("Duplicate adjacent room: " + value.toString());
         }
         return super.put(key, value);
+    }
+
+    @Override
+    public boolean remove(Object key, Object value) {
+        for (ChangeListener changeListener : this.changeListenerList) {
+            changeListener.removed((WalkDirection) key, (Room) value);
+        }
+        return super.remove(key, value);
+    }
+
+    @Override
+    public boolean replace(WalkDirection key, Room oldValue, Room newValue) {
+        for (ChangeListener changeListener : this.changeListenerList) {
+            changeListener.replaced(key, oldValue, newValue);
+        }
+        return super.replace(key, oldValue, newValue);
+    }
+
+    @Override
+    public Room remove(Object key) {
+        for (ChangeListener changeListener : this.changeListenerList) {
+            changeListener.removed((WalkDirection) key, this.get(key));
+        }
+        return super.remove(key);
+    }
+
+    @Override
+    public Room replace(WalkDirection key, Room value) {
+        for (ChangeListener changeListener : this.changeListenerList) {
+            changeListener.replaced(key, this.get(key), value);
+        }
+        return super.replace(key, value);
+    }
+
+    public List<ChangeListener> getChangeListenerList() {
+        if (changeListenerList == null) {
+            changeListenerList = new ArrayList<>();
+        }
+        return changeListenerList;
+    }
+
+    public interface ChangeListener {
+        void removed(WalkDirection key, Room value);
+
+        void added(WalkDirection key, Room value);
+
+        void replaced(WalkDirection key, Room oldValue, Room newValue);
     }
 }

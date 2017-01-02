@@ -37,14 +37,18 @@ public class Room implements Serializable {
     private String name;
     private transient Runnable nameChangeListener;
     private boolean detailsTold;
-    private List<Item> itemsInRoom;
-    private List<Entity> entitiesInRoom;
+    private ItemList itemsInRoom;
+    private EntityList entitiesInRoom;
     private RoomMap adjacentRooms;
     private transient BooleanProperty isCurrentRoom;
     /**
+     * {@code true} if this game was modified since the last save, {@code false} otherwise
+     */
+    private transient BooleanProperty modified;
+    /**
      * Used for {@link #isConnectedTo(Room)}
      */
-    private List<Room> visitedRooms;
+    private transient List<Room> visitedRooms;
 
     public Room() {
         this("");
@@ -55,18 +59,18 @@ public class Room implements Serializable {
     }
 
     public Room(String name, String description) {
-        this(name, description, new ArrayList<>());
+        this(name, description, new ItemList());
     }
 
-    public Room(String name, String description, List<Item> itemsInRoom) {
-        this(name, description, itemsInRoom, new ArrayList<>());
+    public Room(String name, String description, ItemList itemsInRoom) {
+        this(name, description, itemsInRoom, new EntityList());
     }
 
-    public Room(String name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom) {
+    public Room(String name, String description, ItemList itemsInRoom, EntityList entitiesInRoom) {
         this(name, description, itemsInRoom, entitiesInRoom, new RoomMap(WalkDirection.values().length));
     }
 
-    public Room(String name, String description, List<Item> itemsInRoom, List<Entity> entitiesInRoom, RoomMap adjacentRooms) {
+    public Room(String name, String description, ItemList itemsInRoom, EntityList entitiesInRoom, RoomMap adjacentRooms) {
         this.setName(name);
         this.setDescription(description);
         this.setItemsInRoom(itemsInRoom);
@@ -107,8 +111,9 @@ public class Room implements Serializable {
     }
 
     public void setName(String name) {
-        this.name=name;
-        if (this.getNameChangeListener()!=null){
+        this.name = name;
+        setModified(true);
+        if (this.getNameChangeListener() != null) {
             this.getNameChangeListener().run();
         }
     }
@@ -122,6 +127,7 @@ public class Room implements Serializable {
     }
 
     public void setDescription(String description) {
+        setModified(true);
         this.description = description;
     }
 
@@ -130,23 +136,57 @@ public class Room implements Serializable {
     }
 
     public void setDetailsTold(boolean detailsTold) {
+        setModified(true);
         this.detailsTold = detailsTold;
     }
 
-    public List<Item> getItemsInRoom() {
+    public ItemList getItemsInRoom() {
         return itemsInRoom;
     }
 
-    public void setItemsInRoom(List<Item> itemsInRoom) {
+    public void setItemsInRoom(ItemList itemsInRoom) {
+        setModified(true);
         this.itemsInRoom = itemsInRoom;
+        this.itemsInRoom.getChangeListenerList().add(new ItemList.ChangeListener() {
+            @Override
+            public void removed(Item item) {
+                setModified(true);
+            }
+
+            @Override
+            public void added(int index, Item item) {
+                setModified(true);
+            }
+
+            @Override
+            public void replaced(int index, Item oldValue, Item newValue) {
+                setModified(true);
+            }
+        });
     }
 
-    public List<Entity> getEntitiesInRoom() {
+    public EntityList getEntitiesInRoom() {
         return entitiesInRoom;
     }
 
-    public void setEntitiesInRoom(List<Entity> entitiesInRoom) {
+    public void setEntitiesInRoom(EntityList entitiesInRoom) {
         this.entitiesInRoom = entitiesInRoom;
+        this.entitiesInRoom.getChangeListenerList().add(new EntityList.ChangeListener() {
+            @Override
+            public void removed(Entity item) {
+                setModified(true);
+            }
+
+            @Override
+            public void added(int index, Entity item) {
+                setModified(true);
+            }
+
+            @Override
+            public void replaced(int index, Entity oldValue, Entity newValue) {
+                setModified(true);
+            }
+        });
     }
 
     public RoomMap getAdjacentRooms() {
@@ -155,6 +195,52 @@ public class Room implements Serializable {
 
     public void setAdjacentRooms(RoomMap adjacentRooms) {
         this.adjacentRooms = adjacentRooms;
+
+        this.adjacentRooms.getChangeListenerList().add(new RoomMap.ChangeListener() {
+            @Override
+            public void removed(WalkDirection key, Room value) {
+                setModified(true);
+            }
+
+            @Override
+            public void added(WalkDirection key, Room value) {
+                setModified(true);
+            }
+
+            @Override
+            public void replaced(WalkDirection key, Room oldValue, Room newValue) {
+                setModified(true);
+            }
+        });
+    }
+
+    /**
+     * Checks if this game was modified since the last save.
+     *
+     * @return {@code true} if this game was modified since the last save, {@code false} otherwise
+     */
+    public boolean isModified() {
+        if (this.modified == null) {
+            modified = new SimpleBooleanProperty();
+        }
+
+        return modified.getValue();
+    }
+
+    public void setModified(boolean modified) {
+        if (this.modified == null) {
+            this.modified = new SimpleBooleanProperty();
+        }
+
+        this.modified.set(modified);
+    }
+
+    public BooleanProperty modifiedProperty() {
+        if (this.modified == null) {
+            modified = new SimpleBooleanProperty();
+        }
+
+        return modified;
     }
 
     /**
@@ -169,7 +255,7 @@ public class Room implements Serializable {
     public boolean isConnectedTo(Room room) {
         visitedRooms = new ArrayList();
 
-        boolean res = isConnectedTo(this,room);
+        boolean res = isConnectedTo(this, room);
 
         // release resources
         visitedRooms = null;
@@ -207,22 +293,24 @@ public class Room implements Serializable {
 
     /**
      * Checks if this and the specified room are direct neighbours
+     *
      * @param room The room to be checked
      * @return {@code true} if this and the specified room are direct neighbours, {@code false} otherwise
      */
-    public boolean isDirectlyConnectedTo(Room room){
-        return getDirectionTo(room)!=null;
+    public boolean isDirectlyConnectedTo(Room room) {
+        return getDirectionTo(room) != null;
     }
 
     /**
      * Returns the direction that needs to be taken to get from {@code this} room to the specified room
+     *
      * @param room The room to get the direction for
      * @return The direction to take to get from {@code this} to {@code room} or {@code null} if {@code this} and {@code room} are not directly connected
      * @see #isDirectlyConnectedTo(Room)
      */
-    public WalkDirection getDirectionTo(Room room){
-        for(Map.Entry entry:this.getAdjacentRooms().entrySet()){
-            if (entry.getValue()==room){
+    public WalkDirection getDirectionTo(Room room) {
+        for (Map.Entry entry : this.getAdjacentRooms().entrySet()) {
+            if (entry.getValue() == room) {
                 return (WalkDirection) entry.getKey();
             }
         }
@@ -231,7 +319,7 @@ public class Room implements Serializable {
     }
 
     void setIsCurrentRoom(boolean isCurrentRoom) {
-        if (this.isCurrentRoom==null){
+        if (this.isCurrentRoom == null) {
             // initialize the variable
             this.isCurrentRoom = new SimpleBooleanProperty();
         }
@@ -240,7 +328,7 @@ public class Room implements Serializable {
     }
 
     public boolean isCurrentRoom() {
-        if (this.isCurrentRoom==null){
+        if (this.isCurrentRoom == null) {
             // initialize the variable
             this.isCurrentRoom = new SimpleBooleanProperty();
         }
@@ -249,7 +337,7 @@ public class Room implements Serializable {
     }
 
     public BooleanProperty isCurrentRoomProperty() {
-        if (this.isCurrentRoom==null){
+        if (this.isCurrentRoom == null) {
             // initialize the variable
             this.isCurrentRoom = new SimpleBooleanProperty();
         }

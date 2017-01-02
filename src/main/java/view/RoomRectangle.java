@@ -216,9 +216,11 @@ public class RoomRectangle extends Rectangle implements Serializable, Selectable
                         }
 
                         if (finalRoom.getRoom().getAdjacentRooms().containsKey(WalkDirectionUtils.invert(dir))) {
-                            // finalRoom has got a connection to another room in our direction that we need to delete
-                            finalRoom.getRoom().getAdjacentRooms().get(WalkDirectionUtils.invert(dir)).getAdjacentRooms().remove(dir);
-                            finalRoom.getRoom().getAdjacentRooms().remove(WalkDirectionUtils.invert(dir));
+                            if (finalRoom.getRoom().getAdjacentRooms().get(WalkDirectionUtils.invert(dir)) != this.getRoom()) {
+                                // finalRoom has got a connection to another room in our direction that we need to delete
+                                finalRoom.getRoom().getAdjacentRooms().get(WalkDirectionUtils.invert(dir)).getAdjacentRooms().remove(dir);
+                                finalRoom.getRoom().getAdjacentRooms().remove(WalkDirectionUtils.invert(dir));
+                            }
                         }
 
                         // delete the old connection between this and finalRoom
@@ -230,19 +232,16 @@ public class RoomRectangle extends Rectangle implements Serializable, Selectable
                             }
                         }
 
-                        if (oldDirThisToFinalRoom != null) {
+                        if (oldDirThisToFinalRoom != null && oldDirThisToFinalRoom != dir) {
+                            // there was an old connection, remove it
                             this.getRoom().getAdjacentRooms().remove(oldDirThisToFinalRoom);
                             finalRoom.getRoom().getAdjacentRooms().remove(WalkDirectionUtils.invert(oldDirThisToFinalRoom));
                         }
 
-                        for (Map.Entry<WalkDirection, Room> entry : finalRoom.getRoom().getAdjacentRooms().entrySet()) {
-                            if (entry.getValue() == this.getRoom()) {
-                                finalRoom.getRoom().getAdjacentRooms().remove(entry.getKey());
-                            }
+                        if (oldDirThisToFinalRoom != dir) {
+                            this.getRoom().getAdjacentRooms().put(dir, finalRoom.getRoom());
+                            finalRoom.getRoom().getAdjacentRooms().put(WalkDirectionUtils.invert(dir), this.getRoom());
                         }
-
-                        this.getRoom().getAdjacentRooms().put(dir, finalRoom.getRoom());
-                        finalRoom.getRoom().getAdjacentRooms().put(WalkDirectionUtils.invert(dir), this.getRoom());
                     }
                 }
 
