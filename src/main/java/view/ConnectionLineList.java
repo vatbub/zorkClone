@@ -34,7 +34,6 @@ public class ConnectionLineList extends CopyOnWriteArrayList<ConnectionLine> {
         super();
     }
 
-    @SuppressWarnings({"unused"})
     public ConnectionLineList(Collection<? extends ConnectionLine> c) {
         super(c);
     }

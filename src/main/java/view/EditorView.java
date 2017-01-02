@@ -694,6 +694,9 @@ public class EditorView extends Application {
         currentGame.setValue(game);
         unconnectedRooms = new RoomRectangleList();
         allRoomsAsList = null;
+        for (ConnectionLine line:new ConnectionLineList(lineList)){
+            line.invalidate();
+        }
         renderView();
     }
 
