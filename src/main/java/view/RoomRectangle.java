@@ -45,7 +45,7 @@ import java.util.logging.Level;
 /**
  * The graphical representation of a {@link model.Room} in the {@link EditorView}
  */
-public class RoomRectangle extends Rectangle implements Serializable {
+public class RoomRectangle extends Rectangle implements Serializable, Selectable {
     private Room room;
     private BooleanProperty selected = new SimpleBooleanProperty();
     private BooleanProperty isTemporary = new SimpleBooleanProperty();
@@ -149,11 +149,15 @@ public class RoomRectangle extends Rectangle implements Serializable {
         });
 
         // Add Path using drag and drop
-        this.setOnDragDetected(event -> dragStarted = true);
+        this.setOnDragDetected(event -> {
+            dragStarted = true;
+            event.consume();
+        });
 
         this.setOnMousePressed(event -> {
             this.moveStartLocalX = event.getX() - this.getX();
             this.moveStartLocalY = event.getY() - this.getY();
+            event.consume();
         });
 
         this.setOnMouseDragged(event -> {
@@ -289,6 +293,8 @@ public class RoomRectangle extends Rectangle implements Serializable {
                     EditorView.currentEditorInstance.renderView(false);
                 }
             }
+
+            event.consume();
         });
 
         // Style
