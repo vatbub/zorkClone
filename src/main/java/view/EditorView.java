@@ -38,6 +38,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ZoomEvent;
 import javafx.scene.shape.Line;
@@ -659,10 +660,27 @@ public class EditorView extends Application {
 
         // forward events to all selected items
         // drawing.setOnMouseClicked(forwardEventsToSelectableNodesHandler);
-        drawing.setOnMousePressed(forwardEventsToSelectableNodesHandler);
-        drawing.setOnMouseReleased(forwardEventsToSelectableNodesHandler);
-        drawing.setOnDragDetected(forwardEventsToSelectableNodesHandler);
-        drawing.setOnMouseDragged(forwardEventsToSelectableNodesHandler);
+        // drawing.setOnMousePressed(forwardEventsToSelectableNodesHandler);
+        // drawing.setOnMouseReleased(forwardEventsToSelectableNodesHandler);
+        // drawing.setOnDragDetected(forwardEventsToSelectableNodesHandler);
+        // drawing.setOnMouseDragged(forwardEventsToSelectableNodesHandler);
+        scrollPane.setOnKeyReleased(event -> {
+            System.out.println("Typed: " + event.getCode());
+            if (event.getCode().equals(KeyCode.DELETE)){
+                for (Node child : new ArrayList<>(drawing.getChildren())) {
+                    if (child instanceof Disposable) {
+                        if (((Disposable) child).isSelected() && event.getTarget() != child) {
+                            FOKLogger.fine(EditorView.class.getName(), "Sending disposal command to child, Child is:  " + child.toString() + "\ntarget is: " + event.getTarget().toString());
+                            try {
+                            ((Disposable) child).dispose();}catch (IllegalStateException e){
+                                FOKLogger.log(EditorView.class.getName(), Level.INFO, "User tried to remove the current room (not allowed)", e);
+                                new Alert(Alert.AlertType.ERROR, "Could not perform delete operation: \n\n" + ExceptionUtils.getStackTrace(e)).show();
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -778,6 +796,10 @@ public class EditorView extends Application {
 
     public RoomRectangleList getAllRoomsAsList() {
         return allRoomsAsList;
+    }
+
+    public RoomRectangleList getUnconnectedRooms() {
+        return unconnectedRooms;
     }
 
     public Game getCurrentGame() {

@@ -45,7 +45,7 @@ import java.util.logging.Level;
 /**
  * The graphical representation of a {@link model.Room} in the {@link EditorView}
  */
-public class RoomRectangle extends Rectangle implements Serializable, Selectable {
+public class RoomRectangle extends Rectangle implements Serializable, Disposable, Selectable {
     private Room room;
     private BooleanProperty selected = new SimpleBooleanProperty();
     private BooleanProperty isTemporary = new SimpleBooleanProperty();
@@ -470,5 +470,23 @@ public class RoomRectangle extends Rectangle implements Serializable, Selectable
      */
     public Line getLineToRectangle(RoomRectangle target) {
         return new Line(this.getCenterX(), this.getCenterY(), target.getCenterX(), target.getCenterY());
+    }
+
+    @Override
+    public void dispose() {
+        if (this.getRoom().isCurrentRoom()){
+            throw new IllegalStateException("Cannot remove the current room: " + this.toString());
+        }
+
+        FOKLogger.fine(RoomRectangle.class.getName(), "Dispoing room " + this.toString() + "...");
+        for (Map.Entry<WalkDirection, Room> entry:this.getRoom().getAdjacentRooms().entrySet()){
+            entry.getValue().getAdjacentRooms().remove(WalkDirectionUtils.invert(entry.getKey()));
+            this.getRoom().getAdjacentRooms().remove(entry.getKey());
+        }
+
+        EditorView.currentEditorInstance.getAllRoomsAsList().remove(this);
+        EditorView.currentEditorInstance.getUnconnectedRooms().remove(this);
+        this.setCustomParent(null);
+        EditorView.currentEditorInstance.renderView(false);
     }
 }

@@ -27,13 +27,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import logging.FOKLogger;
 import model.WalkDirection;
+import model.WalkDirectionUtils;
 
 import java.util.Map;
 
 /**
  * A line that connects two rooms
  */
-public class ConnectionLine extends Line implements Selectable {
+public class ConnectionLine extends Line implements Selectable, Disposable {
     private RoomRectangle startRoom;
     private RoomRectangle endRoom;
     private InvalidationRunnable invalidationRunnable;
@@ -189,6 +190,14 @@ public class ConnectionLine extends Line implements Selectable {
     @SuppressWarnings({"unused"})
     public BooleanProperty isSelectedProperty() {
         return selected;
+    }
+
+    @Override
+    public void dispose() {
+        WalkDirection dir = WalkDirectionUtils.getFromLine(this);
+        this.getStartRoom().getRoom().getAdjacentRooms().remove(dir);
+        this.getEndRoom().getRoom().getAdjacentRooms().remove(WalkDirectionUtils.invert(dir));
+        this.invalidate();
     }
 
     public interface InvalidationRunnable {
