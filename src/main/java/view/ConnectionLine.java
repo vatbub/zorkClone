@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * A line that connects two rooms
  */
-public class ConnectionLine extends Line implements Selectable {
+public class ConnectionLine extends Line {
     private RoomRectangle startRoom;
     private RoomRectangle endRoom;
     private InvalidationRunnable invalidationRunnable;
