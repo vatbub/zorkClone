@@ -278,6 +278,7 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
                     FOKLogger.fine(RoomRectangle.class.getName(), "Room is " + fromThisToTarget.toString());
                     this.getRoom().getAdjacentRooms().put(fromThisToTarget, target.getRoom());
                     target.getRoom().getAdjacentRooms().put(fromTargetToThis, this.getRoom());
+                    target.setSelected(false);
                 }
 
                 // reset the dragging line if one was drawn
