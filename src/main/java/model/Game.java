@@ -99,7 +99,7 @@ public class Game implements Serializable {
             public void removed(WalkDirection key, Room value) {
                 FOKLogger.finest(Game.class.getName(), "Adjacent room was removed");
                 value.modifiedProperty().removeListener(roomModificationListener);
-                if (value.getAdjacentRooms().getChangeListenerList().contains(roomModificationListener)){
+                if (value.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)){
                     value.getAdjacentRooms().getChangeListenerList().remove(roomMapModificationListener);
                 }
             }
@@ -109,7 +109,7 @@ public class Game implements Serializable {
                 FOKLogger.finest(Game.class.getName(), "Adjacent room was added");
                 value.modifiedProperty().removeListener(roomModificationListener);
                 value.modifiedProperty().addListener(roomModificationListener);
-                if (!value.getAdjacentRooms().getChangeListenerList().contains(roomModificationListener)){
+                if (!value.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)){
                     value.getAdjacentRooms().getChangeListenerList().add(roomMapModificationListener);
                 }
             }
@@ -119,7 +119,7 @@ public class Game implements Serializable {
                 FOKLogger.finest(Game.class.getName(), "Adjacent room was replaced");
                 newValue.modifiedProperty().removeListener(roomModificationListener);
                 newValue.modifiedProperty().addListener(roomModificationListener);
-                if (!newValue.getAdjacentRooms().getChangeListenerList().contains(roomModificationListener)){
+                if (!newValue.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)){
                     newValue.getAdjacentRooms().getChangeListenerList().add(roomMapModificationListener);
                 }
             }
