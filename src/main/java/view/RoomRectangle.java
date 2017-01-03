@@ -149,10 +149,7 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
         });
 
         // Add Path using drag and drop
-        this.setOnDragDetected(event -> {
-            dragStarted = true;
-            event.consume();
-        });
+        this.setOnDragDetected(event -> dragStarted = true);
 
         this.setOnMousePressed(event -> {
             this.moveStartLocalX = event.getX() - this.getX();
@@ -292,8 +289,6 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
                     EditorView.currentEditorInstance.renderView(false);
                 }
             }
-
-            event.consume();
         });
 
         // Style
@@ -474,12 +469,12 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
 
     @Override
     public void dispose() {
-        if (this.getRoom().isCurrentRoom()){
+        if (this.getRoom().isCurrentRoom()) {
             throw new IllegalStateException("Cannot remove the room where the player is currently in: " + this.toString());
         }
 
         FOKLogger.fine(RoomRectangle.class.getName(), "Dispoing room " + this.toString() + "...");
-        for (Map.Entry<WalkDirection, Room> entry:this.getRoom().getAdjacentRooms().entrySet()){
+        for (Map.Entry<WalkDirection, Room> entry : this.getRoom().getAdjacentRooms().entrySet()) {
             entry.getValue().getAdjacentRooms().remove(WalkDirectionUtils.invert(entry.getKey()));
             this.getRoom().getAdjacentRooms().remove(entry.getKey());
         }

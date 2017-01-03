@@ -312,7 +312,6 @@ public class EditorView extends Application {
 
             this.setCurrentEditMode(this.getPreviousEditMode());
         }
-        event.consume();
     }
 
     @FXML
