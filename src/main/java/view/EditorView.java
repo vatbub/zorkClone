@@ -28,6 +28,7 @@ import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
@@ -53,10 +54,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.LinkedList;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.logging.Level;
 
 public class EditorView extends Application {
@@ -74,6 +72,7 @@ public class EditorView extends Application {
     private boolean isMouseOverDrawing = false;
     private boolean compassIconFaded = false;
     private static Stage stage;
+
     /**
      * Used to display a temporary room when in EditMode.INSERT_ROOM
      */
@@ -164,6 +163,20 @@ public class EditorView extends Application {
 
     @FXML
     private MenuItem menuItemSaveAs;
+
+    private EventHandler<MouseEvent> forwardEventsToSelectableNodesHandler = (event -> {
+        if (getCurrentEditMode() == EditMode.MOVE) {
+            for (Node child : new ArrayList<>(drawing.getChildren())) {
+                if (child instanceof Selectable) {
+                    if (((Selectable) child).isSelected() && event.getTarget() != child) {
+                        FOKLogger.fine(EditorView.class.getName(), "Child is:  " + child.toString() + "\ntarget is: " + event.getTarget().toString());
+                        child.fireEvent(event);
+                        event.consume();
+                    }
+                }
+            }
+        }
+    });
 
     private ConnectionLine.InvalidationRunnable lineInvalidationRunnable = (lineToDispose) -> {
         FOKLogger.info(EditorView.class.getName(), "Invalidated line that connected " + lineToDispose.getStartRoom().getRoom().getName() + " and " + lineToDispose.getEndRoom().getRoom().getName());
@@ -298,6 +311,7 @@ public class EditorView extends Application {
 
             this.setCurrentEditMode(this.getPreviousEditMode());
         }
+        event.consume();
     }
 
     @FXML
@@ -642,6 +656,13 @@ public class EditorView extends Application {
         insertPath.setTooltip(new Tooltip("Connect rooms to create walk paths"));
         autoLayoutButton.setTooltip(new Tooltip("Automatically rearrange the rooms in the view below"));
         refreshViewButton.setTooltip(new Tooltip("Refresh the current view"));
+
+        // forward events to all selected items
+        // drawing.setOnMouseClicked(forwardEventsToSelectableNodesHandler);
+        drawing.setOnMousePressed(forwardEventsToSelectableNodesHandler);
+        drawing.setOnMouseReleased(forwardEventsToSelectableNodesHandler);
+        drawing.setOnDragDetected(forwardEventsToSelectableNodesHandler);
+        drawing.setOnMouseDragged(forwardEventsToSelectableNodesHandler);
     }
 
     /**
