@@ -103,7 +103,15 @@ public class RoomMap extends ConcurrentHashMap<WalkDirection, Room> implements S
 
     public List<ChangeListener> getChangeListenerList() {
         if (changeListenerList == null) {
-            changeListenerList = new ArrayList<>();
+            changeListenerList = new ArrayList<ChangeListener>() {
+                @Override
+                public boolean add(ChangeListener element) {
+                    if (!this.contains(element)) {
+                        return super.add(element);
+                    }
+                    return false;
+                }
+            };
         }
         return changeListenerList;
     }
