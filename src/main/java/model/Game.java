@@ -97,7 +97,7 @@ public class Game implements Serializable {
         roomMapModificationListener = new RoomMap.ChangeListener() {
             @Override
             public void removed(WalkDirection key, Room value) {
-                System.out.println("Adjacent room was removed");
+                FOKLogger.finest(Game.class.getName(), "Adjacent room was removed");
                 value.modifiedProperty().removeListener(roomModificationListener);
                 if (value.getAdjacentRooms().getChangeListenerList().contains(roomModificationListener)){
                     value.getAdjacentRooms().getChangeListenerList().remove(roomMapModificationListener);
@@ -106,7 +106,7 @@ public class Game implements Serializable {
 
             @Override
             public void added(WalkDirection key, Room value) {
-                System.out.println("Adjacent room was added");
+                FOKLogger.finest(Game.class.getName(), "Adjacent room was added");
                 value.modifiedProperty().removeListener(roomModificationListener);
                 value.modifiedProperty().addListener(roomModificationListener);
                 if (!value.getAdjacentRooms().getChangeListenerList().contains(roomModificationListener)){
@@ -116,7 +116,7 @@ public class Game implements Serializable {
 
             @Override
             public void replaced(WalkDirection key, Room oldValue, Room newValue) {
-                System.out.println("Adjacent room was replaced");
+                FOKLogger.finest(Game.class.getName(), "Adjacent room was replaced");
                 newValue.modifiedProperty().removeListener(roomModificationListener);
                 newValue.modifiedProperty().addListener(roomModificationListener);
                 if (!newValue.getAdjacentRooms().getChangeListenerList().contains(roomModificationListener)){

@@ -169,8 +169,7 @@ public class EditorView extends Application {
             for (Node child : new ArrayList<>(drawing.getChildren())) {
                 if (child instanceof Selectable) {
                     if (((Selectable) child).isSelected() && event.getTarget() != child) {
-                        System.out.println("Child is:  " + child.toString());
-                        System.out.println("target is: " + event.getTarget().toString());
+                        FOKLogger.fine(EditorView.class.getName(), "Child is:  " + child.toString() + "\ntarget is: " + event.getTarget().toString());
                         child.fireEvent(event);
                         event.consume();
                     }
