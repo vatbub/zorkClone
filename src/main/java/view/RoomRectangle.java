@@ -158,6 +158,8 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
         });
 
         this.setOnMouseDragged(event -> {
+            // Forward event to scroll pane to fade out the compass image if needed
+            EditorView.currentEditorInstance.scrollPaneOnMouseMoved(event);
             if (EditorView.currentEditorInstance.getCurrentEditMode() == EditMode.INSERT_PATH) {
                 FOKLogger.fine(RoomRectangle.class.getName(), "Inserting new path...");
                 if (line == null) {
