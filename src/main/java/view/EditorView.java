@@ -201,7 +201,7 @@ public class EditorView extends Application {
                 getCurrentGame().save(getCurrentGame().getFileSource());
             } catch (IOException e) {
                 FOKLogger.log(MainWindow.class.getName(), Level.SEVERE, "Could not save the game from the \"Save\" menu", e);
-                new Alert(Alert.AlertType.ERROR, "Could not save the game file: \n\n" + ExceptionUtils.getStackTrace(e)).show();
+                new Alert(Alert.AlertType.ERROR, "Could not save the game file: \n\n" + ExceptionUtils.getRootCauseMessage(e)).show();
             }
         }
     }
@@ -218,7 +218,7 @@ public class EditorView extends Application {
                 getCurrentGame().save(file);
             } catch (IOException e) {
                 FOKLogger.log(MainWindow.class.getName(), Level.SEVERE, "Could not save the game from the \"Save As\" menu", e);
-                new Alert(Alert.AlertType.ERROR, "Could not save the game file: \n\n" + ExceptionUtils.getStackTrace(e)).show();
+                new Alert(Alert.AlertType.ERROR, "Could not save the game file: \n\n" + ExceptionUtils.getRootCauseMessage(e)).show();
             }
         }
     }
@@ -234,7 +234,7 @@ public class EditorView extends Application {
                 loadGame(file);
             } catch (IOException | ClassNotFoundException e) {
                 FOKLogger.log(MainWindow.class.getName(), Level.SEVERE, "Failed to open game " + file.toString(), e);
-                new Alert(Alert.AlertType.ERROR, "Could not open the game file: \n\n" + ExceptionUtils.getStackTrace(e)).show();
+                new Alert(Alert.AlertType.ERROR, "Could not open the game file: \n\n" + ExceptionUtils.getRootCauseMessage(e)).show();
             }
         }
     }
@@ -674,7 +674,7 @@ public class EditorView extends Application {
                             try {
                             ((Disposable) child).dispose();}catch (IllegalStateException e){
                                 FOKLogger.log(EditorView.class.getName(), Level.INFO, "User tried to remove the current room (not allowed)", e);
-                                new Alert(Alert.AlertType.ERROR, "Could not perform delete operation: \n\n" + ExceptionUtils.getStackTrace(e)).show();
+                                new Alert(Alert.AlertType.ERROR, "Could not perform delete operation: \n\n" + ExceptionUtils.getRootCauseMessage(e)).show();
                             }
                         }
                     }

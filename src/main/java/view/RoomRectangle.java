@@ -475,7 +475,7 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
     @Override
     public void dispose() {
         if (this.getRoom().isCurrentRoom()){
-            throw new IllegalStateException("Cannot remove the current room: " + this.toString());
+            throw new IllegalStateException("Cannot remove the room where the player is currently in: " + this.toString());
         }
 
         FOKLogger.fine(RoomRectangle.class.getName(), "Dispoing room " + this.toString() + "...");
