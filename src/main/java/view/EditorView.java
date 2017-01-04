@@ -64,9 +64,10 @@ import java.util.logging.Level;
 public class EditorView extends Application {
 
     public static EditorView currentEditorInstance;
-
+    public static ResourceBundle bundle;
+    private static Stage stage;
+    public ConnectionLineList lineList = new ConnectionLineList();
     private boolean unselectingDisabled;
-
     private ObjectProperty<Game> currentGame = new SimpleObjectProperty<>();
     // Unconnected Rooms will not be saved but need to be hold in the RAM while editing
     private RoomRectangleList unconnectedRooms = new RoomRectangleList();
@@ -75,24 +76,74 @@ public class EditorView extends Application {
     private EditMode previousEditMode;
     private boolean isMouseOverDrawing = false;
     private boolean compassIconFaded = false;
-    private static Stage stage;
-
     private boolean insertRoomDragDetected;
-
     /**
      * Used to display a temporary room when in EditMode.INSERT_ROOM
      */
     private RoomRectangle tempRoomForRoomInsertion;
-
-    public ConnectionLineList lineList = new ConnectionLineList();
-
     /**
      * A thread safe room counter
      */
     private int currentRoomCount = 0;
-
     private double currentMouseX = 0;
     private double currentMouseY = 0;
+    @SuppressWarnings("unused")
+    @FXML // ResourceBundle that was given to the FXMLLoader
+    private ResourceBundle resources;
+    @SuppressWarnings("unused")
+    @FXML // URL location of the FXML file that was given to the FXMLLoader
+    private URL location;
+    @FXML // fx:id="insertRoom"
+    private ToggleButton insertRoom; // Value injected by FXMLLoader
+    @FXML // fx:id="drawing"
+    private CustomGroup drawing; // Value injected by FXMLLoader
+    @FXML // fx:id="insertPath"
+    private ToggleButton insertPath; // Value injected by FXMLLoader
+    @FXML
+    private ToggleButton moveButton;
+    @FXML
+    private Button autoLayoutButton;
+    @FXML
+    private Button refreshViewButton;
+    @FXML
+    private MenuItem newMenuItem;
+    @FXML
+    private ScrollPane scrollPane;
+    @FXML
+    private ImageView compassImage;
+    @FXML
+    private MenuItem menuItemClose;
+    @FXML
+    private MenuItem menuItemOpen;
+    @FXML
+    private MenuItem menuItemSave;
+    @FXML
+    private MenuItem menuItemSaveAs;
+    @FXML
+    private AnchorPane scrollPaneContainer;
+    private EventHandler<MouseEvent> forwardEventsToSelectableNodesHandler = (event -> {
+        if (getCurrentEditMode() == EditMode.MOVE) {
+            for (Node child : new ArrayList<>(drawing.getChildren())) {
+                if (child instanceof Selectable) {
+                    if (((Selectable) child).isSelected() && event.getTarget() != child) {
+                        FOKLogger.fine(EditorView.class.getName(), "Child is:  " + child.toString() + "\ntarget is: " + event.getTarget().toString());
+                        child.fireEvent(event);
+                        event.consume();
+                    }
+                }
+            }
+        }
+    });
+    private ConnectionLine.InvalidationRunnable lineInvalidationRunnable = (lineToDispose) -> {
+        FOKLogger.info(EditorView.class.getName(), "Invalidated line that connected " + lineToDispose.getStartRoom().getRoom().getName() + " and " + lineToDispose.getEndRoom().getRoom().getName());
+        lineList.remove(lineToDispose);
+        if (lineToDispose.getStartRoom().getRoom().isDirectlyConnectedTo(lineToDispose.getEndRoom().getRoom())) {
+            // Connection between rooms must be deleted
+            lineToDispose.getStartRoom().getRoom().getAdjacentRooms().remove(WalkDirectionUtils.getFromLine(lineToDispose));
+            lineToDispose.getEndRoom().getRoom().getAdjacentRooms().remove(WalkDirectionUtils.invert(WalkDirectionUtils.getFromLine(lineToDispose)));
+        }
+        Platform.runLater(() -> drawing.getChildren().remove(lineToDispose));
+    };
 
     public static void main(String[] args) {
         common.Common.setAppName("zorkGameEditor");
@@ -120,83 +171,6 @@ public class EditorView extends Application {
 
         launch(args);
     }
-
-    public static ResourceBundle bundle;
-
-    @SuppressWarnings("unused")
-    @FXML // ResourceBundle that was given to the FXMLLoader
-    private ResourceBundle resources;
-
-    @SuppressWarnings("unused")
-    @FXML // URL location of the FXML file that was given to the FXMLLoader
-    private URL location;
-
-    @FXML // fx:id="insertRoom"
-    private ToggleButton insertRoom; // Value injected by FXMLLoader
-
-    @FXML // fx:id="drawing"
-    private CustomGroup drawing; // Value injected by FXMLLoader
-
-    @FXML // fx:id="insertPath"
-    private ToggleButton insertPath; // Value injected by FXMLLoader
-
-    @FXML
-    private ToggleButton moveButton;
-
-    @FXML
-    private Button autoLayoutButton;
-
-    @FXML
-    private Button refreshViewButton;
-
-    @FXML
-    private MenuItem newMenuItem;
-
-    @FXML
-    private ScrollPane scrollPane;
-
-    @FXML
-    private ImageView compassImage;
-
-    @FXML
-    private MenuItem menuItemClose;
-
-    @FXML
-    private MenuItem menuItemOpen;
-
-    @FXML
-    private MenuItem menuItemSave;
-
-    @FXML
-    private MenuItem menuItemSaveAs;
-
-    @FXML
-    private AnchorPane scrollPaneContainer;
-
-    private EventHandler<MouseEvent> forwardEventsToSelectableNodesHandler = (event -> {
-        if (getCurrentEditMode() == EditMode.MOVE) {
-            for (Node child : new ArrayList<>(drawing.getChildren())) {
-                if (child instanceof Selectable) {
-                    if (((Selectable) child).isSelected() && event.getTarget() != child) {
-                        FOKLogger.fine(EditorView.class.getName(), "Child is:  " + child.toString() + "\ntarget is: " + event.getTarget().toString());
-                        child.fireEvent(event);
-                        event.consume();
-                    }
-                }
-            }
-        }
-    });
-
-    private ConnectionLine.InvalidationRunnable lineInvalidationRunnable = (lineToDispose) -> {
-        FOKLogger.info(EditorView.class.getName(), "Invalidated line that connected " + lineToDispose.getStartRoom().getRoom().getName() + " and " + lineToDispose.getEndRoom().getRoom().getName());
-        lineList.remove(lineToDispose);
-        if (lineToDispose.getStartRoom().getRoom().isDirectlyConnectedTo(lineToDispose.getEndRoom().getRoom())) {
-            // Connection between rooms must be deleted
-            lineToDispose.getStartRoom().getRoom().getAdjacentRooms().remove(WalkDirectionUtils.getFromLine(lineToDispose));
-            lineToDispose.getEndRoom().getRoom().getAdjacentRooms().remove(WalkDirectionUtils.invert(WalkDirectionUtils.getFromLine(lineToDispose)));
-        }
-        Platform.runLater(() -> drawing.getChildren().remove(lineToDispose));
-    };
 
     @FXML
     void menuItemSaveOnAction(ActionEvent event) {

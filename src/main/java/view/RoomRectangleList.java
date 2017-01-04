@@ -82,8 +82,8 @@ public class RoomRectangleList extends CopyOnWriteArrayList<RoomRectangle> {
     }
 
     @Override
-    public boolean add(RoomRectangle roomRectangle){
-        if (this.contains(roomRectangle)){
+    public boolean add(RoomRectangle roomRectangle) {
+        if (this.contains(roomRectangle)) {
             throw new IllegalArgumentException("Duplicate child: " + roomRectangle.toString());
         }
         return super.add(roomRectangle);

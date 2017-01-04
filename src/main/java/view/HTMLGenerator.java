@@ -28,7 +28,7 @@ import java.util.Objects;
 
 /**
  * Renders the html code for the gui to show the message history<br>
- *     Style is inspired by <a href="https://codepen.io/Founts/pen/gmhcl">Jason Founts</a>
+ * Style is inspired by <a href="https://codepen.io/Founts/pen/gmhcl">Jason Founts</a>
  */
 class HTMLGenerator {
     /**
@@ -330,7 +330,7 @@ class HTMLGenerator {
 
             String messageString = message.getMessage().replace("\n", "<br>");
             // Add empty line if there is no message
-            if (messageString.equals("")){
+            if (messageString.equals("")) {
                 messageString = "<br>";
             }
 

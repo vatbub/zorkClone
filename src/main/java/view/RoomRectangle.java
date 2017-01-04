@@ -351,15 +351,6 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
     }
 
     /**
-     * Sets the parent of this node like {@code Node.getChildren.add(this)}. The custom implementation was required to enforce that this node always has a parent.
-     *
-     * @param parent The parent to set
-     */
-    public void setCustomParent(CustomGroup parent) {
-        this.setCustomParent(parent, true);
-    }
-
-    /**
      * Sets the current parent of the node. The custom implementation was required to enforce that this node always has a parent.
      *
      * @param parent          The new parent to set
@@ -407,17 +398,26 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
         return parent;
     }
 
-    public boolean isRendered() {
-        return this.getCustomParent() != null;
+    /**
+     * Sets the parent of this node like {@code Node.getChildren.add(this)}. The custom implementation was required to enforce that this node always has a parent.
+     *
+     * @param parent The parent to set
+     */
+    public void setCustomParent(CustomGroup parent) {
+        this.setCustomParent(parent, true);
     }
 
-    public void setTemporary(boolean isTemporary) {
-        this.isTemporary.set(isTemporary);
+    public boolean isRendered() {
+        return this.getCustomParent() != null;
     }
 
     @SuppressWarnings("unused")
     public boolean isTemporary() {
         return isTemporary.get();
+    }
+
+    public void setTemporary(boolean isTemporary) {
+        this.isTemporary.set(isTemporary);
     }
 
     @SuppressWarnings("unused")

@@ -50,8 +50,21 @@ import java.util.logging.Level;
 
 public class MainWindow extends Application {
 
+    public static ResourceBundle bundle;
     private static boolean disableUpdateChecks;
     Game currentGame = new Game();
+    @SuppressWarnings("unused")
+    @FXML // ResourceBundle that was given to the FXMLLoader
+    private ResourceBundle resources;
+    @SuppressWarnings("unused")
+    @FXML // URL location of the FXML file that was given to the FXMLLoader
+    private URL location;
+    @FXML // fx:id="commandLine"
+    private TextField commandLine; // Value injected by FXMLLoader
+    @FXML // fx:id="getAvailableCommandsButton"
+    private Button getAvailableCommandsButton; // Value injected by FXMLLoader
+    @FXML
+    private WebView messageView;
 
     public static void main(String[] args) {
         common.Common.setAppName("zork");
@@ -82,25 +95,6 @@ public class MainWindow extends Application {
 
         launch(args);
     }
-
-    public static ResourceBundle bundle;
-
-    @SuppressWarnings("unused")
-    @FXML // ResourceBundle that was given to the FXMLLoader
-    private ResourceBundle resources;
-
-    @SuppressWarnings("unused")
-    @FXML // URL location of the FXML file that was given to the FXMLLoader
-    private URL location;
-
-    @FXML // fx:id="commandLine"
-    private TextField commandLine; // Value injected by FXMLLoader
-
-    @FXML // fx:id="getAvailableCommandsButton"
-    private Button getAvailableCommandsButton; // Value injected by FXMLLoader
-
-    @FXML
-    private WebView messageView;
 
     @FXML
         // This method is called by the FXMLLoader when initialization is complete

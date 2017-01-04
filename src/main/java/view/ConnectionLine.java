@@ -74,13 +74,13 @@ public class ConnectionLine extends Line implements Selectable, Disposable {
         return endRoom;
     }
 
-    public RoomRectangle getStartRoom() {
-        return startRoom;
-    }
-
     public void setEndRoom(RoomRectangle endRoom) {
         this.endRoom = endRoom;
         updateLocation();
+    }
+
+    public RoomRectangle getStartRoom() {
+        return startRoom;
     }
 
     public void setStartRoom(RoomRectangle startRoom) {
@@ -200,12 +200,12 @@ public class ConnectionLine extends Line implements Selectable, Disposable {
         this.invalidate();
     }
 
-    public interface InvalidationRunnable {
-        void run(ConnectionLine lineToDispose);
-    }
-
     @Override
     public String toString() {
         return super.toString() + ", connecting " + getStartRoom().getRoom().getName() + " and " + getEndRoom().getRoom().getName();
+    }
+
+    public interface InvalidationRunnable {
+        void run(ConnectionLine lineToDispose);
     }
 }

@@ -3,6 +3,6 @@ package view;
 /**
  * A deletable map element
  */
-public interface Disposable extends Selectable{
+public interface Disposable extends Selectable {
     void dispose();
 }
