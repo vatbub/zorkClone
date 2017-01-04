@@ -31,7 +31,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -41,6 +43,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ZoomEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Line;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -73,6 +76,8 @@ public class EditorView extends Application {
     private boolean isMouseOverDrawing = false;
     private boolean compassIconFaded = false;
     private static Stage stage;
+
+    private boolean insertRoomDragDetected;
 
     /**
      * Used to display a temporary room when in EditMode.INSERT_ROOM
@@ -165,6 +170,9 @@ public class EditorView extends Application {
     @FXML
     private MenuItem menuItemSaveAs;
 
+    @FXML
+    private AnchorPane scrollPaneContainer;
+
     private EventHandler<MouseEvent> forwardEventsToSelectableNodesHandler = (event -> {
         if (getCurrentEditMode() == EditMode.MOVE) {
             for (Node child : new ArrayList<>(drawing.getChildren())) {
@@ -250,6 +258,42 @@ public class EditorView extends Application {
     }
 
     @FXML
+    void insertRoomOnDragDetected(MouseEvent event) {
+        insertRoomDragDetected = true;
+        setCurrentEditMode(EditMode.INSERT_ROOM);
+    }
+
+    @FXML
+    void insertRoomOnMouseDragged(MouseEvent event) {
+        Bounds scrollPaneBounds = scrollPaneContainer.localToScene(scrollPane.getBoundsInLocal());
+        if (event.getSceneX() >= scrollPaneBounds.getMinX() && event.getSceneX() <= scrollPaneBounds.getMaxX() && event.getSceneY() >= scrollPaneBounds.getMinY() && event.getSceneY() <= scrollPaneBounds.getMaxY()) {
+            // we're in the scroll pane
+            if (!isMouseOverDrawing) {
+                scrollPaneOnMouseEntered(event);
+            }
+        } else {
+            if (isMouseOverDrawing) {
+                scrollPaneOnMouseExited(event);
+            }
+        }
+        scrollPaneOnMouseMoved(event);
+    }
+
+    @FXML
+    void insertRoomOnMousePressed(MouseEvent event) {
+        insertRoom.setCursor(Cursor.CLOSED_HAND);
+    }
+
+    @FXML
+    void insertRoomOnMouseReleased(MouseEvent event) {
+        insertRoom.setCursor(Cursor.OPEN_HAND);
+        if (insertRoomDragDetected) {
+            insertRoomDragDetected = false;
+            scrollPaneOnMouseClicked(event);
+        }
+    }
+
+    @FXML
     void insertPathOnAction(ActionEvent event) {
         this.setCurrentEditMode(EditMode.INSERT_PATH);
     }
@@ -302,7 +346,18 @@ public class EditorView extends Application {
             - once with event.getTarget() instanceof Label (the name label of the room)
         ... and we need to suppress one of the two because we don't want to insert two rooms
          */
-        if (currentEditMode == EditMode.INSERT_ROOM && event.getTarget() instanceof RoomRectangle && event.getClickCount() == 1) {
+        /*
+        When the user uses a touch screen and adds a new room by clicking the insertRoom-button and then clicking the
+        scrollPane, the event target is an instance of ScrollPaneSkin$4 which is an anonymous inner class in ScrollPane.
+        Since we cannot directly check the class type using instanceof against that inner class, we need to use
+        event.getTarget().getClass().getName() and do a String comparison for this particular use case.
+        Keep in mind that this is an internal api of java and the class name of that class might change at ANY TIME so
+        things might break just by upgrading the java version! (But we have no other choice unfortunately :( )
+        See https://github.com/vatbub/zorkClone/issues/7 and http://stackoverflow.com/questions/41454202/javafx-instanceof-scrollpaneskin-fails
+        for more info
+         */
+        FOKLogger.finest(EditorView.class.getName(), "scrollPaneOnMouseClicked occurred. event target class is " + event.getTarget().getClass().getName());
+        if (currentEditMode == EditMode.INSERT_ROOM && (event.getTarget() instanceof RoomRectangle || event.getTarget() instanceof ToggleButton || event.getTarget().getClass().getName().equals("com.sun.javafx.scene.control.skin.ScrollPaneSkin$4")) && event.getClickCount() == 1) {
             // add tempRoomForRoomInsertion to the game
             FOKLogger.fine(MainWindow.class.getName(), "Added room to game: " + tempRoomForRoomInsertion.getRoom().getName());
             tempRoomForRoomInsertion.setTemporary(false);
@@ -317,6 +372,8 @@ public class EditorView extends Application {
     @FXML
     void scrollPaneOnMouseEntered(MouseEvent event) {
         isMouseOverDrawing = true;
+        currentMouseX = event.getScreenX();
+        currentMouseY = event.getScreenY();
         if (this.getCurrentEditMode() == EditMode.INSERT_ROOM) {
             initInsertRoomEditMode();
         }
@@ -665,13 +722,14 @@ public class EditorView extends Application {
         // drawing.setOnMouseDragged(forwardEventsToSelectableNodesHandler);
         scrollPane.setOnKeyReleased(event -> {
             System.out.println("Typed: " + event.getCode());
-            if (event.getCode().equals(KeyCode.DELETE)){
+            if (event.getCode().equals(KeyCode.DELETE)) {
                 for (Node child : new ArrayList<>(drawing.getChildren())) {
                     if (child instanceof Disposable) {
                         if (((Disposable) child).isSelected() && event.getTarget() != child) {
                             FOKLogger.fine(EditorView.class.getName(), "Sending disposal command to child, Child is:  " + child.toString() + "\ntarget is: " + event.getTarget().toString());
                             try {
-                            ((Disposable) child).dispose();}catch (IllegalStateException e){
+                                ((Disposable) child).dispose();
+                            } catch (IllegalStateException e) {
                                 FOKLogger.log(EditorView.class.getName(), Level.INFO, "User tried to remove the current room (not allowed)", e);
                                 new Alert(Alert.AlertType.ERROR, "Could not perform delete operation: \n\n" + ExceptionUtils.getRootCauseMessage(e)).show();
                             }
@@ -710,7 +768,7 @@ public class EditorView extends Application {
         currentGame.setValue(game);
         unconnectedRooms = new RoomRectangleList();
         allRoomsAsList = null;
-        for (ConnectionLine line:new ConnectionLineList(lineList)){
+        for (ConnectionLine line : new ConnectionLineList(lineList)) {
             line.invalidate();
         }
         renderView();

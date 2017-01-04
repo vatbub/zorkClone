@@ -10,7 +10,7 @@
 
 <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="571.0" prefWidth="781.0" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.EditorView">
          <center>
-      <AnchorPane>
+      <AnchorPane fx:id="scrollPaneContainer">
          <children>
                   <ScrollPane fx:id="scrollPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onMouseClicked="#scrollPaneOnMouseClicked" onMouseEntered="#scrollPaneOnMouseEntered" onMouseExited="#scrollPaneOnMouseExited" onMouseMoved="#scrollPaneOnMouseMoved" onMouseReleased="#scrollPaneOnMouseReleased" onZoom="#scrollPaneOnZoom" pannable="true" prefHeight="200.0" prefWidth="200.0" styleClass="scrollPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
                      <content>
@@ -53,7 +53,10 @@
                   </MenuBar>
                   <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                     <items>
-                      <ToggleButton fx:id="insertRoom" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#insertRoomOnAction" text="insertRoom" />
+                      <ToggleButton fx:id="insertRoom" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#insertRoomOnAction" onDragDetected="#insertRoomOnDragDetected" onMouseDragged="#insertRoomOnMouseDragged" onMousePressed="#insertRoomOnMousePressed" onMouseReleased="#insertRoomOnMouseReleased" text="insertRoom">
+                     <cursor>
+                        <Cursor fx:constant="OPEN_HAND" />
+                     </cursor></ToggleButton>
                         <ToggleButton fx:id="moveButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#moveButtonOnAction" text="move" />
                         <ToggleButton fx:id="insertPath" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#insertPathOnAction" text="insertPath" />
                         <Button fx:id="autoLayoutButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#autoLayoutButtonOnAction" text="autoLayout" />
