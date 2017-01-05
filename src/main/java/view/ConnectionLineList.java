@@ -79,4 +79,40 @@ public class ConnectionLineList extends CopyOnWriteArrayList<ConnectionLine> {
         // nothing found
         return null;
     }
+
+    /**
+     * Checks if the angle of all lines in this list matches their preferred angle exactly.
+     *
+     * @return {@code true} if the angle of all lines matches their preferred angle exactly, {@code false} if at least one angle does not match
+     */
+    public boolean allLinesMatchPreferredAngle() {
+        return allLinesMatchPreferredAngle(0);
+    }
+
+    /**
+     * Checks if the angle of all lines in this list matches their preferred angle within the specified tolerance.
+     *
+     * @param tolerance The angle tolerance that is still tolerated
+     * @return {@code true} if the angle of all lines matches their preferred angle within the specified tolerance, {@code false} if at least one angle does not match
+     */
+    public boolean allLinesMatchPreferredAngle(double tolerance) {
+        return getLinesThatDoNotMatchPreferredAngle(tolerance).size() == 0;
+    }
+
+    public ConnectionLineList getLinesThatDoNotMatchPreferredAngle() {
+        return getLinesThatDoNotMatchPreferredAngle(0);
+    }
+
+    public ConnectionLineList getLinesThatDoNotMatchPreferredAngle(double tolerance) {
+        ConnectionLineList res = new ConnectionLineList();
+
+        for (ConnectionLine line : this) {
+            if (Math.abs(line.getAngle() - line.getPreferredAngle()) > tolerance) {
+                // out of tolerance
+                res.add(line);
+            }
+        }
+
+        return res;
+    }
 }

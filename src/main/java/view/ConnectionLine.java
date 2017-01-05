@@ -178,6 +178,55 @@ public class ConnectionLine extends Line implements Selectable, Disposable {
         this.invalidationRunnable = invalidationRunnable;
     }
 
+    /**
+     * Calculates the angle that this line should be rendered with when using autoLayout.
+     *
+     * @return The angle that this line should be rendered with when using autoLayout in rad.
+     */
+    public double getPreferredAngle() {
+        double res = 0;
+        switch (this.getStartRoom().getRoom().getAdjacentRooms().getKeyForObject(this.getEndRoom().getRoom())) {
+            case NORTH:
+                res = 0;
+                break;
+            case WEST:
+                res = -0.5;
+                break;
+            case EAST:
+                res = 0.5;
+                break;
+            case SOUTH:
+                res = 1;
+                break;
+            case NORTH_WEST:
+                res = -0.25;
+                break;
+            case NORTH_EAST:
+                res = 0.25;
+                break;
+            case SOUTH_WEST:
+                res = -0.75;
+                break;
+            case SOUTH_EAST:
+                res = 0.75;
+                break;
+            case NONE:
+                // Will not occur
+                break;
+        }
+
+        return res * Math.PI;
+    }
+
+    /**
+     * Calculates the angle that the line is pointing in
+     *
+     * @return The angle that the line is pointing in
+     */
+    public double getAngle() {
+        return Math.atan2(this.getEndX() - this.getStartX(), this.getStartY() - this.getEndY());
+    }
+
     @SuppressWarnings({"unused"})
     public boolean isSelected() {
         return selected.get();

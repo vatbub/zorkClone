@@ -70,6 +70,14 @@ public class RoomMap extends ConcurrentHashMap<WalkDirection, Room> implements S
     }
 
     @Override
+    public Room remove(Object key) {
+        for (ChangeListener changeListener : this.changeListenerList) {
+            changeListener.removed((WalkDirection) key, this.get(key));
+        }
+        return super.remove(key);
+    }
+
+    @Override
     public boolean remove(Object key, Object value) {
         for (ChangeListener changeListener : this.changeListenerList) {
             changeListener.removed((WalkDirection) key, (Room) value);
@@ -86,14 +94,6 @@ public class RoomMap extends ConcurrentHashMap<WalkDirection, Room> implements S
     }
 
     @Override
-    public Room remove(Object key) {
-        for (ChangeListener changeListener : this.changeListenerList) {
-            changeListener.removed((WalkDirection) key, this.get(key));
-        }
-        return super.remove(key);
-    }
-
-    @Override
     public Room replace(WalkDirection key, Room value) {
         for (ChangeListener changeListener : this.changeListenerList) {
             changeListener.replaced(key, this.get(key), value);
@@ -106,6 +106,22 @@ public class RoomMap extends ConcurrentHashMap<WalkDirection, Room> implements S
             changeListenerList = new ArrayList<>();
         }
         return changeListenerList;
+    }
+
+    /**
+     * Returns the direction that the specified room is in or {@code null} if the specified room is not connected to this room
+     *
+     * @param room The room to get the direction to
+     * @return The direction that the specified room is in or {@code null} if the specified room is not connected to this room
+     */
+    public WalkDirection getKeyForObject(Room room) {
+        for (Entry<WalkDirection, Room> entry : this.entrySet()) {
+            if (entry.getValue() == room) {
+                return entry.getKey();
+            }
+        }
+
+        return null;
     }
 
     public interface ChangeListener {
