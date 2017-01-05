@@ -51,7 +51,6 @@ public class Game implements Serializable {
     private int score;
     private int moveCount;
     private List<GameMessage> messages;
-    private transient static FOKLogger log = new FOKLogger(Game.class.getName());
 
     /**
      * If the game was loaded from a file, this specifies the file it was loaded from. {@code null} if the game was not loaded from a file.
@@ -99,7 +98,7 @@ public class Game implements Serializable {
             public void removed(WalkDirection key, Room value) {
                 FOKLogger.finest(Game.class.getName(), "Adjacent room was removed");
                 value.modifiedProperty().removeListener(roomModificationListener);
-                if (value.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)){
+                if (value.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)) {
                     value.getAdjacentRooms().getChangeListenerList().remove(roomMapModificationListener);
                 }
             }
@@ -109,7 +108,7 @@ public class Game implements Serializable {
                 FOKLogger.finest(Game.class.getName(), "Adjacent room was added");
                 value.modifiedProperty().removeListener(roomModificationListener);
                 value.modifiedProperty().addListener(roomModificationListener);
-                if (!value.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)){
+                if (!value.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)) {
                     value.getAdjacentRooms().getChangeListenerList().add(roomMapModificationListener);
                 }
             }
@@ -119,23 +118,23 @@ public class Game implements Serializable {
                 FOKLogger.finest(Game.class.getName(), "Adjacent room was replaced");
                 newValue.modifiedProperty().removeListener(roomModificationListener);
                 newValue.modifiedProperty().addListener(roomModificationListener);
-                if (!newValue.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)){
+                if (!newValue.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)) {
                     newValue.getAdjacentRooms().getChangeListenerList().add(roomMapModificationListener);
                 }
             }
         };
 
         modifiedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue){
+            if (!newValue) {
                 // set modified for all rooms
                 LinkedList<Room> roomQueue = new LinkedList<>();
                 roomQueue.add(this.getCurrentRoom());
-                while(!roomQueue.isEmpty()){
+                while (!roomQueue.isEmpty()) {
                     Room room = roomQueue.remove();
                     System.out.println(room.getName());
                     room.setModified(false);
-                    for (Map.Entry<WalkDirection, Room> entry:room.getAdjacentRooms().entrySet()){
-                        if (entry.getValue().isModified()){
+                    for (Map.Entry<WalkDirection, Room> entry : room.getAdjacentRooms().entrySet()) {
+                        if (entry.getValue().isModified()) {
                             roomQueue.add(entry.getValue());
                         }
                     }
@@ -150,24 +149,93 @@ public class Game implements Serializable {
         this.setCurrentRoom(currentRoom);
     }
 
+    /**
+     * Loads a game from the specified {@code File}.
+     *
+     * @param saveFileLocation The fully qualified path and name of the file to load the save from.
+     * @return The game that was saved in that file
+     * @throws IOException            If the specified file dows not exist or cannot be read for some other reason.
+     * @throws ClassNotFoundException If the specified file does not contain a {@code Game} but anything else (wrong file format)
+     * @see #save()
+     * @see #save(String)
+     * @see #save(File)
+     * @see #gameSavedWithAppVersion
+     */
+    public static Game load(String saveFileLocation) throws IOException, ClassNotFoundException {
+        return Game.load(new File(saveFileLocation));
+    }
+
+    /**
+     * Loads a game from the specified {@code File}.
+     *
+     * @param saveFile The file to load the save from
+     * @return The game that was saved in that file
+     * @throws IOException            If the specified file dows not exist or cannot be read for some other reason.
+     * @throws ClassNotFoundException If the specified file does not contain a {@code Game} but anything else (wrong file format)
+     */
+    public static Game load(@NotNull File saveFile) throws IOException, ClassNotFoundException {
+        Objects.requireNonNull(saveFile);
+
+        FileInputStream fileIn = new FileInputStream(saveFile);
+        ObjectInputStream objIn = new ObjectInputStream(fileIn);
+
+        Game res = (Game) objIn.readObject();
+        res.setFileSource(saveFile);
+        res.getCurrentRoom().setIsCurrentRoom(true);
+        return res;
+    }
+
     public int getMoveCount() {
         return moveCount;
+    }
+
+    public void setMoveCount(int moveCount) {
+        this.moveCount = moveCount;
+        setModified(true);
     }
 
     public int getScore() {
         return score;
     }
 
+    public void setScore(int score) {
+        this.score = score;
+        setModified(true);
+    }
+
     public Player getPlayer() {
         return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+        setModified(true);
     }
 
     public Room getCurrentRoom() {
         return currentRoom;
     }
 
+    public void setCurrentRoom(Room currentRoom) {
+        if (this.currentRoom != null) {
+            this.currentRoom.setIsCurrentRoom(false);
+        }
+        this.currentRoom = currentRoom;
+        this.currentRoom.setIsCurrentRoom(true);
+        this.currentRoom.modifiedProperty().addListener(roomModificationListener);
+        if (!this.currentRoom.getAdjacentRooms().getChangeListenerList().contains(roomModificationListener)) {
+            this.currentRoom.getAdjacentRooms().getChangeListenerList().add(roomMapModificationListener);
+        }
+        setModified(true);
+    }
+
     public List<GameMessage> getMessages() {
         return messages;
+    }
+
+    public void setMessages(List<GameMessage> messages) {
+        this.messages = messages;
+        setModified(true);
     }
 
     public String getGameSavedWithAppVersion() {
@@ -181,6 +249,10 @@ public class Game implements Serializable {
      */
     public File getFileSource() {
         return fileSource;
+    }
+
+    public void setFileSource(File fileSource) {
+        this.fileSource = fileSource;
     }
 
     /**
@@ -211,44 +283,6 @@ public class Game implements Serializable {
 
         return modified;
     }
-
-    public void setCurrentRoom(Room currentRoom) {
-        if (this.currentRoom != null) {
-            this.currentRoom.setIsCurrentRoom(false);
-        }
-        this.currentRoom = currentRoom;
-        this.currentRoom.setIsCurrentRoom(true);
-        this.currentRoom.modifiedProperty().addListener(roomModificationListener);
-        if (!this.currentRoom.getAdjacentRooms().getChangeListenerList().contains(roomModificationListener)){
-            this.currentRoom.getAdjacentRooms().getChangeListenerList().add(roomMapModificationListener);
-        }
-        setModified(true);
-    }
-
-    public void setMoveCount(int moveCount) {
-        this.moveCount = moveCount;
-        setModified(true);
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
-        setModified(true);
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-        setModified(true);
-    }
-
-    public void setMessages(List<GameMessage> messages) {
-        this.messages = messages;
-        setModified(true);
-    }
-
-    public void setFileSource(File fileSource) {
-        this.fileSource = fileSource;
-    }
-
     public void save() {
         this.save("");
     }
@@ -288,7 +322,7 @@ public class Game implements Serializable {
         try {
             this.save(new File(fileName));
         } catch (IOException e) {
-            log.getLogger().log(Level.SEVERE, "Something magical happened and the user tried to save two games at exactly the same time. Here's the result:", e);
+            FOKLogger.log(Game.class.getName(), Level.SEVERE, "Something magical happened and the user tried to save two games at exactly the same time. Here's the result:", e);
         }
     }
 
@@ -317,41 +351,5 @@ public class Game implements Serializable {
 
         this.setFileSource(fileToSave);
         this.setModified(false);
-    }
-
-    /**
-     * Loads a game from the specified {@code File}.
-     *
-     * @param saveFileLocation The fully qualified path and name of the file to load the save from.
-     * @return The game that was saved in that file
-     * @throws IOException            If the specified file dows not exist or cannot be read for some other reason.
-     * @throws ClassNotFoundException If the specified file does not contain a {@code Game} but anything else (wrong file format)
-     * @see #save()
-     * @see #save(String)
-     * @see #save(File)
-     * @see #gameSavedWithAppVersion
-     */
-    public static Game load(String saveFileLocation) throws IOException, ClassNotFoundException {
-        return Game.load(new File(saveFileLocation));
-    }
-
-    /**
-     * Loads a game from the specified {@code File}.
-     *
-     * @param saveFile The file to load the save from
-     * @return The game that was saved in that file
-     * @throws IOException            If the specified file dows not exist or cannot be read for some other reason.
-     * @throws ClassNotFoundException If the specified file does not contain a {@code Game} but anything else (wrong file format)
-     */
-    public static Game load(@NotNull File saveFile) throws IOException, ClassNotFoundException {
-        Objects.requireNonNull(saveFile);
-
-        FileInputStream fileIn = new FileInputStream(saveFile);
-        ObjectInputStream objIn = new ObjectInputStream(fileIn);
-
-        Game res = (Game) objIn.readObject();
-        res.setFileSource(saveFile);
-        res.getCurrentRoom().setIsCurrentRoom(true);
-        return res;
     }
 }
