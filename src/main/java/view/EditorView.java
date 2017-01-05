@@ -632,6 +632,110 @@ public class EditorView extends Application {
                 }
             }
 
+            // reposition rooms to fit preferred angle of connection lines
+            if (autoLayout) {
+                Platform.runLater(() -> {
+                    double coordinateDifferenceUsedToDetermineBetterPositions = 50;
+                    double tolerance = 0.1 * Math.PI;
+                    int counter = 0;
+                    while (!lineList.allLinesMatchPreferredAngle(tolerance)) {
+                        if (counter >= 100000) {
+                            counter = 0;
+                        } else {
+                            counter++;
+                        }
+                        for (ConnectionLine line : lineList.getLinesThatDoNotMatchPreferredAngle()) {
+                            // save the current position of the end room
+                            double currentX = line.getEndRoom().getX();
+                            double currentY = line.getEndRoom().getY();
+                        /*
+                        0: north
+                        1: south
+                        2: west
+                        3: east
+                         */
+                            List<Double> modifiedAngles = new ArrayList<>(4);
+                            List<Double> x = new ArrayList<>(4);
+                            List<Double> y = new ArrayList<>(4);
+                            double xTemp;
+                            double yTemp;
+
+                            // move north
+                            xTemp = currentX;
+                            yTemp = currentY - coordinateDifferenceUsedToDetermineBetterPositions;
+                            double finalYTemp = yTemp;
+                            // Platform.runLater(() -> {
+                            line.getEndRoom().setY(finalYTemp);
+                            // });
+                            x.add(xTemp);
+                            y.add(yTemp);
+                            // Platform.runLater(() -> {
+                            line.updateLocation();
+                            // });
+                            modifiedAngles.add(Math.abs(line.getAngle() - line.getPreferredAngle()));
+
+                            // move south
+                            xTemp = currentX;
+                            yTemp = currentY + coordinateDifferenceUsedToDetermineBetterPositions;
+                            double finalYTemp1 = yTemp;
+                            // Platform.runLater(() -> {
+                            line.getEndRoom().setY(finalYTemp1);
+                            // });
+                            x.add(xTemp);
+                            y.add(yTemp);
+                            // Platform.runLater(() -> {
+                            line.updateLocation();
+                            // });
+                            modifiedAngles.add(Math.abs(line.getAngle() - line.getPreferredAngle()));
+
+                            // move west
+                            xTemp = currentX - coordinateDifferenceUsedToDetermineBetterPositions;
+                            yTemp = currentY;
+                            double finalXTemp = xTemp;
+                            // Platform.runLater(() -> {
+                            line.getEndRoom().setX(finalXTemp);
+                            // });
+                            x.add(xTemp);
+                            y.add(yTemp);
+                            //                          Platform.runLater(() -> {
+                            line.updateLocation();
+//                             });
+                            modifiedAngles.add(Math.abs(line.getAngle() - line.getPreferredAngle()));
+
+                            // move east
+                            xTemp = currentX + coordinateDifferenceUsedToDetermineBetterPositions;
+                            yTemp = currentY;
+                            double finalXTemp1 = xTemp;
+                            // Platform.runLater(() -> {
+                            line.getEndRoom().setX(finalXTemp1);
+                            // });
+                            x.add(xTemp);
+                            y.add(yTemp);
+                            // Platform.runLater(() -> {
+                            line.updateLocation();
+                            // });
+                            modifiedAngles.add(Math.abs(line.getAngle() - line.getPreferredAngle()));
+
+                            // get the direction of the minimal angle difference (that is the direction that we need to move in)
+                            double min = Collections.min(modifiedAngles);
+                            for (int i = 0; i < modifiedAngles.size(); i++) {
+                                if (modifiedAngles.get(i) == min) {
+                                    // do the move
+                                    System.out.println(min + ", dir = " + i + ", " + line.getStartRoom().getRoom().getName() + ", " + line.getEndRoom().getRoom().getName());
+                                    int finalI = i;
+                                    // Platform.runLater(() -> {
+                                    line.getEndRoom().setX(x.get(finalI));
+                                    line.getEndRoom().setY(y.get(finalI));
+                                    line.updateLocation();
+                                    // });
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
             // set the room count
             currentRoomCount = allRoomsAsList.size();
         });
