@@ -83,8 +83,15 @@
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
                 <executions>
+                    <execution>
+                        <!-- Create the jar-with-dependencies -->
+                        <id>buildMainExecutableJar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
                     <execution>
                         <id>build-editorJar</id>
                         <phase>package</phase>
@@ -121,7 +128,9 @@
                         <configuration>
                             <artifacts>
                                 <artifact>
-                                    <file>${project.build.directory}/${project.artifactId}-${project.version}-gameEditor.jar</file>
+                                    <file>
+                                        ${project.build.directory}/${project.artifactId}-${project.version}-gameEditor.jar
+                                    </file>
                                     <type>jar</type>
                                     <classifier>gameEditor</classifier>
                                 </artifact>
