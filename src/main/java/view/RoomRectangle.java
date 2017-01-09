@@ -123,7 +123,7 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
 
         this.setOnMouseClicked(event -> {
             if (event.getClickCount() == 1) {
-                this.setSelected(true);
+                this.setSelected(!this.isSelected());
             } else if (event.getClickCount() == 2) {
                 // launch editor
                 FOKLogger.info(RoomRectangle.class.getName(), "RoomEditor launched");

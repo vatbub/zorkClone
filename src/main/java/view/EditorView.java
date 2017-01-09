@@ -694,8 +694,7 @@ public class EditorView extends Application {
         // drawing.setOnMouseReleased(forwardEventsToSelectableNodesHandler);
         // drawing.setOnDragDetected(forwardEventsToSelectableNodesHandler);
         // drawing.setOnMouseDragged(forwardEventsToSelectableNodesHandler);
-        scrollPane.setOnKeyReleased(event -> {
-            System.out.println("Typed: " + event.getCode());
+        scrollPane.setOnKeyPressed(event -> {
             if (event.getCode().equals(KeyCode.DELETE)) {
                 for (Node child : new ArrayList<>(drawing.getChildren())) {
                     if (child instanceof Disposable) {
@@ -708,6 +707,13 @@ public class EditorView extends Application {
                                 new Alert(Alert.AlertType.ERROR, "Could not perform delete operation: \n\n" + ExceptionUtils.getRootCauseMessage(e)).show();
                             }
                         }
+                    }
+                }
+            } else if (event.getCode().equals(KeyCode.A) && event.isControlDown()) {
+                // select everything
+                for (Node child : new ArrayList<>(drawing.getChildren())) {
+                    if (child instanceof Selectable) {
+                        ((Selectable) child).setSelected(true);
                     }
                 }
             }

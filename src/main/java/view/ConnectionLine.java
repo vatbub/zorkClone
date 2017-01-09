@@ -81,7 +81,7 @@ public class ConnectionLine extends Line implements Selectable, Disposable {
 
         hitboxLine.setOnMouseClicked(event -> {
             if (event.getClickCount() == 1) {
-                this.setSelected(true);
+                this.setSelected(!this.isSelected());
             }
         });
 
