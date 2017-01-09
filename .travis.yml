@@ -12,8 +12,6 @@ before_install:
 - git clone -b travis `git config --get remote.origin.url` target/travis
 install:
 - mvn license:update-file-header
-- git config user.email "vatbub123@googlemail.com"
-- git config user.name "Travis CI"
 - git commit -a -m "[ci skip] [Automated commit by travis] Added license header to some files"
 - git push origin master
 script:
