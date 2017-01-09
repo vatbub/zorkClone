@@ -26,7 +26,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
@@ -59,7 +58,7 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
     /**
      * Label to show the user that this is the current room
      */
-    private ImageView currentPlayerIcon = new ImageView(new Image(this.getClass().getResourceAsStream("playerIcon.png")));
+    private PlayerIcon currentPlayerIcon = new PlayerIcon(new Image(this.getClass().getResourceAsStream("playerIcon.png")), this);
     private CustomGroup parent;
     private WalkDirection reevaluatedDirection;
 
@@ -102,11 +101,7 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
         nameLabel.setOnDragDetected(event -> thisRef.fireEvent(event));
         nameLabel.setOnMouseDragged(event -> thisRef.fireEvent(event));
 
-        currentPlayerIcon.setOnMousePressed(event -> thisRef.fireEvent(event));
         currentPlayerIcon.setOnMouseClicked(event -> thisRef.fireEvent(event));
-        currentPlayerIcon.setOnMouseReleased(event -> thisRef.fireEvent(event));
-        currentPlayerIcon.setOnDragDetected(event -> thisRef.fireEvent(event));
-        currentPlayerIcon.setOnMouseDragged(event -> thisRef.fireEvent(event));
 
         // track changes of the parent node
         this.parentProperty().addListener((observable, oldValue, newValue) -> {
@@ -125,19 +120,6 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
         this.widthProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
         this.xProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
         this.yProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
-        /*this.getRoom().nameProperty().addListener((observable, oldValue, newValue) -> {
-            Thread t = new Thread((Runnable & Serializable)() -> {
-                try {
-                    Thread.sleep(12);
-                } catch (InterruptedException e) {
-                    log.getLogger().log(Level.SEVERE, "An error occurred", e);
-                }
-
-                Platform.runLater(this::updateNameLabelPosition);
-            });
-
-            t.start();
-        });*/
 
         this.setOnMouseClicked(event -> {
             if (event.getClickCount() == 1) {
@@ -346,8 +328,9 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
         this.nameLabel.setLayoutY(centerY - nameLabel.getHeight() / 2.0);
 
         // calculate the upper left corner of the player icon
-        this.currentPlayerIcon.setLayoutX(centerX - currentPlayerIcon.getImage().getWidth() / 2.0);
-        this.currentPlayerIcon.setLayoutY(centerY + (nameLabel.getHeight() / 2.0) + 15 - currentPlayerIcon.getImage().getHeight() / 2.0);
+        this.currentPlayerIcon.setX(centerX - currentPlayerIcon.getImage().getWidth() / 2.0);
+        this.currentPlayerIcon.setY(centerY + (nameLabel.getHeight() / 2.0) + 15 - currentPlayerIcon.getImage().getHeight() / 2.0);
+        this.currentPlayerIcon.setOpacity(1);
     }
 
     /**

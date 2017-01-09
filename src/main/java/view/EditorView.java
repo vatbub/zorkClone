@@ -560,8 +560,8 @@ public class EditorView extends Application {
 
                 if (!currentRoom.isRendered()) {
                     allRoomsAsList.add(currentRoom);
-                    currentRoom.updateNameLabelPosition();
                     currentRoom.setCustomParent(drawing);
+                    currentRoom.updateNameLabelPosition();
                 }
                 for (Map.Entry<WalkDirection, Room> entry : currentRoom.getRoom().getAdjacentRooms().entrySet()) {
                     RoomRectangle newRoom;
