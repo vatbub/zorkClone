@@ -330,7 +330,6 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
         // calculate the upper left corner of the player icon
         this.currentPlayerIcon.setX(centerX - currentPlayerIcon.getImage().getWidth() / 2.0);
         this.currentPlayerIcon.setY(centerY + (nameLabel.getHeight() / 2.0) + 15 - currentPlayerIcon.getImage().getHeight() / 2.0);
-        this.currentPlayerIcon.setOpacity(1);
     }
 
     /**
@@ -429,6 +428,10 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
      */
     public double getCenterY() {
         return this.getY() + (this.getHeight() / 2);
+    }
+
+    public Label getNameLabel() {
+        return nameLabel;
     }
 
     /**

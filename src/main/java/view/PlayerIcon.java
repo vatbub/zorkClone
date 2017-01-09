@@ -14,6 +14,7 @@ public class PlayerIcon extends ImageView {
     private double moveStartLocalY;
     private RoomRectangle previousTarget;
     private RoomRectangle parent;
+    private PlayerIcon iconCopy;
 
     public PlayerIcon() {
         this(null);
@@ -33,20 +34,30 @@ public class PlayerIcon extends ImageView {
         this.setCursor(Cursor.MOVE);
 
         // initialize the events
-        // ensure the icon is drawn on top
-        this.setOnDragDetected(event -> this.toFront());
+        this.setOnDragDetected(event -> {
+            dragStarted = true;
+
+            // ensure the icon is drawn on top
+            this.toFront();
+        });
 
         this.setOnMousePressed(event -> {
             this.moveStartLocalX = event.getX() - this.getX();
             this.moveStartLocalY = event.getY() - this.getY();
+
+            // draw copy of icon on its original spot
+            iconCopy = new PlayerIcon(this.getImage(), this.getCustomParent());
+            this.getCustomParent().getCustomParent().getChildren().add(iconCopy);
+            iconCopy.setX(this.getX());
+            iconCopy.setY(this.getY());
+            iconCopy.setVisible(true);
+            iconCopy.setOpacity(0.3);
+
             event.consume();
         });
 
         this.setOnMouseDragged(event -> {
-            dragStarted = true;
-
             // move the image
-            this.setOpacity(0.5);
             FOKLogger.fine(PlayerIcon.class.getName(), "Moving the player icon...");
             this.setX(event.getX() - this.moveStartLocalX);
             this.setY(event.getY() - this.moveStartLocalY);
@@ -60,6 +71,21 @@ public class PlayerIcon extends ImageView {
             }
 
             previousTarget = newTarget;
+
+            // draw the iconCopy in the new target
+
+            if (newTarget == null) {
+                // just to draw the iconCopy
+                newTarget = this.getCustomParent();
+            }
+
+            // Get the center of the parent rectangle
+            double centerX = newTarget.getX() + newTarget.getWidth() / 2.0;
+            double centerY = newTarget.getY() + newTarget.getHeight() / 2.0;
+
+            // calculate the upper left corner of the player icon
+            iconCopy.setX(centerX - iconCopy.getImage().getWidth() / 2.0);
+            iconCopy.setY(centerY + (newTarget.getNameLabel().getHeight() / 2.0) + 15 - iconCopy.getImage().getHeight() / 2.0);
         });
         this.setOnMouseReleased(event -> {
             if (dragStarted) {
