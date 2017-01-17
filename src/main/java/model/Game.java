@@ -87,42 +87,7 @@ public class Game implements Serializable {
     }
 
     public Game(Room currentRoom, Player player, int score, int moveCount, List<GameMessage> messages) {
-        roomModificationListener = ((observable, oldValue, newValue) -> {
-            if (newValue) {
-                System.out.println("Room was modified");
-                setModified(true);
-            }
-        });
-        roomMapModificationListener = new RoomMap.ChangeListener() {
-            @Override
-            public void removed(WalkDirection key, Room value) {
-                FOKLogger.finest(Game.class.getName(), "Adjacent room was removed");
-                value.modifiedProperty().removeListener(roomModificationListener);
-                if (value.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)) {
-                    value.getAdjacentRooms().getChangeListenerList().remove(roomMapModificationListener);
-                }
-            }
-
-            @Override
-            public void added(WalkDirection key, Room value) {
-                FOKLogger.finest(Game.class.getName(), "Adjacent room was added");
-                value.modifiedProperty().removeListener(roomModificationListener);
-                value.modifiedProperty().addListener(roomModificationListener);
-                if (!value.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)) {
-                    value.getAdjacentRooms().getChangeListenerList().add(roomMapModificationListener);
-                }
-            }
-
-            @Override
-            public void replaced(WalkDirection key, Room oldValue, Room newValue) {
-                FOKLogger.finest(Game.class.getName(), "Adjacent room was replaced");
-                newValue.modifiedProperty().removeListener(roomModificationListener);
-                newValue.modifiedProperty().addListener(roomModificationListener);
-                if (!newValue.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)) {
-                    newValue.getAdjacentRooms().getChangeListenerList().add(roomMapModificationListener);
-                }
-            }
-        };
+        initListeners();
 
         modifiedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
@@ -185,6 +150,50 @@ public class Game implements Serializable {
         return res;
     }
 
+    private void initListeners() {
+        if (roomModificationListener == null) {
+            roomModificationListener = ((observable, oldValue, newValue) -> {
+                if (newValue) {
+                    System.out.println("Room was modified");
+                    setModified(true);
+                }
+            });
+        }
+
+        if (roomMapModificationListener == null) {
+            roomMapModificationListener = new RoomMap.ChangeListener() {
+                @Override
+                public void removed(WalkDirection key, Room value) {
+                    FOKLogger.finest(Game.class.getName(), "Adjacent room was removed");
+                    value.modifiedProperty().removeListener(roomModificationListener);
+                    if (value.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)) {
+                        value.getAdjacentRooms().getChangeListenerList().remove(roomMapModificationListener);
+                    }
+                }
+
+                @Override
+                public void added(WalkDirection key, Room value) {
+                    FOKLogger.finest(Game.class.getName(), "Adjacent room was added");
+                    value.modifiedProperty().removeListener(roomModificationListener);
+                    value.modifiedProperty().addListener(roomModificationListener);
+                    if (!value.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)) {
+                        value.getAdjacentRooms().getChangeListenerList().add(roomMapModificationListener);
+                    }
+                }
+
+                @Override
+                public void replaced(WalkDirection key, Room oldValue, Room newValue) {
+                    FOKLogger.finest(Game.class.getName(), "Adjacent room was replaced");
+                    newValue.modifiedProperty().removeListener(roomModificationListener);
+                    newValue.modifiedProperty().addListener(roomModificationListener);
+                    if (!newValue.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)) {
+                        newValue.getAdjacentRooms().getChangeListenerList().add(roomMapModificationListener);
+                    }
+                }
+            };
+        }
+    }
+
     public int getMoveCount() {
         return moveCount;
     }
@@ -217,6 +226,8 @@ public class Game implements Serializable {
     }
 
     public void setCurrentRoom(Room currentRoom) {
+        initListeners();
+
         if (this.currentRoom != null) {
             this.currentRoom.setIsCurrentRoom(false);
         }
@@ -283,6 +294,7 @@ public class Game implements Serializable {
 
         return modified;
     }
+
     public void save() {
         this.save("");
     }

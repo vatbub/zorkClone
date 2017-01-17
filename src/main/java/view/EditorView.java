@@ -557,9 +557,16 @@ public class EditorView extends Application {
 
             while (!renderQueue.isEmpty()) {
                 RoomRectangle currentRoom = renderQueue.remove();
+                if (currentRoom == null) {
+                    // currentRoom == null means that the room was never added to allRoomsAsList and that means that we ran into a bug, so report it :(
+                    // for now, as reporting is not yet implemented, we need to throw an exception
+                    throw new IllegalStateException("A room of the game was never added to allRoomsAsList. This is an internal bug and needs to be reported to the dev team. Please tell us at https://github.com/vatbub/zorkClone/issues what you did when this exception occurred.");
+                }
 
                 if (!currentRoom.isRendered()) {
-                    allRoomsAsList.add(currentRoom);
+                    if (!allRoomsAsList.contains(currentRoom)) {
+                        allRoomsAsList.add(currentRoom);
+                    }
                     currentRoom.setCustomParent(drawing);
                     currentRoom.updateNameLabelPosition();
                 }
@@ -570,6 +577,7 @@ public class EditorView extends Application {
                     if (newRoom == null) {
                         // not rendered yet
                         newRoom = new RoomRectangle(drawing, entry.getValue());
+                        allRoomsAsList.add(newRoom);
                     }
 
                     // Set room position

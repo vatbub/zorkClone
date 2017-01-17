@@ -60,7 +60,7 @@ public class RoomMap extends ConcurrentHashMap<WalkDirection, Room> implements S
 
     @Override
     public Room put(WalkDirection key, Room value) {
-        for (ChangeListener changeListener : this.changeListenerList) {
+        for (ChangeListener changeListener : this.getChangeListenerList()) {
             changeListener.added(key, value);
         }
         if (this.contains(value)) {
@@ -71,7 +71,7 @@ public class RoomMap extends ConcurrentHashMap<WalkDirection, Room> implements S
 
     @Override
     public Room remove(Object key) {
-        for (ChangeListener changeListener : this.changeListenerList) {
+        for (ChangeListener changeListener : this.getChangeListenerList()) {
             changeListener.removed((WalkDirection) key, this.get(key));
         }
         return super.remove(key);
@@ -79,7 +79,7 @@ public class RoomMap extends ConcurrentHashMap<WalkDirection, Room> implements S
 
     @Override
     public boolean remove(Object key, Object value) {
-        for (ChangeListener changeListener : this.changeListenerList) {
+        for (ChangeListener changeListener : this.getChangeListenerList()) {
             changeListener.removed((WalkDirection) key, (Room) value);
         }
         return super.remove(key, value);
@@ -87,7 +87,7 @@ public class RoomMap extends ConcurrentHashMap<WalkDirection, Room> implements S
 
     @Override
     public boolean replace(WalkDirection key, Room oldValue, Room newValue) {
-        for (ChangeListener changeListener : this.changeListenerList) {
+        for (ChangeListener changeListener : this.getChangeListenerList()) {
             changeListener.replaced(key, oldValue, newValue);
         }
         return super.replace(key, oldValue, newValue);
@@ -95,7 +95,7 @@ public class RoomMap extends ConcurrentHashMap<WalkDirection, Room> implements S
 
     @Override
     public Room replace(WalkDirection key, Room value) {
-        for (ChangeListener changeListener : this.changeListenerList) {
+        for (ChangeListener changeListener : this.getChangeListenerList()) {
             changeListener.replaced(key, this.get(key), value);
         }
         return super.replace(key, value);
