@@ -21,6 +21,7 @@ package view;
  */
 
 
+import common.AppConfig;
 import common.Common;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
@@ -54,6 +55,7 @@ import model.Room;
 import model.WalkDirection;
 import model.WalkDirectionUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import view.reporting.ReportingDialog;
 
 import java.io.File;
 import java.io.IOException;
@@ -146,7 +148,9 @@ public class EditorView extends Application {
     };
 
     public static void main(String[] args) {
-        common.Common.setAppName("zorkGameEditor");
+        Common.setAppName("zorkGameEditor");
+        Common.setAwsAccessKey(AppConfig.awsLogAccesKeyID);
+        Common.setAwsSecretAccessKey(AppConfig.awsLogSecretAccesKeyID);
         FOKLogger.enableLoggingOfUncaughtExceptions();
         for (String arg : args) {
             if (arg.toLowerCase().matches("mockappversion=.*")) {
@@ -559,8 +563,7 @@ public class EditorView extends Application {
                 RoomRectangle currentRoom = renderQueue.remove();
                 if (currentRoom == null) {
                     // currentRoom == null means that the room was never added to allRoomsAsList and that means that we ran into a bug, so report it :(
-                    // for now, as reporting is not yet implemented, we need to throw an exception
-                    throw new IllegalStateException("A room of the game was never added to allRoomsAsList. This is an internal bug and needs to be reported to the dev team. Please tell us at https://github.com/vatbub/zorkClone/issues what you did when this exception occurred.");
+                    new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, new IllegalStateException("A room of the game was never added to allRoomsAsList. This is an internal bug and needs to be reported to the dev team. Please tell us at https://github.com/vatbub/zorkClone/issues what you did when this exception occurred."));
                 }
 
                 if (!currentRoom.isRendered()) {
@@ -666,6 +669,17 @@ public class EditorView extends Application {
         assert insertPath != null : "fx:id=\"insertPath\" was not injected: check your FXML file 'EditorMain.fxml'.";
 
         currentEditorInstance = this;
+
+        // modify the default exception handler to show the ReportingDialog on every uncaught exception
+        final Thread.UncaughtExceptionHandler currentUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
+            if (currentUncaughtExceptionHandler != null) {
+                // execute current handler as we only want to append it
+                currentUncaughtExceptionHandler.uncaughtException(thread, exception);
+            }
+
+            new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, exception, true);
+        });
 
         currentGame.addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
