@@ -41,6 +41,7 @@ import javafx.stage.Stage;
 import logging.FOKLogger;
 import model.Game;
 import parser.Parser;
+import view.reporting.ReportingDialog;
 import view.updateAvailableDialog.UpdateAvailableDialog;
 
 import java.net.URL;
@@ -69,6 +70,16 @@ public class MainWindow extends Application {
     public static void main(String[] args) {
         common.Common.setAppName("zork");
         FOKLogger.enableLoggingOfUncaughtExceptions();
+        // modify the default exception handler to show the ReportingDialog on every uncaught exception
+        final Thread.UncaughtExceptionHandler currentUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
+            if (currentUncaughtExceptionHandler != null) {
+                // execute current handler as we only want to append it
+                currentUncaughtExceptionHandler.uncaughtException(thread, exception);
+            }
+
+            new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, exception, true);
+        });
         for (String arg : args) {
             if (arg.toLowerCase().matches("mockappversion=.*")) {
                 // Set the mock version
