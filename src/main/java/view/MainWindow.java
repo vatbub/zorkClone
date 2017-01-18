@@ -27,6 +27,7 @@ import common.UpdateChecker;
 import common.UpdateInfo;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -69,6 +70,8 @@ public class MainWindow extends Application {
 
     public static void main(String[] args) {
         common.Common.setAppName("zork");
+        Common.setAwsAccessKey(AppConfig.awsLogAccesKeyID);
+        Common.setAwsSecretAccessKey(AppConfig.awsLogSecretAccesKeyID);
         FOKLogger.enableLoggingOfUncaughtExceptions();
         // modify the default exception handler to show the ReportingDialog on every uncaught exception
         final Thread.UncaughtExceptionHandler currentUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
@@ -165,6 +168,11 @@ public class MainWindow extends Application {
             this.commandLine.setText("");
             updateCommandView();
         }
+    }
+
+    @FXML
+    void fileBugMenuItemOnAction(ActionEvent event) {
+        new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, true);
     }
 
     public void updateCommandView() {

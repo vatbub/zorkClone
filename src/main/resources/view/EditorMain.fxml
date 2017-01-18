@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.image.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
-<?import java.lang.*?>
-<?import view.*?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="571.0" prefWidth="781.0" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.EditorView">
+<?import view.CustomGroup?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+            minHeight="-Infinity" minWidth="-Infinity" prefHeight="571.0" prefWidth="781.0" GridPane.hgrow="ALWAYS"
+            GridPane.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/8" fx:controller="view.EditorView">
          <center>
       <AnchorPane fx:id="scrollPaneContainer">
          <children>
@@ -47,6 +47,8 @@
                       <Menu mnemonicParsing="false" text="Help">
                         <items>
                           <MenuItem mnemonicParsing="false" text="About" />
+                            <MenuItem mnemonicParsing="false" onAction="#fileBugMenuItemOnAction"
+                                      text="File a bug/feature request"/>
                         </items>
                       </Menu>
                     </menus>

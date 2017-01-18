@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.web.*?>
-<?import java.lang.*?>
-<?import java.net.*?>
-<?import java.util.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.*?>
-<?import javafx.scene.text.*?>
-
-<VBox prefHeight="493.0" prefWidth="828.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.MainWindow">
+<?import javafx.scene.web.WebView?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="493.0" prefWidth="828.0" xmlns="http://javafx.com/javafx/8"
+      fx:controller="view.MainWindow">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
@@ -29,6 +24,7 @@
         <Menu mnemonicParsing="false" text="%menu.title.help">
           <items>
             <MenuItem mnemonicParsing="false" text="%menu.title.about" />
+              <MenuItem mnemonicParsing="false" onAction="#fileBugMenuItemOnAction" text="%menu.title.fileBug"/>
           </items>
         </Menu>
       </menus>

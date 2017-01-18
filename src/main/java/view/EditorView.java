@@ -177,6 +177,11 @@ public class EditorView extends Application {
     }
 
     @FXML
+    void fileBugMenuItemOnAction(ActionEvent event) {
+        new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, true);
+    }
+
+    @FXML
     void menuItemSaveOnAction(ActionEvent event) {
         if (getCurrentGame().getFileSource() == null) {
             // show the save as dialog
