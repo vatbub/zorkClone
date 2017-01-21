@@ -2,6 +2,7 @@ language: java
 jdk:
 - oraclejdk8
 addons:
+  srcclr: true
   apt:
     packages:
     - oracle-java8-installer
@@ -25,8 +26,6 @@ notifications:
     - vatbub123+travisbuildnotification@googlemail.com
     on_success: never
 on_failure: always
-addons:
-  srcclr: true
 env:
   global:
   - secure: O0TlEeTmAW9KCtXPFibEmWRR3fpz6iEBYXi4yQLYZmZvpaEbmSR6nAUeLxVAv8v64Xo89A3DyZhFFu+O5kvGCwRI8Q1UDt75R/v+Neek0lGE26s0hLXTzj1Gt9RsLXIMlhn8t2DCtdHN3CYg6l3Shi3mWC3xwiR8t1yEeU+WnjRxcoLzZRNDJX8NWnQn78nL8F+gcnI2brIhvAG1U34n/KSTuO2hJHcb60U/59cA7C3OBguZOXwKbaEO4+JrkrBQG/TLrYN/ow9D/52CkNfFDLX+iHF/kdHHn91mC+zAz029PMJiaS6FMew1glPje9RqALxDrVhRdlIB72v+t37LixF6RS4C8NwyNflAI3U092mlTERpnHzdXUmY/ce5be5ZhnhSy88QWpdA4th1YRLfiPZ7WxERgi3KgSLSN9g/a874rMj5c+Yoht47JEx8FnMrKg+Qg8M+nuzpzr1jePVvVRKH4m9nY1mjU2hEYjTc4tg3DCYDSMCl9Rt6VyizHVDUSJ3yU1KY+FIZKbQQgg07Oc9rg7lpVmGK8KySfvaWgbEyYIPRAPgDLL/SQg/XqmAvtL/IDCE1w+/cONMWSlYNwJ8MJ2kCWpbIz4PX9rks0PlbLk422qKW89WWVfbdGWMS8UO+22njHkitbk0uGnm9WdWn41Jtshkn9/e56f8qEyo=
