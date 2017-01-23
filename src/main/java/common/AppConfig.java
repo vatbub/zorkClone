@@ -38,8 +38,6 @@ public class AppConfig {
     public static final String gitHubRepoName = "hangman-solver";
     public static final String gitHubUserName = "vatbub";
     // aws
-    // I know I shouldn't do that but we have to until we have a global solution to store api keys
-    // TODO: Obfuscate api keys
     public static final String awsLogAccesKeyID = new Object() {
         int t;
 
