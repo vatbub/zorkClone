@@ -139,28 +139,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- <plugin>
-                <groupId>com.github.wvengen</groupId>
-                <artifactId>proguard-maven-plugin</artifactId>
-                <version>2.0.13</version>
-                <executions>
-                    <execution>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>proguard</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <options>
-                        <option>-allowaccessmodification</option>
-                        <option>-keep public class * extends java.applet.Applet { *; }</option>
-                    </options>
-                    <libs>
-                        <lib>${java.home}/lib/rt.jar</lib>
-                    </libs>
-                </configuration>
-            </plugin> -->
         </plugins>
     </build>
 </project>
