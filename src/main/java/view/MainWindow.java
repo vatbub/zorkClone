@@ -81,7 +81,7 @@ public class MainWindow extends Application {
                 currentUncaughtExceptionHandler.uncaughtException(thread, exception);
             }
 
-            new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, exception, true);
+            new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, exception);
         });
         for (String arg : args) {
             if (arg.toLowerCase().matches("mockappversion=.*")) {
@@ -172,7 +172,7 @@ public class MainWindow extends Application {
 
     @FXML
     void fileBugMenuItemOnAction(ActionEvent event) {
-        new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, true);
+        new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName);
     }
 
     public void updateCommandView() {

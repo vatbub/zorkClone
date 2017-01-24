@@ -35,7 +35,7 @@ public class AppConfig {
     public static final String groupID = "com.github.vatbub";
     public static final String updateFileClassifier = "jar-with-dependencies";
     // issue reporting
-    public static final String gitHubRepoName = "hangman-solver";
+    public static final String gitHubRepoName = "zorkclone";
     public static final String gitHubUserName = "vatbub";
     // aws
     public static final String awsLogAccesKeyID = new Object() {
