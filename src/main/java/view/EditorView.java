@@ -682,8 +682,10 @@ public class EditorView extends Application {
                 // execute current handler as we only want to append it
                 currentUncaughtExceptionHandler.uncaughtException(thread, exception);
             }
-
-            new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, exception);
+            Platform.runLater(() -> {
+                new ExceptionAlert(exception).showAndWait();
+                new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, exception);
+            });
         });
 
         currentGame.addListener((observable, oldValue, newValue) -> {

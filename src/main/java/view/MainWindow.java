@@ -80,8 +80,10 @@ public class MainWindow extends Application {
                 // execute current handler as we only want to append it
                 currentUncaughtExceptionHandler.uncaughtException(thread, exception);
             }
-
-            new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, exception);
+            Platform.runLater(() -> {
+                new ExceptionAlert(exception).showAndWait();
+                new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, exception);
+            });
         });
         for (String arg : args) {
             if (arg.toLowerCase().matches("mockappversion=.*")) {
