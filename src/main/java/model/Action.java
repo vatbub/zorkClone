@@ -26,6 +26,7 @@ import java.util.Map;
 /**
  * A action that can happen in the {@link Game} like picking up or moving an item, moving the player...
  */
+@SuppressWarnings("unused")
 public abstract class Action {
     private String name;
     private Map<String, Object> params;

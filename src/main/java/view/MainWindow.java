@@ -54,6 +54,7 @@ public class MainWindow extends Application {
 
     public static ResourceBundle bundle;
     private static boolean disableUpdateChecks;
+    @SuppressWarnings("CanBeFinal")
     Game currentGame = new Game();
     @SuppressWarnings("unused")
     @FXML // ResourceBundle that was given to the FXMLLoader
@@ -70,8 +71,8 @@ public class MainWindow extends Application {
 
     public static void main(String[] args) {
         common.Common.setAppName("zork");
-        Common.setAwsAccessKey(AppConfig.awsLogAccesKeyID);
-        Common.setAwsSecretAccessKey(AppConfig.awsLogSecretAccesKeyID);
+        Common.setAwsAccessKey(AppConfig.awsLogAccessKeyID);
+        Common.setAwsSecretAccessKey(AppConfig.awsLogSecretAccessKeyID);
         FOKLogger.enableLoggingOfUncaughtExceptions();
         // modify the default exception handler to show the ReportingDialog on every uncaught exception
         final Thread.UncaughtExceptionHandler currentUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
@@ -117,7 +118,7 @@ public class MainWindow extends Application {
     void initialize() {
         assert commandLine != null : "fx:id=\"commandLine\" was not injected: check your FXML file 'BasicApplication_i18n.fxml'.";
         assert getAvailableCommandsButton != null : "fx:id=\"getAvailableCommandsButton\" was not injected: check your FXML file 'BasicApplication_i18n.fxml'.";
-        currentGame.getMessages().add(new GameMessage("ZORK I: The Great Underground Empire\nCopyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved.\nZORK is a registered trademark of Infocom, Inc.\n Revison " + Common.getAppVersion() + "-" + Common.getBuildNumber() + "\n\nThis game is not yet functional. Give the team some time and come back in some time. See ya :)", true));
+        currentGame.getMessages().add(new GameMessage("ZORK I: The Great Underground Empire\nCopyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved.\nZORK is a registered trademark of Infocom, Inc.\n Revision " + Common.getAppVersion() + "-" + Common.getBuildNumber() + "\n\nThis game is not yet functional. Give the team some time and come back in some time. See ya :)", true));
         updateCommandView();
     }
 

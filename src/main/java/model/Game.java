@@ -38,6 +38,7 @@ import java.util.logging.Level;
 /**
  * Represents the game as a whole, all the rooms, items and the current {@link Player}.
  */
+@SuppressWarnings("unused")
 public class Game implements Serializable {
 
     /**
@@ -78,11 +79,11 @@ public class Game implements Serializable {
         this(currentRoom, player, 0);
     }
 
-    public Game(Room currentRoom, Player player, int score) {
+    public Game(Room currentRoom, Player player, @SuppressWarnings("SameParameterValue") int score) {
         this(currentRoom, player, score, 0);
     }
 
-    public Game(Room currentRoom, Player player, int score, int moveCount) {
+    public Game(Room currentRoom, Player player, int score, @SuppressWarnings("SameParameterValue") int moveCount) {
         this(currentRoom, player, score, moveCount, new ArrayList<>());
     }
 
@@ -119,7 +120,7 @@ public class Game implements Serializable {
      *
      * @param saveFileLocation The fully qualified path and name of the file to load the save from.
      * @return The game that was saved in that file
-     * @throws IOException            If the specified file dows not exist or cannot be read for some other reason.
+     * @throws IOException            If the specified file does not exist or cannot be read for some other reason.
      * @throws ClassNotFoundException If the specified file does not contain a {@code Game} but anything else (wrong file format)
      * @see #save()
      * @see #save(String)
@@ -135,7 +136,7 @@ public class Game implements Serializable {
      *
      * @param saveFile The file to load the save from
      * @return The game that was saved in that file
-     * @throws IOException            If the specified file dows not exist or cannot be read for some other reason.
+     * @throws IOException            If the specified file does not exist or cannot be read for some other reason.
      * @throws ClassNotFoundException If the specified file does not contain a {@code Game} but anything else (wrong file format)
      */
     public static Game load(@NotNull File saveFile) throws IOException, ClassNotFoundException {
@@ -234,6 +235,7 @@ public class Game implements Serializable {
         this.currentRoom = currentRoom;
         this.currentRoom.setIsCurrentRoom(true);
         this.currentRoom.modifiedProperty().addListener(roomModificationListener);
+        //noinspection SuspiciousMethodCalls
         if (!this.currentRoom.getAdjacentRooms().getChangeListenerList().contains(roomModificationListener)) {
             this.currentRoom.getAdjacentRooms().getChangeListenerList().add(roomMapModificationListener);
         }
@@ -314,7 +316,7 @@ public class Game implements Serializable {
      * @see #load(File)
      * @see #load(String)
      */
-    public void save(@NotNull String customNamePrefix) {
+    public void save(@SuppressWarnings("SameParameterValue") @NotNull String customNamePrefix) {
         Objects.requireNonNull(customNamePrefix);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
         Date date = new Date();
@@ -351,6 +353,7 @@ public class Game implements Serializable {
 
         if (fileToSave.exists()) {
             // delete the file
+            //noinspection ResultOfMethodCallIgnored
             fileToSave.delete();
         }
 

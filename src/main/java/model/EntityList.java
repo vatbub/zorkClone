@@ -80,6 +80,7 @@ public class EntityList extends ArrayList<Entity> implements Serializable {
         return super.remove(o);
     }
 
+    @SuppressWarnings("unused")
     public interface ChangeListener {
         void removed(Entity item);
 

@@ -27,8 +27,9 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Created by Frederik on 27/11/2016.
+ * Any item in the game that can be placed in a {@link Room} or in the {@link Player}{@code s} inventory
  */
+@SuppressWarnings("unused")
 public class Item implements Serializable {
     private Noun name;
     private String description;

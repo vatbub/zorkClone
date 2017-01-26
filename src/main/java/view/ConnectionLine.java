@@ -38,13 +38,13 @@ import java.util.logging.Level;
  * A line that connects two rooms
  */
 public class ConnectionLine extends Line implements Selectable, Disposable {
+    private final BooleanProperty selected = new SimpleBooleanProperty();
+    private final ConnectionLine thisRef = this;
+    private final Line hitboxLine = new Line();
     private RoomRectangle startRoom;
     private RoomRectangle endRoom;
     private InvalidationRunnable invalidationRunnable;
-    private BooleanProperty selected = new SimpleBooleanProperty();
-    private ConnectionLine thisRef = this;
     private CustomGroup parent;
-    private Line hitboxLine = new Line();
 
     public ConnectionLine() {
         this(null, null);
@@ -142,6 +142,7 @@ public class ConnectionLine extends Line implements Selectable, Disposable {
                 }
             }
 
+            //noinspection ConstantConditions
             switch (dir) {
                 case NORTH:
                     this.setStartX(getStartRoom().getX() + getStartRoom().getWidth() / 2.0);
@@ -202,6 +203,7 @@ public class ConnectionLine extends Line implements Selectable, Disposable {
         }
     }
 
+    @SuppressWarnings("unused")
     public InvalidationRunnable getInvalidationRunnable() {
         return invalidationRunnable;
     }
@@ -337,6 +339,7 @@ public class ConnectionLine extends Line implements Selectable, Disposable {
      *
      * @param parent The parent to set
      */
+    @SuppressWarnings("unused")
     public void setCustomParent(CustomGroup parent) {
         this.setCustomParent(parent, true);
     }

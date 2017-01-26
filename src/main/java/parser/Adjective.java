@@ -26,6 +26,7 @@ import java.util.List;
 /**
  * The representation of an adjective in a sentence.
  */
+@SuppressWarnings("unused")
 public class Adjective extends Word {
     public Adjective() {
         super();

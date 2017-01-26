@@ -56,7 +56,7 @@
     <packaging>jar</packaging>
 
     <name>Zork Clone</name>
-    <description>A clone for the pouplar game Zork.</description>
+    <description>A clone for the popular game Zork.</description>
     <url>https://github.com/vatbub/${gitRepoName}</url>
 
     <properties>

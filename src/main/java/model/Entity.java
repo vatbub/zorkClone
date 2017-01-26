@@ -26,8 +26,9 @@ import parser.Word;
 import java.io.Serializable;
 
 /**
- * Any entity in the game like a {@link Player} or thief, trol, ...
+ * Any entity in the game like a {@link Player} or thief, troll, ...
  */
+@SuppressWarnings("unused")
 public class Entity implements Serializable{
     private int remainingHealth = 10;
     private Word name;

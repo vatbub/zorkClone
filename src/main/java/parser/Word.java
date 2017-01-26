@@ -29,11 +29,11 @@ import java.util.List;
  * Any word that can be used by the {@link model.Player} to interact with the game.
  */
 public class Word implements Serializable {
+    private final Word thisWordInstance;
     private String word;
     private List<String> synonyms;
-    private Word thisWordInstance;
     private List<? extends Word> permittedWordClassesThatFollow;
-    private List<Word> permittedWordsThatFollow = new ArrayList<Word>() {
+    private final List<Word> permittedWordsThatFollow = new ArrayList<Word>() {
         @Override
         public void add(int index, Word word) {
             if (!thisWordInstance.isWordPermittedAsFollowingWord(word))
@@ -94,11 +94,6 @@ public class Word implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return this.getClass().getSimpleName() + "@" + this.getWord();
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Word) {
             // obj is a word
@@ -124,6 +119,11 @@ public class Word implements Serializable {
             // Not the same class
             return false;
         }
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "@" + this.getWord();
     }
 
     /**

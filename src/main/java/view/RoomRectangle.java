@@ -45,24 +45,24 @@ import java.util.logging.Level;
  * The graphical representation of a {@link model.Room} in the {@link EditorView}
  */
 public class RoomRectangle extends Rectangle implements Serializable, Disposable, Selectable {
+    private final BooleanProperty selected = new SimpleBooleanProperty();
+    private final BooleanProperty isTemporary = new SimpleBooleanProperty();
+    private final RoomRectangle thisRef = this;
+    private final Label nameLabel = new Label();
+    /**
+     * Label to show the user that this is the current room
+     */
+    private final PlayerIcon currentPlayerIcon = new PlayerIcon(new Image(this.getClass().getResourceAsStream("playerIcon.png")), this);
     private Room room;
-    private BooleanProperty selected = new SimpleBooleanProperty();
-    private BooleanProperty isTemporary = new SimpleBooleanProperty();
-    private RoomRectangle thisRef = this;
     private boolean dragStarted;
     private Line line;
     private RoomRectangle previousTarget;
     private double moveStartLocalX = -1;
     private double moveStartLocalY = -1;
-    private Label nameLabel = new Label();
-    /**
-     * Label to show the user that this is the current room
-     */
-    private PlayerIcon currentPlayerIcon = new PlayerIcon(new Image(this.getClass().getResourceAsStream("playerIcon.png")), this);
     private CustomGroup parent;
     private WalkDirection reevaluatedDirection;
 
-    public RoomRectangle(CustomGroup parent) {
+    public RoomRectangle(@SuppressWarnings("SameParameterValue") CustomGroup parent) {
         this(parent, new Room());
     }
 
@@ -95,13 +95,13 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
         });
 
         // forward events from nameLabel and currentPlayerIcon to this rectangle
-        nameLabel.setOnMousePressed(event -> thisRef.fireEvent(event));
-        nameLabel.setOnMouseClicked(event -> thisRef.fireEvent(event));
-        nameLabel.setOnMouseReleased(event -> thisRef.fireEvent(event));
-        nameLabel.setOnDragDetected(event -> thisRef.fireEvent(event));
-        nameLabel.setOnMouseDragged(event -> thisRef.fireEvent(event));
+        nameLabel.setOnMousePressed(thisRef::fireEvent);
+        nameLabel.setOnMouseClicked(thisRef::fireEvent);
+        nameLabel.setOnMouseReleased(thisRef::fireEvent);
+        nameLabel.setOnDragDetected(thisRef::fireEvent);
+        nameLabel.setOnMouseDragged(thisRef::fireEvent);
 
-        currentPlayerIcon.setOnMouseClicked(event -> thisRef.fireEvent(event));
+        currentPlayerIcon.setOnMouseClicked(thisRef::fireEvent);
 
         // track changes of the parent node
         this.parentProperty().addListener((observable, oldValue, newValue) -> {
@@ -462,7 +462,7 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
             throw new IllegalStateException("Cannot remove the room where the player is currently in: " + this.toString());
         }
 
-        FOKLogger.fine(RoomRectangle.class.getName(), "Dispoing room " + this.toString() + "...");
+        FOKLogger.fine(RoomRectangle.class.getName(), "Disposing room " + this.toString() + "...");
         for (Map.Entry<WalkDirection, Room> entry : this.getRoom().getAdjacentRooms().entrySet()) {
             entry.getValue().getAdjacentRooms().remove(WalkDirectionUtils.invert(entry.getKey()));
             this.getRoom().getAdjacentRooms().remove(entry.getKey());

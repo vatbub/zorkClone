@@ -41,7 +41,7 @@ public class PlayerIcon extends ImageView {
         this(null);
     }
 
-    public PlayerIcon(RoomRectangle parent) {
+    public PlayerIcon(@SuppressWarnings("SameParameterValue") RoomRectangle parent) {
         this((Image) null, parent);
     }
 

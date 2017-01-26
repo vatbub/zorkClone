@@ -44,7 +44,7 @@ public class RoomRectangleList extends CopyOnWriteArrayList<RoomRectangle> {
      * Searches for the RoomRectangle that contains that particular room.
      *
      * @param room The room to find
-     * @return The {@link RoomRectangle} that contains the specified rrom or {@code null} if the room was not found.
+     * @return The {@link RoomRectangle} that contains the specified room or {@code null} if the room was not found.
      */
     @Nullable
     public RoomRectangle findByRoom(Room room) {

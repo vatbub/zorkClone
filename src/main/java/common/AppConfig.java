@@ -38,7 +38,7 @@ public class AppConfig {
     public static final String gitHubRepoName = "zorkclone";
     public static final String gitHubUserName = "vatbub";
     // aws
-    public static final String awsLogAccesKeyID = new Object() {
+    public static final String awsLogAccessKeyID = new Object() {
         int t;
 
         public String toString() {
@@ -89,7 +89,7 @@ public class AppConfig {
         }
     }.toString();
 
-    public static final String awsLogSecretAccesKeyID = new Object() {
+    public static final String awsLogSecretAccessKeyID = new Object() {
         int t;
 
         public String toString() {
