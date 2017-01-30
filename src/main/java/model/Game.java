@@ -166,9 +166,11 @@ public class Game implements Serializable {
                 @Override
                 public void removed(WalkDirection key, Room value) {
                     FOKLogger.finest(Game.class.getName(), "Adjacent room was removed");
-                    value.modifiedProperty().removeListener(roomModificationListener);
-                    if (value.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)) {
-                        value.getAdjacentRooms().getChangeListenerList().remove(roomMapModificationListener);
+                    if (value != null) {
+                        value.modifiedProperty().removeListener(roomModificationListener);
+                        if (value.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)) {
+                            value.getAdjacentRooms().getChangeListenerList().remove(roomMapModificationListener);
+                        }
                     }
                 }
 
