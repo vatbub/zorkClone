@@ -569,7 +569,7 @@ public class EditorView extends Application {
                 RoomRectangle currentRoom = renderQueue.remove();
                 if (currentRoom == null) {
                     // currentRoom == null means that the room was never added to allRoomsAsList and that means that we ran into a bug, so report it :(
-                    new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, new IllegalStateException("A room of the game was never added to allRoomsAsList. This is an internal bug and needs to be reported to the dev team. Please tell us at https://github.com/vatbub/zorkClone/issues what you did when this exception occurred."));
+                    Platform.runLater(() -> new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, new IllegalStateException("A room of the game was never added to allRoomsAsList. This is an internal bug and needs to be reported to the dev team. Please tell us at https://github.com/vatbub/zorkClone/issues what you did when this exception occurred.")));
                 }
 
                 //noinspection ConstantConditions
