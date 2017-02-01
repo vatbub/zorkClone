@@ -54,6 +54,7 @@ public class MainWindow extends Application {
 
     public static ResourceBundle bundle;
     private static boolean disableUpdateChecks;
+    private static Stage stage;
     @SuppressWarnings("CanBeFinal")
     Game currentGame = new Game();
     @SuppressWarnings("unused")
@@ -125,6 +126,7 @@ public class MainWindow extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         bundle = ResourceBundle.getBundle("view.strings");
+        stage = primaryStage;
 
         try {
             Thread updateThread = new Thread(() -> {
@@ -175,7 +177,7 @@ public class MainWindow extends Application {
 
     @FXML
     void fileBugMenuItemOnAction(ActionEvent event) {
-        new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName);
+        new ReportingDialog(stage.getScene()).show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName);
     }
 
     public void updateCommandView() {

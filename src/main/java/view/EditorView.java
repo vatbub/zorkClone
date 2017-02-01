@@ -180,7 +180,7 @@ public class EditorView extends Application {
     @FXML
     void fileBugMenuItemOnAction(ActionEvent event) {
         FOKLogger.info(EditorView.class.getName(), "Manual call of the ReportingDialog");
-        new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName);
+        new ReportingDialog(stage.getScene()).show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName);
     }
 
     @FXML
@@ -570,7 +570,7 @@ public class EditorView extends Application {
                 RoomRectangle currentRoom = renderQueue.remove();
                 if (currentRoom == null) {
                     FOKLogger.severe(EditorView.class.getName(), "currentRoom == null means that the room was never added to allRoomsAsList and that means that we ran into a bug, so report it :(");
-                    Platform.runLater(() -> new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, new IllegalStateException("A room of the game was never added to allRoomsAsList. This is an internal bug and needs to be reported to the dev team. Please tell us at https://github.com/vatbub/zorkClone/issues what you did when this exception occurred.")));
+                    Platform.runLater(() -> new ReportingDialog(stage.getScene()).show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, new IllegalStateException("A room of the game was never added to allRoomsAsList. This is an internal bug and needs to be reported to the dev team. Please tell us at https://github.com/vatbub/zorkClone/issues what you did when this exception occurred.")));
                 }
 
                 //noinspection ConstantConditions
@@ -687,7 +687,7 @@ public class EditorView extends Application {
             }
             Platform.runLater(() -> {
                 new ExceptionAlert(exception).showAndWait();
-                new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, exception);
+                new ReportingDialog(stage.getScene()).show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, exception);
             });
         });
 
