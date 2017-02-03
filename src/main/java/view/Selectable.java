@@ -26,6 +26,7 @@ import javafx.beans.property.BooleanProperty;
 /**
  * A ui element that can be selected by the user
  */
+@SuppressWarnings("unused")
 public interface Selectable {
     boolean isSelected();
 

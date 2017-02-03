@@ -21,6 +21,8 @@ package model;
  */
 
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * A map of rooms designed to save adjacent rooms of a {@link Room}
  */
+@SuppressWarnings("ALL")
 public class RoomMap extends ConcurrentHashMap<WalkDirection, Room> implements Serializable {
     private transient List<ChangeListener> changeListenerList;
 
@@ -59,8 +62,8 @@ public class RoomMap extends ConcurrentHashMap<WalkDirection, Room> implements S
     }
 
     @Override
-    public Room put(WalkDirection key, Room value) {
-        for (ChangeListener changeListener : this.changeListenerList) {
+    public Room put(@NotNull WalkDirection key, @NotNull Room value) {
+        for (ChangeListener changeListener : this.getChangeListenerList()) {
             changeListener.added(key, value);
         }
         if (this.contains(value)) {
@@ -70,8 +73,8 @@ public class RoomMap extends ConcurrentHashMap<WalkDirection, Room> implements S
     }
 
     @Override
-    public Room remove(Object key) {
-        for (ChangeListener changeListener : this.changeListenerList) {
+    public Room remove(@NotNull Object key) {
+        for (ChangeListener changeListener : this.getChangeListenerList()) {
             changeListener.removed((WalkDirection) key, this.get(key));
         }
         return super.remove(key);
@@ -79,23 +82,23 @@ public class RoomMap extends ConcurrentHashMap<WalkDirection, Room> implements S
 
     @Override
     public boolean remove(Object key, Object value) {
-        for (ChangeListener changeListener : this.changeListenerList) {
+        for (ChangeListener changeListener : this.getChangeListenerList()) {
             changeListener.removed((WalkDirection) key, (Room) value);
         }
         return super.remove(key, value);
     }
 
     @Override
-    public boolean replace(WalkDirection key, Room oldValue, Room newValue) {
-        for (ChangeListener changeListener : this.changeListenerList) {
+    public boolean replace(@NotNull WalkDirection key, @NotNull Room oldValue, @NotNull Room newValue) {
+        for (ChangeListener changeListener : this.getChangeListenerList()) {
             changeListener.replaced(key, oldValue, newValue);
         }
         return super.replace(key, oldValue, newValue);
     }
 
     @Override
-    public Room replace(WalkDirection key, Room value) {
-        for (ChangeListener changeListener : this.changeListenerList) {
+    public Room replace(@NotNull WalkDirection key, @NotNull Room value) {
+        for (ChangeListener changeListener : this.getChangeListenerList()) {
             changeListener.replaced(key, this.get(key), value);
         }
         return super.replace(key, value);
@@ -124,11 +127,15 @@ public class RoomMap extends ConcurrentHashMap<WalkDirection, Room> implements S
         return null;
     }
 
+    @SuppressWarnings("unused")
     public interface ChangeListener {
-        void removed(WalkDirection key, Room value);
+        @SuppressWarnings("unused")
+        void removed(@SuppressWarnings("unused") WalkDirection key, Room value);
 
-        void added(WalkDirection key, Room value);
+        @SuppressWarnings("unused")
+        void added(@SuppressWarnings("unused") WalkDirection key, Room value);
 
-        void replaced(WalkDirection key, Room oldValue, Room newValue);
+        @SuppressWarnings("unused")
+        void replaced(@SuppressWarnings("unused") WalkDirection key, @SuppressWarnings("unused") Room oldValue, Room newValue);
     }
 }

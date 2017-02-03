@@ -26,7 +26,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
@@ -46,24 +45,24 @@ import java.util.logging.Level;
  * The graphical representation of a {@link model.Room} in the {@link EditorView}
  */
 public class RoomRectangle extends Rectangle implements Serializable, Disposable, Selectable {
+    private final BooleanProperty selected = new SimpleBooleanProperty();
+    private final BooleanProperty isTemporary = new SimpleBooleanProperty();
+    private final RoomRectangle thisRef = this;
+    private final Label nameLabel = new Label();
+    /**
+     * Label to show the user that this is the current room
+     */
+    private final PlayerIcon currentPlayerIcon = new PlayerIcon(new Image(this.getClass().getResourceAsStream("playerIcon.png")), this);
     private Room room;
-    private BooleanProperty selected = new SimpleBooleanProperty();
-    private BooleanProperty isTemporary = new SimpleBooleanProperty();
-    private RoomRectangle thisRef = this;
     private boolean dragStarted;
     private Line line;
     private RoomRectangle previousTarget;
     private double moveStartLocalX = -1;
     private double moveStartLocalY = -1;
-    private Label nameLabel = new Label();
-    /**
-     * Label to show the user that this is the current room
-     */
-    private ImageView currentPlayerIcon = new ImageView(new Image(this.getClass().getResourceAsStream("playerIcon.png")));
     private CustomGroup parent;
     private WalkDirection reevaluatedDirection;
 
-    public RoomRectangle(CustomGroup parent) {
+    public RoomRectangle(@SuppressWarnings("SameParameterValue") CustomGroup parent) {
         this(parent, new Room());
     }
 
@@ -96,17 +95,13 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
         });
 
         // forward events from nameLabel and currentPlayerIcon to this rectangle
-        nameLabel.setOnMousePressed(event -> thisRef.fireEvent(event));
-        nameLabel.setOnMouseClicked(event -> thisRef.fireEvent(event));
-        nameLabel.setOnMouseReleased(event -> thisRef.fireEvent(event));
-        nameLabel.setOnDragDetected(event -> thisRef.fireEvent(event));
-        nameLabel.setOnMouseDragged(event -> thisRef.fireEvent(event));
+        nameLabel.setOnMousePressed(thisRef::fireEvent);
+        nameLabel.setOnMouseClicked(thisRef::fireEvent);
+        nameLabel.setOnMouseReleased(thisRef::fireEvent);
+        nameLabel.setOnDragDetected(thisRef::fireEvent);
+        nameLabel.setOnMouseDragged(thisRef::fireEvent);
 
-        currentPlayerIcon.setOnMousePressed(event -> thisRef.fireEvent(event));
-        currentPlayerIcon.setOnMouseClicked(event -> thisRef.fireEvent(event));
-        currentPlayerIcon.setOnMouseReleased(event -> thisRef.fireEvent(event));
-        currentPlayerIcon.setOnDragDetected(event -> thisRef.fireEvent(event));
-        currentPlayerIcon.setOnMouseDragged(event -> thisRef.fireEvent(event));
+        currentPlayerIcon.setOnMouseClicked(thisRef::fireEvent);
 
         // track changes of the parent node
         this.parentProperty().addListener((observable, oldValue, newValue) -> {
@@ -125,23 +120,10 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
         this.widthProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
         this.xProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
         this.yProperty().addListener((observable, oldValue, newValue) -> updateNameLabelPosition());
-        /*this.getRoom().nameProperty().addListener((observable, oldValue, newValue) -> {
-            Thread t = new Thread((Runnable & Serializable)() -> {
-                try {
-                    Thread.sleep(12);
-                } catch (InterruptedException e) {
-                    log.getLogger().log(Level.SEVERE, "An error occurred", e);
-                }
-
-                Platform.runLater(this::updateNameLabelPosition);
-            });
-
-            t.start();
-        });*/
 
         this.setOnMouseClicked(event -> {
             if (event.getClickCount() == 1) {
-                this.setSelected(true);
+                this.setSelected(!this.isSelected());
             } else if (event.getClickCount() == 2) {
                 // launch editor
                 FOKLogger.info(RoomRectangle.class.getName(), "RoomEditor launched");
@@ -162,13 +144,6 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
             EditorView.currentEditorInstance.scrollPaneOnMouseMoved(event);
             if (EditorView.currentEditorInstance.getCurrentEditMode() == EditMode.INSERT_PATH) {
                 FOKLogger.fine(RoomRectangle.class.getName(), "Inserting new path...");
-                if (line == null) {
-                    line = new Line(this.getCenterX(), this.getCenterY(), event.getX(), event.getY());
-                    this.getCustomParent().getChildren().add(line);
-                } else {
-                    line.setEndX(event.getX());
-                    line.setEndY(event.getY());
-                }
 
                 RoomRectangle newTarget = (RoomRectangle) this.getCustomParent().getRectangleByCoordinatesPreferFront(event.getX(), event.getY());
                 if (newTarget != previousTarget && previousTarget != null) {
@@ -179,6 +154,111 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
                 }
 
                 previousTarget = newTarget;
+
+                if (line == null) {
+                    line = new Line(this.moveStartLocalX + this.getX(), this.moveStartLocalY + this.getY(), event.getX(), event.getY());
+                    this.getCustomParent().getChildren().add(line);
+                } else {
+                    double startX = 0;
+                    double startY = 0;
+                    double endX = event.getX();
+                    double endY = event.getY();
+
+                    if (event.getX() >= this.getX() && event.getX() <= this.getX() + this.getWidth() && event.getY() >= this.getY() && event.getY() <= this.getY() + this.getHeight()) {
+                        startX = this.moveStartLocalX + this.getX();
+                        startY = this.moveStartLocalY + this.getY();
+                    } else {
+                        WalkDirection dir = WalkDirectionUtils.getFromLine(new Line(this.getCenterX(), this.getCenterY(), endX, endY));
+                        if (newTarget != null) {
+                            dir = WalkDirectionUtils.getFromLine(new Line(this.getCenterX(), this.getCenterY(), newTarget.getCenterX(), newTarget.getCenterY()));
+                            WalkDirection dir2 = WalkDirectionUtils.invert(dir);
+                            switch (dir2) {
+                                case NORTH:
+                                    endX = newTarget.getCenterX();
+                                    endY = newTarget.getY();
+                                    break;
+                                case WEST:
+                                    endX = newTarget.getX();
+                                    endY = newTarget.getCenterY();
+                                    break;
+                                case EAST:
+                                    endX = newTarget.getX() + newTarget.getWidth();
+                                    endY = newTarget.getCenterY();
+                                    break;
+                                case SOUTH:
+                                    endX = newTarget.getCenterX();
+                                    endY = newTarget.getY() + newTarget.getHeight();
+                                    break;
+                                case NORTH_WEST:
+                                    endX = newTarget.getX();
+                                    endY = newTarget.getY();
+                                    break;
+                                case NORTH_EAST:
+                                    endX = newTarget.getX() + newTarget.getWidth();
+                                    endY = newTarget.getY();
+                                    break;
+                                case SOUTH_WEST:
+                                    endX = newTarget.getX();
+                                    endY = newTarget.getY() + newTarget.getHeight();
+                                    break;
+                                case SOUTH_EAST:
+                                    endX = newTarget.getX() + newTarget.getWidth();
+                                    endY = newTarget.getY() + newTarget.getHeight();
+                                    break;
+                                case NONE:
+                                    throw new IllegalStateException("WalkDirection is NONE");
+                            }
+                        }
+
+                        for (Map.Entry<WalkDirection, Room> entry : this.getRoom().getAdjacentRooms().entrySet()) {
+                            ConnectionLine line2 = EditorView.currentEditorInstance.lineList.findByStartAndEndRoomIgnoreLineDirection(this, EditorView.currentEditorInstance.getAllRoomsAsList().findByRoom(entry.getValue()));
+                            if (line2 != null) {
+                                line2.setSelected(entry.getKey() == dir && newTarget != null && newTarget.getRoom() != this.getRoom().getAdjacentRooms().get(entry.getKey()));
+                            }
+                        }
+                        switch (dir) {
+                            case NORTH:
+                                startX = this.getCenterX();
+                                startY = this.getY();
+                                break;
+                            case WEST:
+                                startX = this.getX();
+                                startY = this.getCenterY();
+                                break;
+                            case EAST:
+                                startX = this.getX() + this.getWidth();
+                                startY = this.getCenterY();
+                                break;
+                            case SOUTH:
+                                startX = this.getCenterX();
+                                startY = this.getY() + this.getHeight();
+                                break;
+                            case NORTH_WEST:
+                                startX = this.getX();
+                                startY = this.getY();
+                                break;
+                            case NORTH_EAST:
+                                startX = this.getX() + this.getWidth();
+                                startY = this.getY();
+                                break;
+                            case SOUTH_WEST:
+                                startX = this.getX();
+                                startY = this.getY() + this.getHeight();
+                                break;
+                            case SOUTH_EAST:
+                                startX = this.getX() + this.getWidth();
+                                startY = this.getY() + this.getHeight();
+                                break;
+                            case NONE:
+                                throw new IllegalStateException("WalkDirection is NONE");
+                        }
+                    }
+
+                    line.setStartX(startX);
+                    line.setStartY(startY);
+                    line.setEndX(endX);
+                    line.setEndY(endY);
+                }
             } else if (EditorView.currentEditorInstance.getCurrentEditMode() == EditMode.MOVE) {
                 FOKLogger.fine(RoomRectangle.class.getName(), "Moving room...");
                 this.setX(event.getX() - this.moveStartLocalX);
@@ -255,7 +335,7 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
                 RoomRectangle target = (RoomRectangle) this.getCustomParent().getRectangleByCoordinatesPreferFront(event.getX(), event.getY());
 
                 if (target != null && target != thisRef && EditorView.currentEditorInstance.getCurrentEditMode() == EditMode.INSERT_PATH) {
-                    WalkDirection fromThisToTarget = WalkDirectionUtils.getFromLine(line);
+                    WalkDirection fromThisToTarget = WalkDirectionUtils.getFromLine(new Line(this.getCenterX(), this.getCenterY(), target.getCenterX(), target.getCenterY()));
                     WalkDirection fromTargetToThis = WalkDirectionUtils.invert(fromThisToTarget);
 
                     // Delete old references
@@ -346,8 +426,8 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
         this.nameLabel.setLayoutY(centerY - nameLabel.getHeight() / 2.0);
 
         // calculate the upper left corner of the player icon
-        this.currentPlayerIcon.setLayoutX(centerX - currentPlayerIcon.getImage().getWidth() / 2.0);
-        this.currentPlayerIcon.setLayoutY(centerY + (nameLabel.getHeight() / 2.0) + 15 - currentPlayerIcon.getImage().getHeight() / 2.0);
+        this.currentPlayerIcon.setX(centerX - currentPlayerIcon.getImage().getWidth() / 2.0);
+        this.currentPlayerIcon.setY(centerY + (nameLabel.getHeight() / 2.0) + 15 - currentPlayerIcon.getImage().getHeight() / 2.0);
     }
 
     /**
@@ -448,6 +528,10 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
         return this.getY() + (this.getHeight() / 2);
     }
 
+    public Label getNameLabel() {
+        return nameLabel;
+    }
+
     /**
      * Calculates the pythagorean distance between the center coordinates of {@code this} and the {@code target}
      *
@@ -476,7 +560,7 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
             throw new IllegalStateException("Cannot remove the room where the player is currently in: " + this.toString());
         }
 
-        FOKLogger.fine(RoomRectangle.class.getName(), "Dispoing room " + this.toString() + "...");
+        FOKLogger.fine(RoomRectangle.class.getName(), "Disposing room " + this.toString() + "...");
         for (Map.Entry<WalkDirection, Room> entry : this.getRoom().getAdjacentRooms().entrySet()) {
             entry.getValue().getAdjacentRooms().remove(WalkDirectionUtils.invert(entry.getKey()));
             this.getRoom().getAdjacentRooms().remove(entry.getKey());

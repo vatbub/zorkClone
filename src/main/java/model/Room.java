@@ -32,6 +32,7 @@ import java.util.Map;
 /**
  * Represents a room in the {@link Game}
  */
+@SuppressWarnings("unused")
 public class Room implements Serializable {
     private String description;
     private String name;
@@ -54,11 +55,11 @@ public class Room implements Serializable {
         this("");
     }
 
-    public Room(String name) {
+    public Room(@SuppressWarnings("SameParameterValue") String name) {
         this(name, "");
     }
 
-    public Room(String name, String description) {
+    public Room(String name, @SuppressWarnings("SameParameterValue") String description) {
         this(name, description, new ItemList());
     }
 
@@ -253,7 +254,7 @@ public class Room implements Serializable {
      * @return {@code true} if {@code this} and the specified room are connected to each other using paths and {@code false} if not
      */
     public boolean isConnectedTo(Room room) {
-        visitedRooms = new ArrayList();
+        visitedRooms = new ArrayList<>();
 
         boolean res = isConnectedTo(this, room);
 

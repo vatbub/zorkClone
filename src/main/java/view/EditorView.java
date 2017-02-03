@@ -21,6 +21,7 @@ package view;
  */
 
 
+import common.AppConfig;
 import common.Common;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
@@ -54,6 +55,7 @@ import model.Room;
 import model.WalkDirection;
 import model.WalkDirectionUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import view.reporting.ReportingDialog;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,9 +68,9 @@ public class EditorView extends Application {
     public static EditorView currentEditorInstance;
     public static ResourceBundle bundle;
     private static Stage stage;
-    public ConnectionLineList lineList = new ConnectionLineList();
+    public final ConnectionLineList lineList = new ConnectionLineList();
+    private final ObjectProperty<Game> currentGame = new SimpleObjectProperty<>();
     private boolean unselectingDisabled;
-    private ObjectProperty<Game> currentGame = new SimpleObjectProperty<>();
     // Unconnected Rooms will not be saved but need to be hold in the RAM while editing
     private RoomRectangleList unconnectedRooms = new RoomRectangleList();
     private RoomRectangleList allRoomsAsList;
@@ -97,6 +99,16 @@ public class EditorView extends Application {
     private ToggleButton insertRoom; // Value injected by FXMLLoader
     @FXML // fx:id="drawing"
     private CustomGroup drawing; // Value injected by FXMLLoader
+    private final ConnectionLine.InvalidationRunnable lineInvalidationRunnable = (lineToDispose) -> {
+        FOKLogger.info(EditorView.class.getName(), "Invalidated line that connected " + lineToDispose.getStartRoom().getRoom().getName() + " and " + lineToDispose.getEndRoom().getRoom().getName());
+        lineList.remove(lineToDispose);
+        if (lineToDispose.getStartRoom().getRoom().isDirectlyConnectedTo(lineToDispose.getEndRoom().getRoom())) {
+            // Connection between rooms must be deleted
+            lineToDispose.getStartRoom().getRoom().getAdjacentRooms().remove(WalkDirectionUtils.getFromLine(lineToDispose));
+            lineToDispose.getEndRoom().getRoom().getAdjacentRooms().remove(WalkDirectionUtils.invert(WalkDirectionUtils.getFromLine(lineToDispose)));
+        }
+        Platform.runLater(() -> drawing.getChildren().remove(lineToDispose));
+    };
     @FXML // fx:id="insertPath"
     private ToggleButton insertPath; // Value injected by FXMLLoader
     @FXML
@@ -121,6 +133,7 @@ public class EditorView extends Application {
     private MenuItem menuItemSaveAs;
     @FXML
     private AnchorPane scrollPaneContainer;
+    @SuppressWarnings("unused")
     private EventHandler<MouseEvent> forwardEventsToSelectableNodesHandler = (event -> {
         if (getCurrentEditMode() == EditMode.MOVE) {
             for (Node child : new ArrayList<>(drawing.getChildren())) {
@@ -134,19 +147,11 @@ public class EditorView extends Application {
             }
         }
     });
-    private ConnectionLine.InvalidationRunnable lineInvalidationRunnable = (lineToDispose) -> {
-        FOKLogger.info(EditorView.class.getName(), "Invalidated line that connected " + lineToDispose.getStartRoom().getRoom().getName() + " and " + lineToDispose.getEndRoom().getRoom().getName());
-        lineList.remove(lineToDispose);
-        if (lineToDispose.getStartRoom().getRoom().isDirectlyConnectedTo(lineToDispose.getEndRoom().getRoom())) {
-            // Connection between rooms must be deleted
-            lineToDispose.getStartRoom().getRoom().getAdjacentRooms().remove(WalkDirectionUtils.getFromLine(lineToDispose));
-            lineToDispose.getEndRoom().getRoom().getAdjacentRooms().remove(WalkDirectionUtils.invert(WalkDirectionUtils.getFromLine(lineToDispose)));
-        }
-        Platform.runLater(() -> drawing.getChildren().remove(lineToDispose));
-    };
 
     public static void main(String[] args) {
-        common.Common.setAppName("zorkGameEditor");
+        Common.setAppName("zorkGameEditor");
+        Common.setAwsAccessKey(AppConfig.awsLogAccessKeyID);
+        Common.setAwsSecretAccessKey(AppConfig.awsLogSecretAccessKeyID);
         FOKLogger.enableLoggingOfUncaughtExceptions();
         for (String arg : args) {
             if (arg.toLowerCase().matches("mockappversion=.*")) {
@@ -170,6 +175,12 @@ public class EditorView extends Application {
         }
 
         launch(args);
+    }
+
+    @FXML
+    void fileBugMenuItemOnAction(ActionEvent event) {
+        FOKLogger.info(EditorView.class.getName(), "Manual call of the ReportingDialog");
+        new ReportingDialog(stage.getScene()).show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName);
     }
 
     @FXML
@@ -299,7 +310,7 @@ public class EditorView extends Application {
         drawing.setScaleY(drawing.getScaleY() * event.getZoomFactor());
         // TODO: Update the actual size in the scrollpane (so that scrollbars appear when zooming in
         // TODO: Add Keyboard and touchpad zoom
-        // TODO: do the zoom with th eright zoom center
+        // TODO: do the zoom with the right zoom center
     }
 
     @FXML
@@ -488,7 +499,7 @@ public class EditorView extends Application {
      * Renders the current game and unconnected rooms in the view.
      *
      * @param autoLayout      If {@code true}, the rooms will be automatically laid out according to their topology.
-     * @param onlyUpdateLines If {@code true}, onyl connecting lines between the rooms are rendered, rooms are left as they are. Useful if the user is currently moving the room around with the mouse.
+     * @param onlyUpdateLines If {@code true}, only connecting lines between the rooms are rendered, rooms are left as they are. Useful if the user is currently moving the room around with the mouse.
      */
     public void renderView(boolean autoLayout, boolean onlyUpdateLines) {
         renderView(autoLayout, onlyUpdateLines, false);
@@ -498,7 +509,7 @@ public class EditorView extends Application {
      * Renders the current game and unconnected rooms in the view.
      *
      * @param autoLayout           If {@code true}, the rooms will be automatically laid out according to their topology.
-     * @param onlyUpdateLines      If {@code true}, onyl connecting lines between the rooms are rendered, rooms are left as they are. Useful if the user is currently moving the room around with the mouse.
+     * @param onlyUpdateLines      If {@code true}, only connecting lines between the rooms are rendered, rooms are left as they are. Useful if the user is currently moving the room around with the mouse.
      * @param synchronousRendering If {@code true}, the rendering will happen synchronously, otherwise asynchronously.
      */
     public void renderView(boolean autoLayout, boolean onlyUpdateLines, @SuppressWarnings("SameParameterValue") boolean synchronousRendering) {
@@ -557,11 +568,18 @@ public class EditorView extends Application {
 
             while (!renderQueue.isEmpty()) {
                 RoomRectangle currentRoom = renderQueue.remove();
+                if (currentRoom == null) {
+                    FOKLogger.severe(EditorView.class.getName(), "currentRoom == null means that the room was never added to allRoomsAsList and that means that we ran into a bug, so report it :(");
+                    Platform.runLater(() -> new ReportingDialog(stage.getScene()).show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, new IllegalStateException("A room of the game was never added to allRoomsAsList. This is an internal bug and needs to be reported to the dev team. Please tell us at https://github.com/vatbub/zorkClone/issues what you did when this exception occurred.")));
+                }
 
+                //noinspection ConstantConditions
                 if (!currentRoom.isRendered()) {
-                    allRoomsAsList.add(currentRoom);
-                    currentRoom.updateNameLabelPosition();
+                    if (!allRoomsAsList.contains(currentRoom)) {
+                        allRoomsAsList.add(currentRoom);
+                    }
                     currentRoom.setCustomParent(drawing);
+                    currentRoom.updateNameLabelPosition();
                 }
                 for (Map.Entry<WalkDirection, Room> entry : currentRoom.getRoom().getAdjacentRooms().entrySet()) {
                     RoomRectangle newRoom;
@@ -570,6 +588,7 @@ public class EditorView extends Application {
                     if (newRoom == null) {
                         // not rendered yet
                         newRoom = new RoomRectangle(drawing, entry.getValue());
+                        allRoomsAsList.add(newRoom);
                     }
 
                     // Set room position
@@ -763,6 +782,19 @@ public class EditorView extends Application {
 
         currentEditorInstance = this;
 
+        // modify the default exception handler to show the ReportingDialog on every uncaught exception
+        final Thread.UncaughtExceptionHandler currentUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
+            if (currentUncaughtExceptionHandler != null) {
+                // execute current handler as we only want to append it
+                currentUncaughtExceptionHandler.uncaughtException(thread, exception);
+            }
+            Platform.runLater(() -> {
+                new ExceptionAlert(exception).showAndWait();
+                new ReportingDialog(stage.getScene()).show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, exception);
+            });
+        });
+
         currentGame.addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 newValue.modifiedProperty().addListener((observable1, oldValue1, newValue1) -> {
@@ -798,8 +830,7 @@ public class EditorView extends Application {
         // drawing.setOnMouseReleased(forwardEventsToSelectableNodesHandler);
         // drawing.setOnDragDetected(forwardEventsToSelectableNodesHandler);
         // drawing.setOnMouseDragged(forwardEventsToSelectableNodesHandler);
-        scrollPane.setOnKeyReleased(event -> {
-            System.out.println("Typed: " + event.getCode());
+        scrollPane.setOnKeyPressed(event -> {
             if (event.getCode().equals(KeyCode.DELETE)) {
                 for (Node child : new ArrayList<>(drawing.getChildren())) {
                     if (child instanceof Disposable) {
@@ -812,6 +843,13 @@ public class EditorView extends Application {
                                 new Alert(Alert.AlertType.ERROR, "Could not perform delete operation: \n\n" + ExceptionUtils.getRootCauseMessage(e)).show();
                             }
                         }
+                    }
+                }
+            } else if (event.getCode().equals(KeyCode.A) && event.isControlDown()) {
+                // select everything
+                for (Node child : new ArrayList<>(drawing.getChildren())) {
+                    if (child instanceof Selectable) {
+                        ((Selectable) child).setSelected(true);
                     }
                 }
             }
@@ -852,6 +890,7 @@ public class EditorView extends Application {
         renderView();
     }
 
+    @SuppressWarnings("unused")
     public void setWindowTitle() {
         setWindowTitle(currentGame.getValue());
     }
@@ -941,6 +980,7 @@ public class EditorView extends Application {
         return currentGame.get();
     }
 
+    @SuppressWarnings("unused")
     public ObjectProperty<Game> currentGameProperty() {
         return currentGame;
     }

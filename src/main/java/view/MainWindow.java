@@ -27,6 +27,7 @@ import common.UpdateChecker;
 import common.UpdateInfo;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -41,6 +42,7 @@ import javafx.stage.Stage;
 import logging.FOKLogger;
 import model.Game;
 import parser.Parser;
+import view.reporting.ReportingDialog;
 import view.updateAvailableDialog.UpdateAvailableDialog;
 
 import java.net.URL;
@@ -52,6 +54,8 @@ public class MainWindow extends Application {
 
     public static ResourceBundle bundle;
     private static boolean disableUpdateChecks;
+    private static Stage stage;
+    @SuppressWarnings("CanBeFinal")
     Game currentGame = new Game();
     @SuppressWarnings("unused")
     @FXML // ResourceBundle that was given to the FXMLLoader
@@ -68,7 +72,21 @@ public class MainWindow extends Application {
 
     public static void main(String[] args) {
         common.Common.setAppName("zork");
+        Common.setAwsAccessKey(AppConfig.awsLogAccessKeyID);
+        Common.setAwsSecretAccessKey(AppConfig.awsLogSecretAccessKeyID);
         FOKLogger.enableLoggingOfUncaughtExceptions();
+        // modify the default exception handler to show the ReportingDialog on every uncaught exception
+        final Thread.UncaughtExceptionHandler currentUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
+            if (currentUncaughtExceptionHandler != null) {
+                // execute current handler as we only want to append it
+                currentUncaughtExceptionHandler.uncaughtException(thread, exception);
+            }
+            Platform.runLater(() -> {
+                new ExceptionAlert(exception).showAndWait();
+                new ReportingDialog().show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName, exception);
+            });
+        });
         for (String arg : args) {
             if (arg.toLowerCase().matches("mockappversion=.*")) {
                 // Set the mock version
@@ -101,13 +119,14 @@ public class MainWindow extends Application {
     void initialize() {
         assert commandLine != null : "fx:id=\"commandLine\" was not injected: check your FXML file 'BasicApplication_i18n.fxml'.";
         assert getAvailableCommandsButton != null : "fx:id=\"getAvailableCommandsButton\" was not injected: check your FXML file 'BasicApplication_i18n.fxml'.";
-        currentGame.getMessages().add(new GameMessage("ZORK I: The Great Underground Empire\nCopyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved.\nZORK is a registered trademark of Infocom, Inc.\n Revison " + Common.getAppVersion() + "-" + Common.getBuildNumber() + "\n\nThis game is not yet functional. Give the team some time and come back in some time. See ya :)", true));
+        currentGame.getMessages().add(new GameMessage("ZORK I: The Great Underground Empire\nCopyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved.\nZORK is a registered trademark of Infocom, Inc.\n Revision " + Common.getAppVersion() + "-" + Common.getBuildNumber() + "\n\nThis game is not yet functional. Give the team some time and come back in some time. See ya :)", true));
         updateCommandView();
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         bundle = ResourceBundle.getBundle("view.strings");
+        stage = primaryStage;
 
         try {
             Thread updateThread = new Thread(() -> {
@@ -154,6 +173,11 @@ public class MainWindow extends Application {
             this.commandLine.setText("");
             updateCommandView();
         }
+    }
+
+    @FXML
+    void fileBugMenuItemOnAction(ActionEvent event) {
+        new ReportingDialog(stage.getScene()).show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName);
     }
 
     public void updateCommandView() {

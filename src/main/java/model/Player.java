@@ -26,6 +26,7 @@ import java.util.List;
 /**
  * Represents the player.
  */
+@SuppressWarnings("unused")
 public class Player extends Entity {
     private List<Item> inventory;
 

@@ -38,6 +38,7 @@ import java.util.logging.Level;
 /**
  * Represents the game as a whole, all the rooms, items and the current {@link Player}.
  */
+@SuppressWarnings("unused")
 public class Game implements Serializable {
 
     /**
@@ -78,51 +79,16 @@ public class Game implements Serializable {
         this(currentRoom, player, 0);
     }
 
-    public Game(Room currentRoom, Player player, int score) {
+    public Game(Room currentRoom, Player player, @SuppressWarnings("SameParameterValue") int score) {
         this(currentRoom, player, score, 0);
     }
 
-    public Game(Room currentRoom, Player player, int score, int moveCount) {
+    public Game(Room currentRoom, Player player, int score, @SuppressWarnings("SameParameterValue") int moveCount) {
         this(currentRoom, player, score, moveCount, new ArrayList<>());
     }
 
     public Game(Room currentRoom, Player player, int score, int moveCount, List<GameMessage> messages) {
-        roomModificationListener = ((observable, oldValue, newValue) -> {
-            if (newValue) {
-                System.out.println("Room was modified");
-                setModified(true);
-            }
-        });
-        roomMapModificationListener = new RoomMap.ChangeListener() {
-            @Override
-            public void removed(WalkDirection key, Room value) {
-                FOKLogger.finest(Game.class.getName(), "Adjacent room was removed");
-                value.modifiedProperty().removeListener(roomModificationListener);
-                if (value.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)) {
-                    value.getAdjacentRooms().getChangeListenerList().remove(roomMapModificationListener);
-                }
-            }
-
-            @Override
-            public void added(WalkDirection key, Room value) {
-                FOKLogger.finest(Game.class.getName(), "Adjacent room was added");
-                value.modifiedProperty().removeListener(roomModificationListener);
-                value.modifiedProperty().addListener(roomModificationListener);
-                if (!value.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)) {
-                    value.getAdjacentRooms().getChangeListenerList().add(roomMapModificationListener);
-                }
-            }
-
-            @Override
-            public void replaced(WalkDirection key, Room oldValue, Room newValue) {
-                FOKLogger.finest(Game.class.getName(), "Adjacent room was replaced");
-                newValue.modifiedProperty().removeListener(roomModificationListener);
-                newValue.modifiedProperty().addListener(roomModificationListener);
-                if (!newValue.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)) {
-                    newValue.getAdjacentRooms().getChangeListenerList().add(roomMapModificationListener);
-                }
-            }
-        };
+        initListeners();
 
         modifiedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
@@ -154,7 +120,7 @@ public class Game implements Serializable {
      *
      * @param saveFileLocation The fully qualified path and name of the file to load the save from.
      * @return The game that was saved in that file
-     * @throws IOException            If the specified file dows not exist or cannot be read for some other reason.
+     * @throws IOException            If the specified file does not exist or cannot be read for some other reason.
      * @throws ClassNotFoundException If the specified file does not contain a {@code Game} but anything else (wrong file format)
      * @see #save()
      * @see #save(String)
@@ -170,7 +136,7 @@ public class Game implements Serializable {
      *
      * @param saveFile The file to load the save from
      * @return The game that was saved in that file
-     * @throws IOException            If the specified file dows not exist or cannot be read for some other reason.
+     * @throws IOException            If the specified file does not exist or cannot be read for some other reason.
      * @throws ClassNotFoundException If the specified file does not contain a {@code Game} but anything else (wrong file format)
      */
     public static Game load(@NotNull File saveFile) throws IOException, ClassNotFoundException {
@@ -183,6 +149,52 @@ public class Game implements Serializable {
         res.setFileSource(saveFile);
         res.getCurrentRoom().setIsCurrentRoom(true);
         return res;
+    }
+
+    private void initListeners() {
+        if (roomModificationListener == null) {
+            roomModificationListener = ((observable, oldValue, newValue) -> {
+                if (newValue) {
+                    System.out.println("Room was modified");
+                    setModified(true);
+                }
+            });
+        }
+
+        if (roomMapModificationListener == null) {
+            roomMapModificationListener = new RoomMap.ChangeListener() {
+                @Override
+                public void removed(WalkDirection key, Room value) {
+                    FOKLogger.finest(Game.class.getName(), "Adjacent room was removed");
+                    if (value != null) {
+                        value.modifiedProperty().removeListener(roomModificationListener);
+                        if (value.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)) {
+                            value.getAdjacentRooms().getChangeListenerList().remove(roomMapModificationListener);
+                        }
+                    }
+                }
+
+                @Override
+                public void added(WalkDirection key, Room value) {
+                    FOKLogger.finest(Game.class.getName(), "Adjacent room was added");
+                    value.modifiedProperty().removeListener(roomModificationListener);
+                    value.modifiedProperty().addListener(roomModificationListener);
+                    if (!value.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)) {
+                        value.getAdjacentRooms().getChangeListenerList().add(roomMapModificationListener);
+                    }
+                }
+
+                @Override
+                public void replaced(WalkDirection key, Room oldValue, Room newValue) {
+                    FOKLogger.finest(Game.class.getName(), "Adjacent room was replaced");
+                    newValue.modifiedProperty().removeListener(roomModificationListener);
+                    newValue.modifiedProperty().addListener(roomModificationListener);
+                    if (!newValue.getAdjacentRooms().getChangeListenerList().contains(roomMapModificationListener)) {
+                        newValue.getAdjacentRooms().getChangeListenerList().add(roomMapModificationListener);
+                    }
+                }
+            };
+        }
     }
 
     public int getMoveCount() {
@@ -217,12 +229,15 @@ public class Game implements Serializable {
     }
 
     public void setCurrentRoom(Room currentRoom) {
+        initListeners();
+
         if (this.currentRoom != null) {
             this.currentRoom.setIsCurrentRoom(false);
         }
         this.currentRoom = currentRoom;
         this.currentRoom.setIsCurrentRoom(true);
         this.currentRoom.modifiedProperty().addListener(roomModificationListener);
+        //noinspection SuspiciousMethodCalls
         if (!this.currentRoom.getAdjacentRooms().getChangeListenerList().contains(roomModificationListener)) {
             this.currentRoom.getAdjacentRooms().getChangeListenerList().add(roomMapModificationListener);
         }
@@ -283,6 +298,7 @@ public class Game implements Serializable {
 
         return modified;
     }
+
     public void save() {
         this.save("");
     }
@@ -302,7 +318,7 @@ public class Game implements Serializable {
      * @see #load(File)
      * @see #load(String)
      */
-    public void save(@NotNull String customNamePrefix) {
+    public void save(@SuppressWarnings("SameParameterValue") @NotNull String customNamePrefix) {
         Objects.requireNonNull(customNamePrefix);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
         Date date = new Date();
@@ -339,6 +355,7 @@ public class Game implements Serializable {
 
         if (fileToSave.exists()) {
             // delete the file
+            //noinspection ResultOfMethodCallIgnored
             fileToSave.delete();
         }
 

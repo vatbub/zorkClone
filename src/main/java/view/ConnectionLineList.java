@@ -29,6 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * A list of {@link ConnectionLine}s that can find a line by its start and and room
  */
+@SuppressWarnings("unused")
 public class ConnectionLineList extends CopyOnWriteArrayList<ConnectionLine> {
     public ConnectionLineList() {
         super();
@@ -95,6 +96,7 @@ public class ConnectionLineList extends CopyOnWriteArrayList<ConnectionLine> {
      * @param tolerance The angle tolerance that is still tolerated
      * @return {@code true} if the angle of all lines matches their preferred angle within the specified tolerance, {@code false} if at least one angle does not match
      */
+    @SuppressWarnings("SameParameterValue")
     public boolean allLinesMatchPreferredAngle(double tolerance) {
         return getLinesThatDoNotMatchPreferredAngle(tolerance).size() == 0;
     }
