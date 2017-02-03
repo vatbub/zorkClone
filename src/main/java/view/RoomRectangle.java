@@ -144,13 +144,6 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
             EditorView.currentEditorInstance.scrollPaneOnMouseMoved(event);
             if (EditorView.currentEditorInstance.getCurrentEditMode() == EditMode.INSERT_PATH) {
                 FOKLogger.fine(RoomRectangle.class.getName(), "Inserting new path...");
-                if (line == null) {
-                    line = new Line(this.getCenterX(), this.getCenterY(), event.getX(), event.getY());
-                    this.getCustomParent().getChildren().add(line);
-                } else {
-                    line.setEndX(event.getX());
-                    line.setEndY(event.getY());
-                }
 
                 RoomRectangle newTarget = (RoomRectangle) this.getCustomParent().getRectangleByCoordinatesPreferFront(event.getX(), event.getY());
                 if (newTarget != previousTarget && previousTarget != null) {
@@ -161,6 +154,111 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
                 }
 
                 previousTarget = newTarget;
+
+                if (line == null) {
+                    line = new Line(this.moveStartLocalX + this.getX(), this.moveStartLocalY + this.getY(), event.getX(), event.getY());
+                    this.getCustomParent().getChildren().add(line);
+                } else {
+                    double startX = 0;
+                    double startY = 0;
+                    double endX = event.getX();
+                    double endY = event.getY();
+
+                    if (event.getX() >= this.getX() && event.getX() <= this.getX() + this.getWidth() && event.getY() >= this.getY() && event.getY() <= this.getY() + this.getHeight()) {
+                        startX = this.moveStartLocalX + this.getX();
+                        startY = this.moveStartLocalY + this.getY();
+                    } else {
+                        WalkDirection dir = WalkDirectionUtils.getFromLine(new Line(this.getCenterX(), this.getCenterY(), endX, endY));
+                        if (newTarget != null) {
+                            dir = WalkDirectionUtils.getFromLine(new Line(this.getCenterX(), this.getCenterY(), newTarget.getCenterX(), newTarget.getCenterY()));
+                            WalkDirection dir2 = WalkDirectionUtils.invert(dir);
+                            switch (dir2) {
+                                case NORTH:
+                                    endX = newTarget.getCenterX();
+                                    endY = newTarget.getY();
+                                    break;
+                                case WEST:
+                                    endX = newTarget.getX();
+                                    endY = newTarget.getCenterY();
+                                    break;
+                                case EAST:
+                                    endX = newTarget.getX() + newTarget.getWidth();
+                                    endY = newTarget.getCenterY();
+                                    break;
+                                case SOUTH:
+                                    endX = newTarget.getCenterX();
+                                    endY = newTarget.getY() + newTarget.getHeight();
+                                    break;
+                                case NORTH_WEST:
+                                    endX = newTarget.getX();
+                                    endY = newTarget.getY();
+                                    break;
+                                case NORTH_EAST:
+                                    endX = newTarget.getX() + newTarget.getWidth();
+                                    endY = newTarget.getY();
+                                    break;
+                                case SOUTH_WEST:
+                                    endX = newTarget.getX();
+                                    endY = newTarget.getY() + newTarget.getHeight();
+                                    break;
+                                case SOUTH_EAST:
+                                    endX = newTarget.getX() + newTarget.getWidth();
+                                    endY = newTarget.getY() + newTarget.getHeight();
+                                    break;
+                                case NONE:
+                                    throw new IllegalStateException("WalkDirection is NONE");
+                            }
+                        }
+
+                        for (Map.Entry<WalkDirection, Room> entry : this.getRoom().getAdjacentRooms().entrySet()) {
+                            ConnectionLine line2 = EditorView.currentEditorInstance.lineList.findByStartAndEndRoomIgnoreLineDirection(this, EditorView.currentEditorInstance.getAllRoomsAsList().findByRoom(entry.getValue()));
+                            if (line2 != null) {
+                                line2.setSelected(entry.getKey() == dir && newTarget != null && newTarget.getRoom() != this.getRoom().getAdjacentRooms().get(entry.getKey()));
+                            }
+                        }
+                        switch (dir) {
+                            case NORTH:
+                                startX = this.getCenterX();
+                                startY = this.getY();
+                                break;
+                            case WEST:
+                                startX = this.getX();
+                                startY = this.getCenterY();
+                                break;
+                            case EAST:
+                                startX = this.getX() + this.getWidth();
+                                startY = this.getCenterY();
+                                break;
+                            case SOUTH:
+                                startX = this.getCenterX();
+                                startY = this.getY() + this.getHeight();
+                                break;
+                            case NORTH_WEST:
+                                startX = this.getX();
+                                startY = this.getY();
+                                break;
+                            case NORTH_EAST:
+                                startX = this.getX() + this.getWidth();
+                                startY = this.getY();
+                                break;
+                            case SOUTH_WEST:
+                                startX = this.getX();
+                                startY = this.getY() + this.getHeight();
+                                break;
+                            case SOUTH_EAST:
+                                startX = this.getX() + this.getWidth();
+                                startY = this.getY() + this.getHeight();
+                                break;
+                            case NONE:
+                                throw new IllegalStateException("WalkDirection is NONE");
+                        }
+                    }
+
+                    line.setStartX(startX);
+                    line.setStartY(startY);
+                    line.setEndX(endX);
+                    line.setEndY(endY);
+                }
             } else if (EditorView.currentEditorInstance.getCurrentEditMode() == EditMode.MOVE) {
                 FOKLogger.fine(RoomRectangle.class.getName(), "Moving room...");
                 this.setX(event.getX() - this.moveStartLocalX);
@@ -237,7 +335,7 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
                 RoomRectangle target = (RoomRectangle) this.getCustomParent().getRectangleByCoordinatesPreferFront(event.getX(), event.getY());
 
                 if (target != null && target != thisRef && EditorView.currentEditorInstance.getCurrentEditMode() == EditMode.INSERT_PATH) {
-                    WalkDirection fromThisToTarget = WalkDirectionUtils.getFromLine(line);
+                    WalkDirection fromThisToTarget = WalkDirectionUtils.getFromLine(new Line(this.getCenterX(), this.getCenterY(), target.getCenterX(), target.getCenterY()));
                     WalkDirection fromTargetToThis = WalkDirectionUtils.invert(fromThisToTarget);
 
                     // Delete old references
