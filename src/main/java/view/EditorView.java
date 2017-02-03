@@ -342,7 +342,7 @@ public class EditorView extends Application {
         for more info
          */
         FOKLogger.finest(EditorView.class.getName(), "scrollPaneOnMouseClicked occurred. event target class is " + event.getTarget().getClass().getName());
-        if (currentEditMode == EditMode.INSERT_ROOM && (event.getTarget() instanceof RoomRectangle || event.getTarget() instanceof ToggleButton || event.getTarget().getClass().getName().equals("com.sun.javafx.scene.control.skin.ScrollPaneSkin$4")) && event.getClickCount() == 1) {
+        if (currentEditMode == EditMode.INSERT_ROOM && (event.getTarget() instanceof RoomRectangle || event.getTarget() instanceof ToggleButton || event.getTarget().getClass().getName().equals("com.sun.javafx.scene.control.skin.ScrollPaneSkin$4")) && event.getClickCount() == 1 && tempRoomForRoomInsertion != null) {
             // add tempRoomForRoomInsertion to the game
             FOKLogger.fine(MainWindow.class.getName(), "Added room to game: " + tempRoomForRoomInsertion.getRoom().getName());
             tempRoomForRoomInsertion.setTemporary(false);
