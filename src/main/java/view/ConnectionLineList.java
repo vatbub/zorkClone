@@ -117,4 +117,48 @@ public class ConnectionLineList extends CopyOnWriteArrayList<ConnectionLine> {
 
         return res;
     }
+
+    /**
+     * Calculates a score of how well all lines in this list match their preferred angle. This score is calculated using the following formula:<br>
+     * <math xmlns='http://www.w3.org/1998/Math/MathML'>
+     * <mrow>
+     * <munderover>
+     * <mo>&#8721;</mo>
+     * <mrow>
+     * <mi>k</mi>
+     * <mo>=</mo>
+     * <mn>0</mn>
+     * </mrow>
+     * <mn>this.size()-1</mn>
+     * </munderover>
+     * <semantics>
+     * <mrow>
+     * <mo>&#10072;</mo>
+     * <mrow>
+     * <mrow>
+     * <mo>this.get(k).getAngle()</mo>
+     * </mrow>
+     * <mo>-</mo>
+     * <mrow>
+     * <mo>this.get(k).getPreferredAngle()</mo>
+     * </mrow>
+     * </mrow>
+     * <mo>&#10072;</mo>
+     * </mrow>
+     * </semantics>
+     * </mrow>
+     * </math><br>
+     * A lower the result, the better all lines match their preferred angle.
+     *
+     * @return A score of how well all lines in this list match their preferred angle.
+     */
+    public double getConnectivityScore() {
+        double res = 0;
+
+        for (ConnectionLine line : this) {
+            res = res + Math.abs(line.getAngle() - line.getPreferredAngle());
+        }
+
+        return res;
+    }
 }

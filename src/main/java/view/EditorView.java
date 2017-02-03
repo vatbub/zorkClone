@@ -654,15 +654,14 @@ public class EditorView extends Application {
             // reposition rooms to fit preferred angle of connection lines
             if (autoLayout) {
                 Platform.runLater(() -> {
-                    double coordinateDifferenceUsedToDetermineBetterPositions = 50;
-                    double tolerance = 0.1 * Math.PI;
+                    double coordinateDifferenceUsedToDetermineBetterPositions = 20;
+                    double tolerance = 0.3 * Math.PI;
                     int counter = 0;
+                    // while (lineList.getConnectivityScore() > 0.1 * counter) {
                     while (!lineList.allLinesMatchPreferredAngle(tolerance)) {
-                        if (counter >= 100000) {
-                            counter = 0;
-                        } else {
-                            counter++;
-                        }
+                        System.out.println(0.1 * counter / Math.PI);
+                        counter++;
+
                         for (ConnectionLine line : lineList.getLinesThatDoNotMatchPreferredAngle()) {
                             // save the current position of the end room
                             double currentX = line.getEndRoom().getX();
@@ -683,56 +682,64 @@ public class EditorView extends Application {
                             xTemp = currentX;
                             yTemp = currentY - coordinateDifferenceUsedToDetermineBetterPositions;
                             double finalYTemp = yTemp;
-                            // Platform.runLater(() -> {
+                            double finalXTemp = xTemp;
+                            //Platform.runLater(() -> {
+                            line.getEndRoom().setX(finalXTemp);
                             line.getEndRoom().setY(finalYTemp);
-                            // });
+                            //});
                             x.add(xTemp);
                             y.add(yTemp);
-                            // Platform.runLater(() -> {
+                            //Platform.runLater(() -> {
                             line.updateLocation();
-                            // });
+                            //});
                             modifiedAngles.add(Math.abs(line.getAngle() - line.getPreferredAngle()));
 
                             // move south
                             xTemp = currentX;
                             yTemp = currentY + coordinateDifferenceUsedToDetermineBetterPositions;
+                            double finalXTemp1 = xTemp;
                             double finalYTemp1 = yTemp;
-                            // Platform.runLater(() -> {
+                            //Platform.runLater(() -> {
+                            line.getEndRoom().setX(finalXTemp1);
                             line.getEndRoom().setY(finalYTemp1);
-                            // });
+                            //});
                             x.add(xTemp);
                             y.add(yTemp);
-                            // Platform.runLater(() -> {
+                            //Platform.runLater(() -> {
                             line.updateLocation();
-                            // });
+                            //});
                             modifiedAngles.add(Math.abs(line.getAngle() - line.getPreferredAngle()));
 
                             // move west
                             xTemp = currentX - coordinateDifferenceUsedToDetermineBetterPositions;
                             yTemp = currentY;
-                            double finalXTemp = xTemp;
-                            // Platform.runLater(() -> {
-                            line.getEndRoom().setX(finalXTemp);
-                            // });
+                            double finalXTemp2 = xTemp;
+                            double finalYTemp2 = yTemp;
+                            //Platform.runLater(() -> {
+                            line.getEndRoom().setX(finalXTemp2);
+                            line.getEndRoom().setY(finalYTemp2);
+                            //});
                             x.add(xTemp);
                             y.add(yTemp);
-                            //                          Platform.runLater(() -> {
+                            //Platform.runLater(() -> {
                             line.updateLocation();
-//                             });
+                            //});
                             modifiedAngles.add(Math.abs(line.getAngle() - line.getPreferredAngle()));
 
                             // move east
                             xTemp = currentX + coordinateDifferenceUsedToDetermineBetterPositions;
                             yTemp = currentY;
-                            double finalXTemp1 = xTemp;
-                            // Platform.runLater(() -> {
-                            line.getEndRoom().setX(finalXTemp1);
-                            // });
+                            double finalXTemp3 = xTemp;
+                            double finalYTemp3 = yTemp;
+                            //Platform.runLater(() -> {
+                            line.getEndRoom().setX(finalXTemp3);
+                            line.getEndRoom().setY(finalYTemp3);
+                            //});
                             x.add(xTemp);
                             y.add(yTemp);
-                            // Platform.runLater(() -> {
+                            //Platform.runLater(() -> {
                             line.updateLocation();
-                            // });
+                            //});
                             modifiedAngles.add(Math.abs(line.getAngle() - line.getPreferredAngle()));
 
                             // get the direction of the minimal angle difference (that is the direction that we need to move in)
@@ -742,11 +749,13 @@ public class EditorView extends Application {
                                     // do the move
                                     System.out.println(min + ", dir = " + i + ", " + line.getStartRoom().getRoom().getName() + ", " + line.getEndRoom().getRoom().getName());
                                     int finalI = i;
-                                    // Platform.runLater(() -> {
+                                    //Platform.runLater(() -> {
                                     line.getEndRoom().setX(x.get(finalI));
                                     line.getEndRoom().setY(y.get(finalI));
-                                    line.updateLocation();
-                                    // });
+                                    for (ConnectionLine line2 : lineList) {
+                                        line2.updateLocation();
+                                    }
+                                    //});
                                     break;
                                 }
                             }
