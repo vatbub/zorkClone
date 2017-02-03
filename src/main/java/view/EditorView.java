@@ -623,7 +623,7 @@ public class EditorView extends Application {
                     }
 
                     ConnectionLine finalConnectionLine = connectionLine;
-                    Platform.runLater(() -> finalConnectionLine.updateLocation());
+                    Platform.runLater(finalConnectionLine::updateLocation);
 
                     if (!newRoom.isRendered()) {
                         // render the child
