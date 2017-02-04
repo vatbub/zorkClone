@@ -32,3 +32,6 @@ Feel free to [file issues](https://github.com/vatbub/zorkClone/issues/new), fork
 
 ##Docs
 [Maven Site](http://vatbubmvnsites.s3-website-us-west-2.amazonaws.com/zorkClone/1.1-SNAPSHOT/site/zorkClone/), [JavaDoc](http://vatbubmvnsites.s3-website-us-west-2.amazonaws.com/zorkClone/1.1-SNAPSHOT/site/zorkClone/apidocs/index.html)
+
+## Contributing
+Contributions of any kind are very welcome. Just fork and submit a Pull Request and we will be happy to merge. Just keep in mind that we use [Issue driven development](https://github.com/vatbub/defaultRepo/wiki/Issue-driven-development).
