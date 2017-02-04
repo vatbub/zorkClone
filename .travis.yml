@@ -8,8 +8,10 @@ addons:
     - oracle-java8-installer
 cache:
   directories:
-  - "$HOME/.m2"
+  - $HOME/.m2
 before_install:
+- openssl aes-256-cbc -K $encrypted_9770031803cc_key -iv $encrypted_9770031803cc_iv
+  -in github_deploy_key.enc -out github_deploy_key -d
 - git clone -b travis `git config --get remote.origin.url` target/travis
 install: echo Install phase has been disabled as a complete build is run during deployment
 script:
