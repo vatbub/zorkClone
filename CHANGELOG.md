@@ -11,10 +11,14 @@
 **Fixed bugs:**
 
 - Exception when cerating a new game [\#21](https://github.com/vatbub/zorkClone/issues/21)
+- Not on FX Thread when using autoLayout [\#19](https://github.com/vatbub/zorkClone/issues/19)
 - Found a bug [\#10](https://github.com/vatbub/zorkClone/issues/10)
 - NullPointerExceptions occurring when manipulating a game loaded from the disk [\#8](https://github.com/vatbub/zorkClone/issues/8)
 - Insert room using touch screen [\#7](https://github.com/vatbub/zorkClone/issues/7)
 - The compass icon does not fade when moving a room or inserting a new path [\#6](https://github.com/vatbub/zorkClone/issues/6)
+- Selecting a room does not deselect other rooms \(no Ctrl pressed\) [\#4](https://github.com/vatbub/zorkClone/issues/4)
+- Strange layout when resizing [\#2](https://github.com/vatbub/zorkClone/issues/2)
+- When scrolling, the current selection is unselected [\#1](https://github.com/vatbub/zorkClone/issues/1)
 
 **Closed issues:**
 
@@ -23,7 +27,6 @@
 - Screenshot test [\#23](https://github.com/vatbub/zorkClone/issues/23)
 - Exception when creating a new room using drag'n'drop [\#22](https://github.com/vatbub/zorkClone/issues/22)
 - Stacktrace testissue [\#20](https://github.com/vatbub/zorkClone/issues/20)
-- Not on FX Thread when using autoLayout [\#19](https://github.com/vatbub/zorkClone/issues/19)
 - Teessstt [\#17](https://github.com/vatbub/zorkClone/issues/17)
 - A testbug from the game view [\#16](https://github.com/vatbub/zorkClone/issues/16)
 - Again a testbug [\#15](https://github.com/vatbub/zorkClone/issues/15)
@@ -32,9 +35,6 @@
 - Another testbug [\#12](https://github.com/vatbub/zorkClone/issues/12)
 - Testbug [\#11](https://github.com/vatbub/zorkClone/issues/11)
 - ihkgvihgvc [\#9](https://github.com/vatbub/zorkClone/issues/9)
-- Selecting a room does not deselect other rooms \(no Ctrl pressed\) [\#4](https://github.com/vatbub/zorkClone/issues/4)
-- Strange layout when resizing [\#2](https://github.com/vatbub/zorkClone/issues/2)
-- When scrolling, the current selection is unselected [\#1](https://github.com/vatbub/zorkClone/issues/1)
 
 ## [zorkClone-1.0](https://github.com/vatbub/zorkClone/tree/zorkClone-1.0) (2016-11-27)
 
