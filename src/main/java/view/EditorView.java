@@ -33,6 +33,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
+import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -46,6 +47,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -70,6 +72,10 @@ public class EditorView extends Application {
     private static Stage stage;
     public final ConnectionLineList lineList = new ConnectionLineList();
     private final ObjectProperty<Game> currentGame = new SimpleObjectProperty<>();
+    private final Rectangle topLeftWindowRectangle = new Rectangle();
+    private final Rectangle topRightWindowRectangle = new Rectangle();
+    private final Rectangle bottomLeftWindowRectangle = new Rectangle();
+    private final Rectangle bottomRightWindowRectangle = new Rectangle();
     private boolean unselectingDisabled;
     // Unconnected Rooms will not be saved but need to be hold in the RAM while editing
     private RoomRectangleList unconnectedRooms = new RoomRectangleList();
@@ -376,6 +382,8 @@ public class EditorView extends Application {
     void scrollPaneOnMouseMoved(MouseEvent event) {
         currentMouseX = event.getScreenX();
         currentMouseY = event.getScreenY();
+        updatePositionOfWindowRectangles();
+
         if (currentEditMode == EditMode.INSERT_ROOM) {
             insertRoomUpdateTempRoomPosition();
         }
@@ -653,6 +661,8 @@ public class EditorView extends Application {
 
             // set the room count
             currentRoomCount = allRoomsAsList.size();
+
+            Platform.runLater(this::updatePositionOfWindowRectangles);
         });
 
         renderThread.setName("renderThread");
@@ -879,5 +889,82 @@ public class EditorView extends Application {
     @SuppressWarnings("unused")
     public ObjectProperty<Game> currentGameProperty() {
         return currentGame;
+    }
+
+    private void updatePositionOfWindowRectangles() {
+        if (!drawing.getChildren().contains(topLeftWindowRectangle)) {
+            drawing.getChildren().add(topLeftWindowRectangle);
+        }
+        if (!drawing.getChildren().contains(topRightWindowRectangle)) {
+            drawing.getChildren().add(topRightWindowRectangle);
+        }
+        if (!drawing.getChildren().contains(bottomLeftWindowRectangle)) {
+            drawing.getChildren().add(bottomLeftWindowRectangle);
+        }
+        if (!drawing.getChildren().contains(bottomRightWindowRectangle)) {
+            drawing.getChildren().add(bottomRightWindowRectangle);
+        }
+
+        double horzCorr = 0;
+        double vertCorr = 0;
+
+        if (getHorizontalScrollbar().isVisible()) {
+            horzCorr = getHorizontalScrollbar().getWidth();
+        }
+        if (getVerticalScrollbar().isVisible()) {
+            vertCorr = getVerticalScrollbar().getHeight();
+        }
+
+        Point2D ulTemp = scrollPane.localToScene(new Point2D(0, 0));
+        Point2D ul = drawing.sceneToLocal(ulTemp);
+        Point2D ur = drawing.sceneToLocal(ulTemp.getX() + scrollPane.getWidth() - horzCorr, ulTemp.getY());
+        Point2D bl = drawing.sceneToLocal(ulTemp.getX(), ulTemp.getY() + scrollPane.getHeight() - vertCorr);
+        Point2D br = drawing.sceneToLocal(ulTemp.getX() + scrollPane.getWidth() - horzCorr, ulTemp.getY() + scrollPane.getHeight() - vertCorr);
+
+        topLeftWindowRectangle.setX(ul.getX());
+        topLeftWindowRectangle.setY(ul.getY());
+        topLeftWindowRectangle.setWidth(10);
+        topLeftWindowRectangle.setHeight(10);
+
+        topRightWindowRectangle.setX(ur.getX());
+        topRightWindowRectangle.setY(ur.getY());
+        topRightWindowRectangle.setWidth(10);
+        topRightWindowRectangle.setHeight(10);
+
+        bottomLeftWindowRectangle.setX(bl.getX());
+        bottomLeftWindowRectangle.setY(bl.getY());
+        bottomLeftWindowRectangle.setWidth(10);
+        bottomLeftWindowRectangle.setHeight(10);
+
+        bottomRightWindowRectangle.setX(br.getX());
+        bottomRightWindowRectangle.setY(br.getY());
+        bottomRightWindowRectangle.setWidth(10);
+        bottomRightWindowRectangle.setHeight(10);
+    }
+
+    private ScrollBar getVerticalScrollbar() {
+        ScrollBar result = null;
+        for (Node n : scrollPane.lookupAll(".scroll-bar")) {
+            if (n instanceof ScrollBar) {
+                ScrollBar bar = (ScrollBar) n;
+                if (bar.getOrientation().equals(Orientation.VERTICAL)) {
+                    result = bar;
+                }
+            }
+        }
+        return result;
+    }
+
+    private ScrollBar getHorizontalScrollbar() {
+        ScrollBar result = null;
+        for (Node n : scrollPane.lookupAll(".scroll-bar")) {
+            if (n instanceof ScrollBar) {
+                ScrollBar bar = (ScrollBar) n;
+                if (bar.getOrientation().equals(Orientation.VERTICAL)) {
+                    result = bar;
+                }
+            }
+        }
+        return result;
     }
 }
