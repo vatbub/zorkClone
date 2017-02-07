@@ -4,6 +4,7 @@ name=Zork (prerelease)
 groupId=com.github.vatbub
 repoBaseURL=https\://dl.bintray.com/vatbub/fokprojectsReleases
 additionalInfoURL=https\://github.com/vatbub/zorkClone#zorkclone-
+changelogURL=https\://github.com/vatbub/zorkClone/blob/master/CHANGELOG.md
 classifier=jar-with-dependencies
 snapshotRepoBaseURL=https\://oss.jfrog.org/artifactory/repo
 artifactId=zorkClone
