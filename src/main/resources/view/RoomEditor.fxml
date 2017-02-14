@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--suppress ALL -->
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import org.controlsfx.control.PrefixSelectionComboBox?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+<?import view.tagarea.TagArea?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="view.RoomEditor">
    <children>
       <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" vgap="8.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
         <columnConstraints>
@@ -23,11 +25,12 @@
             <Label text="Name of the Room:" />
             <Label text="Description:" GridPane.rowIndex="2" />
             <Label text="Items in Room:" GridPane.rowIndex="3" />
-            <Label text="Synonyms for the name, separated with a ;" GridPane.rowIndex="1" />
-            <TextField GridPane.columnIndex="1" />
+             <Label text="Synonyms for the name, separated with a ," GridPane.rowIndex="1"/>
+             <TextField fx:id="roomName" GridPane.columnIndex="1"/>
             <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <PrefixSelectionComboBox maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+             <TagArea GridPane.columnIndex="1" GridPane.rowIndex="1"/>
          </children>
       </GridPane>
    </children>

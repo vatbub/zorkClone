@@ -127,6 +127,7 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
             } else if (event.getClickCount() == 2) {
                 // launch editor
                 FOKLogger.info(RoomRectangle.class.getName(), "RoomEditor launched");
+                new RoomEditor(this.getRoom()).show();
             }
         });
 
