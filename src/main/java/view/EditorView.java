@@ -74,6 +74,7 @@ public class EditorView extends Application {
     // Unconnected Rooms will not be saved but need to be hold in the RAM while editing
     private RoomRectangleList unconnectedRooms = new RoomRectangleList();
     private RoomRectangleList allRoomsAsList;
+    private RoomRectangleList allRoomsAsListCopy;
     private EditMode currentEditMode = EditMode.MOVE;
     private EditMode previousEditMode;
     private boolean isMouseOverDrawing = false;
@@ -536,7 +537,6 @@ public class EditorView extends Application {
             }
 
             LinkedList<RoomRectangle> renderQueue = new LinkedList<>();
-            RoomRectangleList allRoomsAsListCopy;
 
             // The distance between connected rooms
             double roomDistance = 150;
@@ -604,7 +604,7 @@ public class EditorView extends Application {
                                 break;
                             case EAST:
                                 newRoom.setY(currentRoom.getY());
-                                newRoom.setX(currentRoom.getX() + roomDistance);
+                                newRoom.setX(currentRoom.getX() + currentRoom.getWidth() + roomDistance);
                                 break;
                             case SOUTH:
                                 newRoom.setY(currentRoom.getY() + roomDistance);
@@ -616,7 +616,7 @@ public class EditorView extends Application {
                                 break;
                             case NORTH_EAST:
                                 newRoom.setY(currentRoom.getY() - roomDistance);
-                                newRoom.setX(currentRoom.getX() + roomDistance);
+                                newRoom.setX(currentRoom.getX() + currentRoom.getWidth() + roomDistance);
                                 break;
                             case SOUTH_WEST:
                                 newRoom.setY(currentRoom.getY() + roomDistance);
@@ -624,7 +624,7 @@ public class EditorView extends Application {
                                 break;
                             case SOUTH_EAST:
                                 newRoom.setY(currentRoom.getY() + roomDistance);
-                                newRoom.setX(currentRoom.getX() + roomDistance);
+                                newRoom.setX(currentRoom.getX() + currentRoom.getWidth() + roomDistance);
                                 break;
                         }
                     }
@@ -653,6 +653,7 @@ public class EditorView extends Application {
 
             // set the room count
             currentRoomCount = allRoomsAsList.size();
+            allRoomsAsListCopy = null;
         });
 
         renderThread.setName("renderThread");
@@ -865,7 +866,11 @@ public class EditorView extends Application {
     }
 
     public RoomRectangleList getAllRoomsAsList() {
-        return allRoomsAsList;
+        if (allRoomsAsListCopy != null) {
+            return allRoomsAsListCopy;
+        } else {
+            return allRoomsAsList;
+        }
     }
 
     public RoomRectangleList getUnconnectedRooms() {

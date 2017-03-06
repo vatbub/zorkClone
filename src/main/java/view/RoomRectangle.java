@@ -45,6 +45,7 @@ import java.util.logging.Level;
  * The graphical representation of a {@link model.Room} in the {@link EditorView}
  */
 public class RoomRectangle extends Rectangle implements Serializable, Disposable, Selectable {
+    private static final int minRectangleWidth = 100;
     private final BooleanProperty selected = new SimpleBooleanProperty();
     private final BooleanProperty isTemporary = new SimpleBooleanProperty();
     private final RoomRectangle thisRef = this;
@@ -395,6 +396,16 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
         });
     }
 
+    private static void moveRooms(RoomRectangle currentRoom, double widthDiff) {
+        for (Map.Entry<WalkDirection, Room> entry : currentRoom.getRoom().getAdjacentRooms().entrySet()) {
+            if ((entry.getKey() == WalkDirection.NORTH_EAST || entry.getKey() == WalkDirection.NORTH_EAST || entry.getKey() == WalkDirection.EAST || entry.getKey() == WalkDirection.SOUTH_EAST) && entry.getValue() != null) {
+                RoomRectangle adjRoomRectangle = EditorView.currentEditorInstance.getAllRoomsAsList().findByRoom(entry.getValue());
+                adjRoomRectangle.setX(adjRoomRectangle.getX() + widthDiff);
+                moveRooms(adjRoomRectangle, widthDiff);
+            }
+        }
+    }
+
     public Room getRoom() {
         return room;
     }
@@ -418,6 +429,19 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
     }
 
     public void updateNameLabelPosition() {
+        // adapt the width of the rectangle
+        // min width 100 px
+        double newWidth = Math.max(minRectangleWidth, this.nameLabel.getWidth() + 60);
+
+        // move connected rooms
+        double widthDiff = newWidth - this.getWidth();
+        moveRooms(this, widthDiff);
+        Platform.runLater(() -> {
+            EditorView.currentEditorInstance.renderView(false, true, true);
+        });
+
+        this.setWidth(newWidth);
+
         // Get the center of this rectangle
         double centerX = this.getX() + this.getWidth() / 2.0;
         double centerY = this.getY() + this.getHeight() / 2.0;
