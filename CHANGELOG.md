@@ -6,6 +6,7 @@
 
 **Implemented enhancements:**
 
+- Adapt the room size in the editor to the room name length [\#28](https://github.com/vatbub/zorkClone/issues/28)
 - create a button "File GitHub issue" [\#3](https://github.com/vatbub/zorkClone/issues/3)
 
 **Fixed bugs:**
