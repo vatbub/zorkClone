@@ -437,7 +437,7 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
         double widthDiff = newWidth - this.getWidth();
         moveRooms(this, widthDiff);
         Platform.runLater(() -> {
-            EditorView.currentEditorInstance.renderView(false, true, true);
+            EditorView.currentEditorInstance.renderView(false, true);
         });
 
         this.setWidth(newWidth);

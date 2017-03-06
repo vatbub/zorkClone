@@ -61,6 +61,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
 public class EditorView extends Application {
@@ -80,6 +82,8 @@ public class EditorView extends Application {
     private boolean isMouseOverDrawing = false;
     private boolean compassIconFaded = false;
     private boolean insertRoomDragDetected;
+    private ExecutorService renderThreadPool = Executors.newFixedThreadPool(1);
+
     /**
      * Used to display a temporary room when in EditMode.INSERT_ROOM
      */
@@ -349,7 +353,8 @@ public class EditorView extends Application {
             tempRoomForRoomInsertion.setTemporary(false);
             tempRoomForRoomInsertion.setSelected(false);
             allRoomsAsList.add(tempRoomForRoomInsertion);
-            this.renderView(false, false, true);
+            // this.renderView(false, false, true);
+            this.renderView(false, false);
 
             this.setCurrentEditMode(this.getPreviousEditMode());
         }
@@ -503,18 +508,6 @@ public class EditorView extends Application {
      * @param onlyUpdateLines If {@code true}, only connecting lines between the rooms are rendered, rooms are left as they are. Useful if the user is currently moving the room around with the mouse.
      */
     public void renderView(boolean autoLayout, boolean onlyUpdateLines) {
-        renderView(autoLayout, onlyUpdateLines, false);
-    }
-
-    /**
-     * Renders the current game and unconnected rooms in the view.
-     *
-     * @param autoLayout           If {@code true}, the rooms will be automatically laid out according to their topology.
-     * @param onlyUpdateLines      If {@code true}, only connecting lines between the rooms are rendered, rooms are left as they are. Useful if the user is currently moving the room around with the mouse.
-     * @param synchronousRendering If {@code true}, the rendering will happen synchronously, otherwise asynchronously.
-     */
-    public void renderView(boolean autoLayout, boolean onlyUpdateLines, @SuppressWarnings("SameParameterValue") boolean synchronousRendering) {
-        // Only render if it's not already rendering
         int indexCorrection = 0;
         while (drawing.getChildren().size() > indexCorrection) {
             if (!onlyUpdateLines && !(drawing.getChildren().get(indexCorrection) instanceof ConnectionLine)) {
@@ -528,7 +521,7 @@ public class EditorView extends Application {
             }
         }
 
-        Thread renderThread = new Thread(() -> {
+        renderThreadPool.submit(() -> {
             // update the connection status of all rooms
             if (allRoomsAsList != null) {
                 for (RoomRectangle room : allRoomsAsList) {
@@ -557,9 +550,6 @@ public class EditorView extends Application {
             }
 
             renderQueue.add(startRoom);
-                /*
-                assert startRoom != null;
-                startRoom.updateNameLabelPosition();*/
 
             // render unconnected rooms
             for (RoomRectangle room : unconnectedRooms) {
@@ -655,18 +645,6 @@ public class EditorView extends Application {
             currentRoomCount = allRoomsAsList.size();
             allRoomsAsListCopy = null;
         });
-
-        renderThread.setName("renderThread");
-        renderThread.start();
-
-        // Wait for thread to finish if specified
-        if (synchronousRendering) {
-            try {
-                renderThread.join();
-            } catch (InterruptedException e) {
-                FOKLogger.log(MainWindow.class.getName(), Level.SEVERE, "An error occurred", e);
-            }
-        }
     }
 
 
@@ -814,6 +792,7 @@ public class EditorView extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        Platform.setImplicitExit(true);
         bundle = ResourceBundle.getBundle("view.strings");
         stage = primaryStage;
 
@@ -835,6 +814,14 @@ public class EditorView extends Application {
         } catch (Exception e) {
             FOKLogger.log(MainWindow.class.getName(), Level.SEVERE, "An error occurred", e);
         }
+    }
+
+    @Override
+    public void stop() {
+        renderThreadPool.shutdownNow();
+
+        // We need to call that explicitly because the ExecutorService makes the default exit bug around
+        System.exit(0);
     }
 
     public EditMode getCurrentEditMode() {
