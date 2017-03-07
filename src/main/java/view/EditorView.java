@@ -532,7 +532,7 @@ public class EditorView extends Application {
             LinkedList<RoomRectangle> renderQueue = new LinkedList<>();
 
             // The distance between connected rooms
-            double roomDistance = 150;
+            double roomDistance = 50;
 
             RoomRectangle startRoom;
             if (allRoomsAsList == null) {
@@ -582,38 +582,38 @@ public class EditorView extends Application {
                     }
 
                     // Set room position
-                    if (autoLayout) {
+                    if (autoLayout && !newRoom.isRendered()) {
                         switch (entry.getKey()) {
                             case NORTH:
-                                newRoom.setY(currentRoom.getY() - roomDistance);
-                                newRoom.setX(currentRoom.getX());
+                                newRoom.setY(currentRoom.getY() - newRoom.getHeight() - roomDistance);
+                                newRoom.setX(currentRoom.getX() + currentRoom.getWidth() / 2 - newRoom.getWidth() / 2);
                                 break;
                             case WEST:
                                 newRoom.setY(currentRoom.getY());
-                                newRoom.setX(currentRoom.getX() - roomDistance);
+                                newRoom.setX(currentRoom.getX() - newRoom.getWidth() - roomDistance);
                                 break;
                             case EAST:
                                 newRoom.setY(currentRoom.getY());
                                 newRoom.setX(currentRoom.getX() + currentRoom.getWidth() + roomDistance);
                                 break;
                             case SOUTH:
-                                newRoom.setY(currentRoom.getY() + roomDistance);
-                                newRoom.setX(currentRoom.getX());
+                                newRoom.setY(currentRoom.getY() + currentRoom.getHeight() + roomDistance);
+                                newRoom.setX(currentRoom.getX() + currentRoom.getWidth() / 2 - newRoom.getWidth() / 2);
                                 break;
                             case NORTH_WEST:
-                                newRoom.setY(currentRoom.getY() - roomDistance);
-                                newRoom.setX(currentRoom.getX() - roomDistance);
+                                newRoom.setY(currentRoom.getY() - newRoom.getHeight() - roomDistance);
+                                newRoom.setX(currentRoom.getX() - newRoom.getWidth() - roomDistance);
                                 break;
                             case NORTH_EAST:
-                                newRoom.setY(currentRoom.getY() - roomDistance);
+                                newRoom.setY(currentRoom.getY() - newRoom.getHeight() - roomDistance);
                                 newRoom.setX(currentRoom.getX() + currentRoom.getWidth() + roomDistance);
                                 break;
                             case SOUTH_WEST:
-                                newRoom.setY(currentRoom.getY() + roomDistance);
-                                newRoom.setX(currentRoom.getX() - roomDistance);
+                                newRoom.setY(currentRoom.getY() + currentRoom.getHeight() + roomDistance);
+                                newRoom.setX(currentRoom.getX() - newRoom.getWidth() - roomDistance);
                                 break;
                             case SOUTH_EAST:
-                                newRoom.setY(currentRoom.getY() + roomDistance);
+                                newRoom.setY(currentRoom.getY() + currentRoom.getHeight() + roomDistance);
                                 newRoom.setX(currentRoom.getX() + currentRoom.getWidth() + roomDistance);
                                 break;
                         }

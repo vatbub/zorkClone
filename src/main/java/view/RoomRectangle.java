@@ -37,6 +37,8 @@ import model.WalkDirectionUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -46,6 +48,7 @@ import java.util.logging.Level;
  */
 public class RoomRectangle extends Rectangle implements Serializable, Disposable, Selectable {
     private static final int minRectangleWidth = 100;
+    private static List<RoomRectangle> movedRooms;
     private final BooleanProperty selected = new SimpleBooleanProperty();
     private final BooleanProperty isTemporary = new SimpleBooleanProperty();
     private final RoomRectangle thisRef = this;
@@ -398,10 +401,27 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
 
     private static void moveRooms(RoomRectangle currentRoom, double widthDiff) {
         for (Map.Entry<WalkDirection, Room> entry : currentRoom.getRoom().getAdjacentRooms().entrySet()) {
-            if ((entry.getKey() == WalkDirection.SOUTH || entry.getKey() == WalkDirection.NORTH || entry.getKey() == WalkDirection.NORTH_EAST || entry.getKey() == WalkDirection.NORTH_EAST || entry.getKey() == WalkDirection.EAST || entry.getKey() == WalkDirection.SOUTH_EAST) && entry.getValue() != null) {
-                RoomRectangle adjRoomRectangle = EditorView.currentEditorInstance.getAllRoomsAsList().findByRoom(entry.getValue());
-                assert adjRoomRectangle != null;
-                adjRoomRectangle.setX(adjRoomRectangle.getX() + widthDiff);
+            boolean skip = false;
+            RoomRectangle adjRoomRectangle = EditorView.currentEditorInstance.getAllRoomsAsList().findByRoom(entry.getValue());
+            assert adjRoomRectangle != null;
+
+            switch (entry.getKey()) {
+                case NORTH:
+                case SOUTH:
+                    adjRoomRectangle.setX(adjRoomRectangle.getX() + (widthDiff / 2));
+                    break;
+                case EAST:
+                case NORTH_EAST:
+                case SOUTH_EAST:
+                    adjRoomRectangle.setX(adjRoomRectangle.getX() + widthDiff);
+                    break;
+                default:
+                    skip = true;
+                    break;
+            }
+
+            if (!skip && !movedRooms.contains(adjRoomRectangle)) {
+                movedRooms.add(adjRoomRectangle);
                 moveRooms(adjRoomRectangle, widthDiff);
             }
         }
@@ -436,6 +456,7 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
 
         // move connected rooms
         double widthDiff = newWidth - this.getWidth();
+        movedRooms = new ArrayList<>();
         moveRooms(this, widthDiff);
         Platform.runLater(() -> EditorView.currentEditorInstance.renderView(false, true));
 
