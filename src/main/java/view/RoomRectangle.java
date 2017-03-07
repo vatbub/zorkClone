@@ -398,7 +398,7 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
 
     private static void moveRooms(RoomRectangle currentRoom, double widthDiff) {
         for (Map.Entry<WalkDirection, Room> entry : currentRoom.getRoom().getAdjacentRooms().entrySet()) {
-            if ((entry.getKey() == WalkDirection.NORTH_EAST || entry.getKey() == WalkDirection.NORTH_EAST || entry.getKey() == WalkDirection.EAST || entry.getKey() == WalkDirection.SOUTH_EAST) && entry.getValue() != null) {
+            if ((entry.getKey() == WalkDirection.SOUTH || entry.getKey() == WalkDirection.NORTH || entry.getKey() == WalkDirection.NORTH_EAST || entry.getKey() == WalkDirection.NORTH_EAST || entry.getKey() == WalkDirection.EAST || entry.getKey() == WalkDirection.SOUTH_EAST) && entry.getValue() != null) {
                 RoomRectangle adjRoomRectangle = EditorView.currentEditorInstance.getAllRoomsAsList().findByRoom(entry.getValue());
                 assert adjRoomRectangle != null;
                 adjRoomRectangle.setX(adjRoomRectangle.getX() + widthDiff);
