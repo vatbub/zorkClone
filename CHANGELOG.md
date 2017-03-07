@@ -11,6 +11,8 @@
 
 **Fixed bugs:**
 
+- Rooms that are connected to the North or South are not moved when the name of a room is changed [\#31](https://github.com/vatbub/zorkClone/issues/31)
+- Strange autoLayout for rooms with a longer name [\#29](https://github.com/vatbub/zorkClone/issues/29)
 - Exception when cerating a new game [\#21](https://github.com/vatbub/zorkClone/issues/21)
 - Not on FX Thread when using autoLayout [\#19](https://github.com/vatbub/zorkClone/issues/19)
 - Found a bug [\#10](https://github.com/vatbub/zorkClone/issues/10)
@@ -23,6 +25,7 @@
 
 **Closed issues:**
 
+- Exception when connecting a room on the north side [\#32](https://github.com/vatbub/zorkClone/issues/32)
 - Again a screenshot test [\#25](https://github.com/vatbub/zorkClone/issues/25)
 - Another screenshot test [\#24](https://github.com/vatbub/zorkClone/issues/24)
 - Screenshot test [\#23](https://github.com/vatbub/zorkClone/issues/23)
