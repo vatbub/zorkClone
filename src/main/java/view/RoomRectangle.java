@@ -506,9 +506,12 @@ public class RoomRectangle extends Rectangle implements Serializable, Disposable
         Platform.runLater((Runnable & Serializable) () -> {
             // add to new parent
             if (registerAsChild & parent != null) {
-                parent.getChildren().add(thisRef);
-                parent.getChildren().add(this.nameLabel);
-                parent.getChildren().add(this.currentPlayerIcon);
+                if (!parent.getChildren().contains(thisRef))
+                    parent.getChildren().add(thisRef);
+                if (!parent.getChildren().contains(this.nameLabel))
+                    parent.getChildren().add(this.nameLabel);
+                if (!parent.getChildren().contains(this.currentPlayerIcon))
+                    parent.getChildren().add(this.currentPlayerIcon);
             }
         });
 
