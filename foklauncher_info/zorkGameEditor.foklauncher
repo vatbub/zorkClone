@@ -1,5 +1,6 @@
 #This file stores info about a java app. To open this file, get the foklauncher
 #Fri Dec 02 01:12:18 CET 2016
+changelogURL=https\://github.com/vatbub/zorkClone/blob/master/CHANGELOG.md
 name=Zork GameEditor (prerelease)
 groupId=com.github.vatbub
 repoBaseURL=https\://dl.bintray.com/vatbub/fokprojectsReleases
