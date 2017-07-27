@@ -31,7 +31,7 @@
     <parent>
         <groupId>com.github.vatbub</groupId>
         <artifactId>parentPom</artifactId>
-        <version>0.0.21-SNAPSHOT</version>
+        <version>0.0.22-SNAPSHOT</version>
     </parent>
 
     <scm>
@@ -70,7 +70,7 @@
         <dependency>
             <groupId>com.github.vatbub</groupId>
             <artifactId>common</artifactId>
-            <version>0.0.24-SNAPSHOT</version>
+            <version>0.0.25-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.controlsfx</groupId>
