@@ -6,5 +6,5 @@ groupId=com.github.vatbub
 repoBaseURL=https\://dl.bintray.com/vatbub/fokprojectsReleases
 additionalInfoURL=https\://github.com/vatbub/zorkClone#zorkclone-
 classifier=gameEditor
-snapshotRepoBaseURL=https\://oss.jfrog.org/artifactory/repo
+snapshotRepoBaseURL=https\://oss.jfrog.org/artifactory/libs-snapshot
 artifactId=zorkClone
