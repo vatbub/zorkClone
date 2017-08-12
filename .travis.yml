@@ -17,7 +17,6 @@ install: echo Install phase has been disabled as a complete build is run during 
 script:
 - mvn test jacoco:report coveralls:report --settings target/travis/settings.xml
 before_cache:
-- mvn site site:deploy --settings target/travis/settings.xml -DskipTests=true
 - mvn deploy --settings target/travis/settings.xml -DskipTests=true
 after_success:
   - git checkout master

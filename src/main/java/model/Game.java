@@ -21,11 +21,11 @@ package model;
  */
 
 
-import common.Common;
+import com.github.vatbub.common.core.Common;
+import com.github.vatbub.common.core.logging.FOKLogger;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
-import logging.FOKLogger;
 import org.jetbrains.annotations.NotNull;
 import view.GameMessage;
 

@@ -21,6 +21,7 @@ package view;
  */
 
 
+import com.github.vatbub.common.view.reporting.ReportingDialog;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -28,7 +29,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import model.Room;
-import view.reporting.ReportingDialog;
 
 import java.io.IOException;
 import java.util.ResourceBundle;

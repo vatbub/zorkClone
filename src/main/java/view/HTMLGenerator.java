@@ -46,7 +46,7 @@ class HTMLGenerator {
 
         // TODO: give messages from player and from game a different background color
         // Header
-        String res = "<html>\n" +
+        StringBuilder res = new StringBuilder("<html>\n" +
                 "<head>\n" +
                 "<script language=\"javascript\" type=\"text/javascript\">  \n" +
                 "        function toBottom(){\n" +
@@ -319,13 +319,13 @@ class HTMLGenerator {
                 "}\n" +
                 "    </style>\n" +
                 "</head>\n" +
-                "<body onload='toBottom()'>\n";
+                "<body onload='toBottom()'>\n");
 
         for (GameMessage message : messages) {
             if (message.isMessageFromGame()) {
-                res = res + "<div class=\"talk-bubble tri-right border left-top\">\n";
+                res.append("<div class=\"talk-bubble tri-right border left-top\">\n");
             } else {
-                res = res + "<div class=\"talk-bubble tri-right round border right-top\">\n";
+                res.append("<div class=\"talk-bubble tri-right round border right-top\">\n");
             }
 
             String messageString = message.getMessage().replace("\n", "<br>");
@@ -334,15 +334,11 @@ class HTMLGenerator {
                 messageString = "<br>";
             }
 
-            res = res + "<div class=\"talktext\">\n" +
-                    "        <p>" + messageString + "</p>\n" +
-                    "    </div>\n" +
-                    "</div>\n";
+            res.append("<div class=\"talktext\">\n" + "        <p>").append(messageString).append("</p>\n").append("    </div>\n").append("</div>\n");
         }
 
-        res = res + "</body>\n" +
-                "</html>\n";
+        res.append("</body>\n" + "</html>\n");
 
-        return res;
+        return res.toString();
     }
 }

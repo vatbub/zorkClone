@@ -21,10 +21,10 @@ package view;
  */
 
 
+import com.github.vatbub.common.core.logging.FOKLogger;
 import javafx.scene.Cursor;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import logging.FOKLogger;
 
 /**
  * A image view that has events attached specifically required in the GameEditor
@@ -37,6 +37,7 @@ public class PlayerIcon extends ImageView {
     private RoomRectangle parent;
     private PlayerIcon iconCopy;
 
+    @SuppressWarnings("unused")
     public PlayerIcon() {
         this(null);
     }
@@ -45,6 +46,7 @@ public class PlayerIcon extends ImageView {
         this((Image) null, parent);
     }
 
+    @SuppressWarnings("unused")
     public PlayerIcon(String url, RoomRectangle parent) {
         this(new Image(url), parent);
     }

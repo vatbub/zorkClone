@@ -21,10 +21,14 @@ package view;
  */
 
 
+import com.github.vatbub.common.core.Common;
+import com.github.vatbub.common.core.logging.FOKLogger;
+import com.github.vatbub.common.updater.UpdateChecker;
+import com.github.vatbub.common.updater.UpdateInfo;
+import com.github.vatbub.common.updater.view.UpdateAvailableDialog;
+import com.github.vatbub.common.view.core.ExceptionAlert;
+import com.github.vatbub.common.view.reporting.ReportingDialog;
 import common.AppConfig;
-import common.Common;
-import common.UpdateChecker;
-import common.UpdateInfo;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -39,11 +43,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
-import logging.FOKLogger;
 import model.Game;
 import parser.Parser;
-import view.reporting.ReportingDialog;
-import view.updateAvailableDialog.UpdateAvailableDialog;
 
 import java.net.URL;
 import java.util.Locale;
@@ -71,7 +72,7 @@ public class MainWindow extends Application {
     private WebView messageView;
 
     public static void main(String[] args) {
-        common.Common.setAppName("zork");
+        Common.setAppName("zork");
         Common.setAwsAccessKey(AppConfig.awsLogAccessKeyID);
         Common.setAwsSecretAccessKey(AppConfig.awsLogSecretAccessKeyID);
         FOKLogger.enableLoggingOfUncaughtExceptions();
@@ -176,7 +177,7 @@ public class MainWindow extends Application {
     }
 
     @FXML
-    void fileBugMenuItemOnAction(ActionEvent event) {
+    void fileBugMenuItemOnAction(@SuppressWarnings("unused") ActionEvent event) {
         new ReportingDialog(stage.getScene()).show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName);
     }
 

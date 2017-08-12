@@ -21,7 +21,7 @@ package common;
  */
 
 
-import logging.FOKLogger;
+import com.github.vatbub.common.core.logging.FOKLogger;
 
 import java.net.MalformedURLException;
 import java.net.URL;

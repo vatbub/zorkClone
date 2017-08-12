@@ -90,21 +90,21 @@ public class Room implements Serializable {
     }
 
     public String getPrintableDescription(boolean verbose) {
-        String res = getName() + "\n";
+        StringBuilder res = new StringBuilder(getName() + "\n");
 
         if (verbose) {
-            res = res + this.getDescription() + "\n";
+            res.append(this.getDescription()).append("\n");
 
             for (Item item : itemsInRoom) {
-                res = res + item.getDescription() + "\n";
+                res.append(item.getDescription()).append("\n");
             }
 
             for (Entity entity : entitiesInRoom) {
-                res = res + entity.getDescription() + "\n";
+                res.append(entity.getDescription()).append("\n");
             }
         }
 
-        return res;
+        return res.toString();
     }
 
     public String getName() {

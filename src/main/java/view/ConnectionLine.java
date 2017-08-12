@@ -21,12 +21,13 @@ package view;
  */
 
 
+import com.github.vatbub.common.core.logging.FOKLogger;
+import com.github.vatbub.common.view.core.CustomGroup;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import logging.FOKLogger;
 import model.WalkDirection;
 import model.WalkDirectionUtils;
 

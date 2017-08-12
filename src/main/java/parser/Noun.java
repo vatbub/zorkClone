@@ -27,7 +27,7 @@ import java.util.List;
  * The representation of a noun in a sentence.
  */
 @SuppressWarnings("unused")
-public class Noun extends Word{
+public class Noun extends Word {
     public Noun() {
         super();
     }

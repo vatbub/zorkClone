@@ -50,7 +50,7 @@ public class WalkDirectionUtils {
         }
     }
 
-    public static WalkDirection getFromLineAngle(double lineAngle){
+    public static WalkDirection getFromLineAngle(double lineAngle) {
         if (lineAngle <= (Math.PI / 8.0) && lineAngle >= (-Math.PI / 8.0)) {
             // north
             return WalkDirection.NORTH;
@@ -72,7 +72,7 @@ public class WalkDirectionUtils {
         } else if (lineAngle <= (-Math.PI * 3.0 / 8.0) && lineAngle >= (-Math.PI * 5.0 / 8.0)) {
             // w
             return WalkDirection.WEST;
-        } else  {
+        } else {
             // ... if (lineAngle < (-Math.PI * 1.0 / 8.0) && lineAngle > (-Math.PI * 3.0 / 8.0))
             // but the compiler requires else...
             // nw
@@ -80,7 +80,7 @@ public class WalkDirectionUtils {
         }
     }
 
-    public static WalkDirection getFromLine(Line line){
+    public static WalkDirection getFromLine(Line line) {
         double lineAngle = Math.atan2(line.getEndX() - line.getStartX(), line.getStartY() - line.getEndY());
         return getFromLineAngle(lineAngle);
     }

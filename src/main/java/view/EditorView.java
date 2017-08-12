@@ -21,8 +21,12 @@ package view;
  */
 
 
+import com.github.vatbub.common.core.Common;
+import com.github.vatbub.common.core.logging.FOKLogger;
+import com.github.vatbub.common.view.core.CustomGroup;
+import com.github.vatbub.common.view.core.ExceptionAlert;
+import com.github.vatbub.common.view.reporting.ReportingDialog;
 import common.AppConfig;
-import common.Common;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -49,13 +53,11 @@ import javafx.scene.shape.Line;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import logging.FOKLogger;
 import model.Game;
 import model.Room;
 import model.WalkDirection;
 import model.WalkDirectionUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import view.reporting.ReportingDialog;
 
 import java.io.File;
 import java.io.IOException;
@@ -122,18 +124,22 @@ public class EditorView extends Application {
     private Button autoLayoutButton;
     @FXML
     private Button refreshViewButton;
+    @SuppressWarnings("unused")
     @FXML
     private MenuItem newMenuItem;
     @FXML
     private ScrollPane scrollPane;
     @FXML
     private ImageView compassImage;
+    @SuppressWarnings("unused")
     @FXML
     private MenuItem menuItemClose;
+    @SuppressWarnings("unused")
     @FXML
     private MenuItem menuItemOpen;
     @FXML
     private MenuItem menuItemSave;
+    @SuppressWarnings("unused")
     @FXML
     private MenuItem menuItemSaveAs;
     @FXML
@@ -183,7 +189,7 @@ public class EditorView extends Application {
     }
 
     @FXML
-    void fileBugMenuItemOnAction(ActionEvent event) {
+    void fileBugMenuItemOnAction(@SuppressWarnings("unused") ActionEvent event) {
         FOKLogger.info(EditorView.class.getName(), "Manual call of the ReportingDialog");
         new ReportingDialog(stage.getScene()).show(AppConfig.gitHubUserName, AppConfig.gitHubRepoName);
     }
@@ -205,7 +211,7 @@ public class EditorView extends Application {
     }
 
     @FXML
-    void menuItemSaveAsOnAction(ActionEvent event) {
+    void menuItemSaveAsOnAction(@SuppressWarnings("unused") ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save game file");
         File file = fileChooser.showSaveDialog(stage);
@@ -222,7 +228,7 @@ public class EditorView extends Application {
     }
 
     @FXML
-    void menuItemOpenOnAction(ActionEvent event) {
+    void menuItemOpenOnAction(@SuppressWarnings("unused") ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open a game file");
         File file = fileChooser.showOpenDialog(stage);
@@ -238,17 +244,17 @@ public class EditorView extends Application {
     }
 
     @FXML
-    void menuItemCloseOnAction(ActionEvent event) {
+    void menuItemCloseOnAction(@SuppressWarnings("unused") ActionEvent event) {
         Platform.exit();
     }
 
     @FXML
-    void insertRoomOnAction(ActionEvent event) {
+    void insertRoomOnAction(@SuppressWarnings("unused") ActionEvent event) {
         this.setCurrentEditMode(EditMode.INSERT_ROOM);
     }
 
     @FXML
-    void insertRoomOnDragDetected(MouseEvent event) {
+    void insertRoomOnDragDetected(@SuppressWarnings("unused") MouseEvent event) {
         insertRoomDragDetected = true;
         setCurrentEditMode(EditMode.INSERT_ROOM);
     }
@@ -270,7 +276,7 @@ public class EditorView extends Application {
     }
 
     @FXML
-    void insertRoomOnMousePressed(MouseEvent event) {
+    void insertRoomOnMousePressed(@SuppressWarnings("unused") MouseEvent event) {
         insertRoom.setCursor(Cursor.CLOSED_HAND);
     }
 
@@ -284,27 +290,27 @@ public class EditorView extends Application {
     }
 
     @FXML
-    void insertPathOnAction(ActionEvent event) {
+    void insertPathOnAction(@SuppressWarnings("unused") ActionEvent event) {
         this.setCurrentEditMode(EditMode.INSERT_PATH);
     }
 
     @FXML
-    void newMenuItemOnAction(ActionEvent event) {
+    void newMenuItemOnAction(@SuppressWarnings("unused") ActionEvent event) {
         initGame();
     }
 
     @FXML
-    void moveButtonOnAction(ActionEvent event) {
+    void moveButtonOnAction(@SuppressWarnings("unused") ActionEvent event) {
         this.setCurrentEditMode(EditMode.MOVE);
     }
 
     @FXML
-    void autoLayoutButtonOnAction(ActionEvent event) {
+    void autoLayoutButtonOnAction(@SuppressWarnings("unused") ActionEvent event) {
         renderView();
     }
 
     @FXML
-    void refreshViewButtonOnAction(ActionEvent event) {
+    void refreshViewButtonOnAction(@SuppressWarnings("unused") ActionEvent event) {
         renderView(false);
     }
 
@@ -371,7 +377,7 @@ public class EditorView extends Application {
     }
 
     @FXML
-    void scrollPaneOnMouseExited(MouseEvent event) {
+    void scrollPaneOnMouseExited(@SuppressWarnings("unused") MouseEvent event) {
         isMouseOverDrawing = false;
         if (this.getCurrentEditMode() == EditMode.INSERT_ROOM) {
             terminateInsertRoomEditMode();
@@ -552,9 +558,7 @@ public class EditorView extends Application {
             renderQueue.add(startRoom);
 
             // render unconnected rooms
-            for (RoomRectangle room : unconnectedRooms) {
-                renderQueue.add(room);
-            }
+            renderQueue.addAll(unconnectedRooms);
 
             while (!renderQueue.isEmpty()) {
                 RoomRectangle currentRoom = renderQueue.remove();

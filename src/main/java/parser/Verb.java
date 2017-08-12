@@ -44,11 +44,11 @@ public class Verb extends Word {
         super(word, synonyms);
     }
 
-    public Action getAction(){
+    public Action getAction() {
         return action;
     }
 
-    public void setAction(Action action){
+    public void setAction(Action action) {
         this.action = action;
     }
 }
