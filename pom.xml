@@ -10,7 +10,7 @@
             </snapshots>
             <id>bintray-vatbub-fokprojectsReleases</id>
             <name>bintray</name>
-            <url>http://dl.bintray.com/vatbub/fokprojectsReleases</url>
+            <url>https://dl.bintray.com/vatbub/fokprojectsReleases</url>
         </repository>
         <repository>
             <snapshots>
@@ -18,7 +18,7 @@
             </snapshots>
             <id>bintray-vatbub-fokprojectsSnapshots</id>
             <name>bintray</name>
-            <url>http://dl.bintray.com/vatbub/fokprojectsSnapshots</url>
+            <url>https://dl.bintray.com/vatbub/fokprojectsSnapshots</url>
         </repository>
         <repository>
             <snapshots/>

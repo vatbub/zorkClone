@@ -168,15 +168,15 @@ public class EditorView extends Application {
             if (arg.toLowerCase().matches("mockappversion=.*")) {
                 // Set the mock version
                 String version = arg.substring(arg.toLowerCase().indexOf('=') + 1);
-                Common.setMockAppVersion(version);
+                Common.getInstance().setMockAppVersion(version);
             } else if (arg.toLowerCase().matches("mockbuildnumber=.*")) {
                 // Set the mock build number
                 String buildnumber = arg.substring(arg.toLowerCase().indexOf('=') + 1);
-                Common.setMockBuildNumber(buildnumber);
+                Common.getInstance().setMockBuildNumber(buildnumber);
             } else if (arg.toLowerCase().matches("mockpackaging=.*")) {
                 // Set the mock packaging
                 String packaging = arg.substring(arg.toLowerCase().indexOf('=') + 1);
-                Common.setMockPackaging(packaging);
+                Common.getInstance().setMockPackaging(packaging);
             } else if (arg.toLowerCase().matches("locale=.*")) {
                 // set the gui language
                 String guiLanguageCode = arg.substring(arg.toLowerCase().indexOf('=') + 1);
