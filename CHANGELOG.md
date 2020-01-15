@@ -41,6 +41,10 @@
 - Testbug [\#11](https://github.com/vatbub/zorkClone/issues/11)
 - ihkgvihgvc [\#9](https://github.com/vatbub/zorkClone/issues/9)
 
+**Merged pull requests:**
+
+- Bump common.view.tagarea from 0.0.25-SNAPSHOT to 0.1.6-SNAPSHOT [\#38](https://github.com/vatbub/zorkClone/pull/38) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
+
 ## [zorkClone-1.0](https://github.com/vatbub/zorkClone/tree/zorkClone-1.0) (2016-11-27)
 
 
