@@ -160,9 +160,9 @@ public class EditorView extends Application {
     });
 
     public static void main(String[] args) {
-        Common.setAppName("zorkGameEditor");
-        Common.setAwsAccessKey(AppConfig.awsLogAccessKeyID);
-        Common.setAwsSecretAccessKey(AppConfig.awsLogSecretAccessKeyID);
+        Common.getInstance().setAppName("zorkGameEditor");
+        Common.getInstance().setAwsAccessKey(AppConfig.awsLogAccessKeyID);
+        Common.getInstance().setAwsSecretAccessKey(AppConfig.awsLogSecretAccessKeyID);
         FOKLogger.enableLoggingOfUncaughtExceptions();
         for (String arg : args) {
             if (arg.toLowerCase().matches("mockappversion=.*")) {
