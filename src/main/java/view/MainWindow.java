@@ -72,9 +72,9 @@ public class MainWindow extends Application {
     private WebView messageView;
 
     public static void main(String[] args) {
-        Common.setAppName("zork");
-        Common.setAwsAccessKey(AppConfig.awsLogAccessKeyID);
-        Common.setAwsSecretAccessKey(AppConfig.awsLogSecretAccessKeyID);
+        Common.getInstance().setAppName("zork");
+        Common.getInstance().setAwsAccessKey(AppConfig.awsLogAccessKeyID);
+        Common.getInstance().setAwsSecretAccessKey(AppConfig.awsLogSecretAccessKeyID);
         FOKLogger.enableLoggingOfUncaughtExceptions();
         // modify the default exception handler to show the ReportingDialog on every uncaught exception
         final Thread.UncaughtExceptionHandler currentUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
@@ -92,18 +92,18 @@ public class MainWindow extends Application {
             if (arg.toLowerCase().matches("mockappversion=.*")) {
                 // Set the mock version
                 String version = arg.substring(arg.toLowerCase().indexOf('=') + 1);
-                Common.setMockAppVersion(version);
+                Common.getInstance().setMockAppVersion(version);
             } else if (arg.toLowerCase().matches("mockbuildnumber=.*")) {
                 // Set the mock build number
                 String buildnumber = arg.substring(arg.toLowerCase().indexOf('=') + 1);
-                Common.setMockBuildNumber(buildnumber);
+                Common.getInstance().setMockBuildNumber(buildnumber);
             } else if (arg.toLowerCase().matches("disableupdatechecks")) {
                 FOKLogger.info(MainWindow.class.getName(), "Update checks are disabled as app was launched from launcher.");
                 disableUpdateChecks = true;
             } else if (arg.toLowerCase().matches("mockpackaging=.*")) {
                 // Set the mock packaging
                 String packaging = arg.substring(arg.toLowerCase().indexOf('=') + 1);
-                Common.setMockPackaging(packaging);
+                Common.getInstance().setMockPackaging(packaging);
             } else if (arg.toLowerCase().matches("locale=.*")) {
                 // set the gui language
                 String guiLanguageCode = arg.substring(arg.toLowerCase().indexOf('=') + 1);
@@ -120,7 +120,7 @@ public class MainWindow extends Application {
     void initialize() {
         assert commandLine != null : "fx:id=\"commandLine\" was not injected: check your FXML file 'BasicApplication_i18n.fxml'.";
         assert getAvailableCommandsButton != null : "fx:id=\"getAvailableCommandsButton\" was not injected: check your FXML file 'BasicApplication_i18n.fxml'.";
-        currentGame.getMessages().add(new GameMessage("ZORK I: The Great Underground Empire\nCopyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved.\nZORK is a registered trademark of Infocom, Inc.\n Revision " + Common.getAppVersion() + "-" + Common.getBuildNumber() + "\n\nThis game is not yet functional. Give the team some time and come back in some time. See ya :)", true));
+        currentGame.getMessages().add(new GameMessage("ZORK I: The Great Underground Empire\nCopyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved.\nZORK is a registered trademark of Infocom, Inc.\n Revision " + Common.getInstance().getAppVersion() + "-" + Common.getInstance().getBuildNumber() + "\n\nThis game is not yet functional. Give the team some time and come back in some time. See ya :)", true));
         updateCommandView();
     }
 
@@ -133,7 +133,7 @@ public class MainWindow extends Application {
             Thread updateThread = new Thread(() -> {
                 UpdateInfo update = UpdateChecker.isUpdateAvailable(AppConfig.getUpdateRepoBaseURL(),
                         AppConfig.groupID, AppConfig.artifactID, AppConfig.updateFileClassifier,
-                        Common.getPackaging());
+                        Common.getInstance().getPackaging());
                 if (update.showAlert) {
                     Platform.runLater(() -> new UpdateAvailableDialog(update));
                 }

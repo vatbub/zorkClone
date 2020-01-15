@@ -45,7 +45,7 @@ public class Game implements Serializable {
      * The app version that was used when the game was saved.
      */
     @SuppressWarnings({"unused"})
-    public final String gameSavedWithAppVersion = Common.getAppVersion();
+    public final String gameSavedWithAppVersion = Common.getInstance().getAppVersion();
 
     private Room currentRoom;
     private Player player;
@@ -324,7 +324,7 @@ public class Game implements Serializable {
         Date date = new Date();
         String dateString = dateFormat.format(date);
 
-        String fileName = Common.getAndCreateAppDataPath() + "saves" + File.separator;
+        String fileName = Common.getInstance().getAndCreateAppDataPath() + "saves" + File.separator;
 
         if (!customNamePrefix.equals("")) {
             // We have a name given
