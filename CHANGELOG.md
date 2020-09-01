@@ -43,6 +43,8 @@
 
 **Merged pull requests:**
 
+- Bump controlsfx from 8.40.16 to 8.40.17 [\#50](https://github.com/vatbub/zorkClone/pull/50) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
+- Bump build-helper-maven-plugin from 3.1.0 to 3.2.0 [\#49](https://github.com/vatbub/zorkClone/pull/49) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Bump build-helper-maven-plugin from 3.0.0 to 3.1.0 [\#48](https://github.com/vatbub/zorkClone/pull/48) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Bump controlsfx from 8.40.13 to 8.40.16 [\#47](https://github.com/vatbub/zorkClone/pull/47) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Bump parentPom from 1.0.1-SNAPSHOT to 1.0.3-SNAPSHOT [\#46](https://github.com/vatbub/zorkClone/pull/46) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
