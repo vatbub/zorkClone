@@ -1,0 +1,15 @@
+version: 2
+updates:
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: monthly
+    time: "04:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: org.controlsfx:controlsfx
+    versions:
+    - ">= 11.a, < 12"
+  - dependency-name: org.controlsfx:controlsfx
+    versions:
+    - ">= 9.a, < 10"
