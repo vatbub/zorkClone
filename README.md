@@ -30,7 +30,7 @@ Feel free to [file issues](https://github.com/vatbub/zorkClone/issues/new), fork
 - Rewrite the story of Zork I, II and III using the framework ![progress](https://img.shields.io/badge/progress-0%25-red.svg)
 
 
-##Docs
+## Docs
 [Maven Site](http://vatbubmvnsites.s3-website-us-west-2.amazonaws.com/zorkClone/1.1-SNAPSHOT/site/zorkClone/), [JavaDoc](http://vatbubmvnsites.s3-website-us-west-2.amazonaws.com/zorkClone/1.1-SNAPSHOT/site/zorkClone/apidocs/index.html)
 
 ## Contributing
